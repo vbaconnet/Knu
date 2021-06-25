@@ -20,7 +20,13 @@ git clone https://github.com/victor13165/Knu
 cd Knu
 source sourceMe
 ```
+Pour utiliser les scripts Python, il est préférable d'installer les versions de ``numpy``, ``scipy`` et ``matplotlib`` données dans ``requirements.txt``:
+```
+pip install requirements.txt
+```
 
+**ATTENTION**
+Pour l'instant, le calcul du débit de franchissement nécéssite que le module `paraview.simple` puisse être importé. Il faut avoir installé paraview. Ce script va prochainement être modifié pour ne pas avoir à se reposer sur Paraview et utiliser directement l'intégration volumique d'OpenFOAM.
 
 ## Support
 
