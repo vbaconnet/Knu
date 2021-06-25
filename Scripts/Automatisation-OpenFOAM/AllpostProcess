@@ -1,0 +1,107 @@
+#!/bin/bash
+
+. ${WM_PROJECT_DIR:?}/bin/tools/RunFunctions  #Charger les scripts OpenFOAM
+
+usage() {
+    echo "Utilisation : AllpostProcess [-h|--help] <script1> <script2> ... <scriptN>"
+}
+
+send_help() {
+    echo
+    usage
+    echo
+    echo "Lance une série de scripts lorsque la simulation est terminée. La"
+    echo "fin de la simulation est basée sur le fichier log de sortie de simulation,"
+    echo "au format log.nomSolver, ou nomSolver est le nom du solveur donné dans controlDict."
+    echo
+    echo "OPTIONS"
+    echo "-------"
+    echo "   -h, --help: Afficher l'aide"
+    echo
+    echo "ERREURS"
+    echo "-------"
+    echo "   1 en cas de problème de lecture d'option"
+    echo "   2 en cas de problème de lecture de fichier"
+    echo
+
+}
+
+# Vérifier le code de sortie de $?. Si différent de 0, renvoie le code d'erreur $2
+# Donner le nom de l'application dans $1
+check_exit_code() {
+	if [ ! $? -eq 0 ]; then
+		echo "--> Erreur : ${1} a échoué."
+		exit ${2}
+	else
+		echo "${1} terminé"
+	fi
+}
+
+execute_scripts() {
+    #Pour chaque paramètre, l'exécuter
+    for script in $@ ; do
+        echo "Execution de ${script}"
+        $script
+        check_exit_code "${script}" 2
+    done
+}
+
+#==============================================================================
+
+# On parcourt les paramètres donnés par l'utilisateur
+for key in $@ ; do 
+
+	case $key in
+		-h|--help) #Afficher l'aide et quitter
+		send_help
+		exit 0
+		;;
+		*)   # Autre option 
+        #Si le paramètre donné commence par un tiret, il n'est pas accepté
+        if [ ! -z $(echo $key | grep -o "\-") ]; then
+            echo
+            echo "Erreur : argument invalide ${key}"
+            usage
+            exit 1
+        fi
+		;;
+	esac
+	
+done 
+
+#Vérifier si il y a bien une liste d'arguments
+if [ $# -eq 0 ]; then
+    echo "Erreur : aucun script donné en paramètre"
+    usage
+    exit 1
+fi
+
+#Récupérer le temps final dans controlDict
+LATEST_TIME=$(cat system/controlDict | grep endTime | grep -o "[0-9].*\.*[0-9]")
+check_exit_code "cat system/controlDict" 2
+echo "Temps maximal de simulation : ${LATEST_TIME}"
+
+LOGFILE="log.$(getApplication)"
+
+#Lire le dernier temps de simulation
+TIME=$(tail -100 ${LOGFILE} | grep ^Time | tail -1 | grep -o "[0-9].*")
+check_exit_code "Lecture du fichier ${LOGFILE}" 2
+echo "Dernier temps dans le fichier ${LOGFILE} : ${TIME}"
+
+#Boucler tant qu'on a pas terminé 
+while [ ! ${TIME} -eq ${LATEST_TIME} ] && [ ! -z "${TIME}" ] ; do
+
+    echo "Réexecution automatique dans 60 secondes"
+    sleep 60
+
+    #Lire le dernier temps de simulation
+    TIME=$(tail -100 ${LOGFILE} | grep ^Time | tail -1 | grep -o "[0-9].*") 
+    echo "Dernier temps dans le fichier ${LOGFILE}: ${TIME}"
+
+done
+
+echo "Simulation terminée"
+execute_scripts $@
+
+echo
+echo "Terminé"

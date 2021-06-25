@@ -1,0 +1,156 @@
+#!/bin/bash
+
+# !! Important !!
+# Pour une documentation de ce script, se référer aux fonctions send_help()
+# et usage() ci-dessous
+
+. ${WM_PROJECT_DIR:?}/bin/tools/RunFunctions  #Charger les scripts OpenFOAM
+
+#Utilisation du script
+usage() {
+	echo "Utilisation : Allrun [OPTIONS]"
+	echo
+	echo "  -c, --clean : Nettoyer le répertoire (maillage, dossiers de résult"
+    echo "     -ats, dossiers de processeurs, fichiers log)"
+	echo "  -s, --setfields : Lancer setFields selon les critères de "
+	echo "      setFieldsDict"
+	echo "  -t, --toposet : Lancer topoSet selon les critères de topoSetDict"
+	echo "  -p, --parallel : Lancer le calcul en parallèle avec le nombre de pro"
+    echo "     -cesseurs défini dans decomposeParDict"
+	echo "  -r, --noreconstruct : pour ne pas reconstruire les fichiers après "
+	echo "      le calcul parallèle"
+    echo "  -h, --help : afficher l'aide"
+}
+
+#Aide
+send_help() {
+	echo "Utilisation : Allrun [OPTIONS]"
+	echo
+    echo "Lance le calcul OpenFOAM selon le solveur défini dans controlDict"
+    echo "Peut lancer le calcul en parallèle selon les critères définis dans"
+    echo "decomposeParDict. Le solveur est lancé en arrière-plan."
+	echo 
+	echo "OPTIONS"
+	echo "-------"
+	echo "  -c, --clean : Nettoyer le répertoire (maillage, dossiers de résult"
+    echo "     -ats, dossiers de processeurs, fichiers log)"
+	echo "  -s, --setfields : Lancer setFields selon les critères de "
+	echo "      setFieldsDict"
+	echo "  -t, --toposet : Lancer topoSet selon les critères de topoSetDict"
+	echo "  -p, --parallel : Lancer le calcul en parallèle avec le nombre de pro"
+    echo "     -cesseurs défini dans decomposeParDict"
+	echo "  -r, --noreconstruct : pour ne pas reconstruire les fichiers après "
+	echo "      le calcul parallèle"
+    echo "  -h, --help : afficher l'aide"
+	echo
+	echo "ERREURS"
+	echo "-------"
+	echo "  1 pour argument ou option invalide"
+	echo "  4 si erreur dans decomposePar"
+	echo "  7 si erreur de lancement du solveur"
+    echo "  8 si erreur dans reconstructPar "
+}
+
+#Nettoyer le répertoire 
+clean() {
+
+    echo "Nettoyage du répertoire $(pwd)"
+
+	# Si Allclean existe, l'utiliser
+	if [ -f "Allclean" ]; then 
+		./Allclean
+	
+	# Sinon faire ça manuellement
+	else 					   
+		# Remove the mesh
+		foamCleanPolyMesh
+
+		# Remove time folders
+		foamListTimes -rm -time 0: -withZero
+
+		# Remove processor directories
+		rm -rf  processor*
+
+		# Remove logs
+		rm  -f log.*
+	fi
+}
+
+# Vérifier le code de sortie de $?. Si différent de 0, renvoie le code d'erreur $2
+# Donner le nom de l'application dans $1
+check_exit_code() {
+	if [ ! $? -eq 0 ]; then
+		echo "--> Erreur : ${1} a échoué. Consulter log.${1} pour plus de détails"
+		exit ${2}
+	else
+		echo "${1} terminé"
+	fi
+}
+
+#Variables pour la lecture des options
+#-------------------------------
+PARALLEL=false
+DIR_WAS_CLEANED=false
+RECONSTRUCT=true
+#-------------------------------
+
+# On parcourt les paramètres donnés par l'utilisateur
+while [[ $# -gt 0 ]]
+do 
+
+	key="${1}" # première option
+
+	case $key in
+		-h|--help) #Afficher l'aide et quitter
+		send_help
+		exit 0
+		;;
+		-p|--parallel) # activer le calcul parallèle
+		PARALLEL=true
+		shift
+		;;
+		-c|--clean) # nettoyer le dossier
+		clean
+		DIR_WAS_CLEANED=true
+		shift
+		;;
+		-r|--noreconstruct) #Ne pas reconstruire après calcul parallèle
+		RECONSTRUCT=false
+		shift
+		;;
+		*)   # Autre option invalide
+		echo
+		echo "Erreur : argument invalide ${key}"
+		usage
+		echo "Exécutez Allrun -h pour l'aide détaillée"
+		exit 1
+		;;
+	esac
+	
+done 
+
+if $PARALLEL && ! $RECONSTRUCT ; then
+	echo
+	echo "--> Warning : option -r activée sans calcul parallèle"
+	echo "  ** Conseil ** Utilisez l'option -p pour activer le calcul parallèle"
+fi
+
+if $PARALLEL ; then    #Lancement en parallèle
+
+    runApplication decomposePar
+    check_exit_code "decomposePar" 4
+    
+    runParallel $(getApplication) 
+    check_exit_code "$(getApplication)" 7
+
+	if $RECONSTRUCT ; then
+		runApplication reconstructPar 
+		check_exit_code "reconstructPar" 8
+	fi
+
+else
+    runApplication $(getApplication) 
+    check_exit_code "$(getApplication)" 7
+fi
+
+echo "Terminé."
