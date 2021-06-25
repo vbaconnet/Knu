@@ -3,11 +3,22 @@
 . ${WM_PROJECT_DIR:?}/bin/tools/RunFunctions #Quelques fonctions d'openfoam
 
 usage() {
-	echo "Utilisation : Allmesh [-c|--clean] [-p|--parallel] [-e|--extrudemesh] [-S|--snappy]"
+	echo "Utilisation : Allmesh [OPTIONS]"
+	echo
+	echo "  -c, --clean : Nettoyer le répertoire. Le maillage existant "
+	echo "      (polyMesh) est supprimé par défaut."
+	echo "  -p, -parallel : Lancer snappyHexMesh en parallèle avec le nombre de"
+	echo "      processeurs défini dans decomposeParDict."
+	echo "  -e, --extrudemesh : Lancer l'extrusion de maillage selon les "
+	echo "      critères définis dans extrudeMeshDict."
+	echo "  -S, --snappyhexmesh : Lancer snappyHexMesh selon les critères "
+	echo "      définis dans snappyHexMeshDict."
+	echo "  -h, --help : Afficher l'aide "
 }
 
 send_help() {
-	usage
+	echo 
+	echo "Utilisation : Allmesh [OPTIONS]"
 	echo
 	echo "Permet de lancer les outils de maillage d'OpenFOAM. Par défaut, ne "
 	echo "lance que blockMesh. Pour lancer snappyHexMesh, utilisez l'option  "
@@ -16,10 +27,14 @@ send_help() {
 	echo 
 	echo "OPTIONS"
 	echo "-------"
-	echo "  -c, --clean : Nettoyer le répertoire. Le maillage existant (polyMesh) est supprimé par défaut."
-	echo "  -p, -parallel : Lancer snappyHexMesh en parallèle avec le nombre de processeurs défini dans decomposeParDict."
-	echo "  -e, --extrudemesh : Lancer l'extrusion de maillage selon les critères définis dans extrudeMeshDict."
-	echo "  -S, --snappyhexmesh : Lancer snappyHexMesh selon les critères définis dans snappyHexMeshDict."
+	echo "  -c, --clean : Nettoyer le répertoire. Le maillage existant "
+	echo "      (polyMesh) est supprimé par défaut."
+	echo "  -p, -parallel : Lancer snappyHexMesh en parallèle avec le nombre de"
+	echo "      processeurs défini dans decomposeParDict."
+	echo "  -e, --extrudemesh : Lancer l'extrusion de maillage selon les "
+	echo "      critères définis dans extrudeMeshDict."
+	echo "  -S, --snappyhexmesh : Lancer snappyHexMesh selon les critères "
+	echo "      définis dans snappyHexMeshDict."
 	echo "  -h, --help : Afficher l'aide (ce que vous lisez actuellement)"
 	echo
 	echo "ERREURS"
@@ -78,14 +93,28 @@ SNAPPY=false
 DIR_WAS_CLEANED=false
 #-------------------------------
 
+#Lire les arguments et options avec getopt
+#Explication : 
+#     -n Allmesh : permet que le message d'erreur soit "Allmesh ..." et pas
+#			"getopt ..."
+#	  -o hepcS : lecture d'options courtes de type -h, -e... etc ou -he
+#	  -l help,... : lecture d'options longues de type --help, etc
+#     -- : signale la fin des options
+PARSED_ARGS=$(getopt -n Allmesh -o hepcS -l help,extrudemesh,parallel,clean,snappyhexmesh -- "$@")
 
-# On parcourt les paramètres donnés par l'utilisateur
-while [[ $# -gt 0 ]]
-do 
+#Vérifier que tout s'est bien passé
+if [ ! "${?}" -eq 0 ] ; then
+	usage
+	exit 1
+fi
 
-	key="${1}" # première option
+#Ranger les options lues par getopt dans $1, $2, etc
+eval set -- "${PARSED_ARGS}"
 
-	case $key in
+#Parcourir les paramètres
+while [ ! "${#}" -eq 0 ] ; do
+
+	case "${1}" in
 		-h|--help) #Afficher l'aide et quitter
 		send_help
 		exit 0
@@ -107,15 +136,18 @@ do
 		SNAPPY=true
 		shift
 		;;
+		--)   #Fin des arguments
+		shift
+		break
+		;;
 		*)   # Autre option invalide
 		echo
-		echo "Erreur : argument invalide ${key}"
+		echo "Allmesh : ${1} : argument invalide "
 		usage
 		exit 1
 		;;
 	esac
-	
-done 
+done
 
 #Lancer un warning si extrudeMesh mais pas snappyHexMesh
 if ! $SNAPPY  &&  $EXTRUDE ; then

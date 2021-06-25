@@ -49,6 +49,8 @@ send_help() {
 	echo "  4 si erreur dans decomposePar"
 	echo "  7 si erreur de lancement du solveur"
     echo "  8 si erreur dans reconstructPar "
+	echo "  9 si erreur dans la copie du dossier 0"
+	echo "  10 si erreur dans setFields"
 }
 
 #Nettoyer le répertoire 
@@ -92,62 +94,143 @@ check_exit_code() {
 PARALLEL=false
 DIR_WAS_CLEANED=false
 RECONSTRUCT=true
+SETFIELDS=false
+TOPOSET=false
 #-------------------------------
 
+#Lire les arguments et options avec getopt
+#Explication : 
+#     -n Allrun : permet que le message d'erreur soit "Allrun ..." et pas
+#			"getopt ..."
+#	  -o cstprh : lecture d'options courtes de type -h, -s... etc ou -hs
+#	  -l clean,... : lecture d'options longues de type --clean, etc
+#     -- : signale la fin des options
+PARSED_ARGS=$(getopt -n Allrun -o cstprh -l clean,setfields,toposet,parallel,noreconstruct,help -- "$@")
+
+#Vérifier que tout s'est bien passé
+if [ ! "${?}" -eq 0 ] ; then
+	usage
+	exit 1
+fi
+
+#Ranger les options lues par getopt dans $1, $2, etc
+eval set -- "${PARSED_ARGS}"
+
 # On parcourt les paramètres donnés par l'utilisateur
-while [[ $# -gt 0 ]]
-do 
+while [ ! "${#}" -eq 0 ] ; do
 
-	key="${1}" # première option
-
-	case $key in
-		-h|--help) #Afficher l'aide et quitter
+	case "${1}" in
+		-h|--help)            # Afficher l'aide et quitter
 		send_help
 		exit 0
 		;;
-		-p|--parallel) # activer le calcul parallèle
+		-p|--parallel)        # activer le calcul parallèle
 		PARALLEL=true
 		shift
 		;;
-		-c|--clean) # nettoyer le dossier
+		-c|--clean)           # nettoyer le dossier
 		clean
 		DIR_WAS_CLEANED=true
 		shift
 		;;
-		-r|--noreconstruct) #Ne pas reconstruire après calcul parallèle
+		-r|--noreconstruct)   # Ne pas reconstruire après calcul parallèle
 		RECONSTRUCT=false
 		shift
 		;;
-		*)   # Autre option invalide
+		-s|--setfields)       # Lancer setFields
+		SETFIELDS=true
+		shift
+		;;
+		-t|--toposet)         # Lancer topoSet
+		TOPOSET=true
+		shift
+		;;
+		--)                   # Fin des arguments
+		shift
+		break
+		;;
+		*)                    # Autre option invalide
 		echo
-		echo "Erreur : argument invalide ${key}"
+		echo "Allmesh : ${1} : argument invalide "
 		usage
-		echo "Exécutez Allrun -h pour l'aide détaillée"
 		exit 1
 		;;
 	esac
 	
 done 
 
-if $PARALLEL && ! $RECONSTRUCT ; then
+if ! $PARALLEL && ! $RECONSTRUCT ; then
 	echo
 	echo "--> Warning : option -r activée sans calcul parallèle"
 	echo "  ** Conseil ** Utilisez l'option -p pour activer le calcul parallèle"
 fi
 
-if $PARALLEL ; then    #Lancement en parallèle
+#Copie du dossier 0
+if [ -d "0" ] ; then
+	echo "Le dossier 0 existe déjà. Aucune action effectuée"
+else
+	echo "Dossier 0 non trouvé. Recherche de 0.orig..."
+	ZERODIR=""
 
+	#Recherche de 0.orig
+	if [ -d "0.orig" ] ; then 
+		echo "0.orig trouvé" 
+		ZERODIR="0.orig" 
+
+	else 
+		echo "0.orig pas trouvé. Recherche de 0_orig..."
+
+		#Si pas trouvé, recherche de 0_orig
+		if [ -d "0_orig" ] ; then
+			echo "0_orig trouvé" 
+			ZERODIR="0_orig"
+		else 
+			echo "0_orig pas trouvé. Recherche de 0_org..."
+
+			#Si pas trouvé, recherche de 0_org
+			if [ -d "0_org" ] ; then 
+				echo "0_org trouvé"
+				ZERODIR="0_org"
+			else
+				#Si pas trouvé, renvoyer une erreur
+				echo "0_org pas trouvé."
+				echo 
+				echo "--> Erreur : aucun dossier 0, 0.orig, 0_orig ou 0_org trouvé"
+				exit 9
+			fi
+		fi
+	fi
+
+cp -r "${ZERODIR}" 0  # Copie du dossier 0_org ou 0_orig vers 0
+echo "Dossier 0 créé"
+fi
+
+#Lancement de setFields
+if $SETFIELDS ; then
+	runApplication setFields
+	check_exit_code "setFields" 10
+fi
+
+#Lancement en parallèle
+if $PARALLEL ; then    
+
+	#Lancer decomposePar
     runApplication decomposePar
     check_exit_code "decomposePar" 4
-    
-    runParallel $(getApplication) 
+	rm -f log.decomposePar
+
+	#Lancer le solveur donné dans system/controlDict
+    runParallel $(getApplication)
     check_exit_code "$(getApplication)" 7
 
+	#Reconstruction des fichiers et effaçage des dossiers si succès 
 	if $RECONSTRUCT ; then
 		runApplication reconstructPar 
 		check_exit_code "reconstructPar" 8
+		rm -rf processor*
 	fi
 
+#Lancement en séquentiel
 else
     runApplication $(getApplication) 
     check_exit_code "$(getApplication)" 7
