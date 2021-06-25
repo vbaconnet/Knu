@@ -15,7 +15,12 @@ implémente le transport d'un "scalaire passif" type colorant.
 
 ## Installation
 
+```bash
 git clone https://github.com/victor13165/Knu
+cd Knu
+source sourceMe
+```
+
 
 ## Support
 
