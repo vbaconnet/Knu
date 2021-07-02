@@ -19,6 +19,7 @@ usage() {
     echo "     -cesseurs défini dans decomposeParDict"
 	echo "  -r, --noreconstruct : pour ne pas reconstruire les fichiers après "
 	echo "      le calcul parallèle"
+	echo "  -d, --nosolve : Ne pas lancer le solveur"
     echo "  -h, --help : afficher l'aide"
 }
 
@@ -41,6 +42,8 @@ send_help() {
     echo "     -cesseurs défini dans decomposeParDict"
 	echo "  -r, --noreconstruct : pour ne pas reconstruire les fichiers après "
 	echo "      le calcul parallèle"
+	echo "  -n, --nosolve : ne pas lancer le solveur. Si -p ou -r sont activées,"
+	echo "      elles ne seront pas prises en compte et généreront un warning"
     echo "  -h, --help : afficher l'aide"
 	echo
 	echo "ERREURS"
@@ -51,6 +54,7 @@ send_help() {
     echo "  8 si erreur dans reconstructPar "
 	echo "  9 si erreur dans la copie du dossier 0"
 	echo "  10 si erreur dans setFields"
+	echo "  11 si erreur dans topoSet"
 }
 
 #Nettoyer le répertoire 
@@ -82,12 +86,93 @@ clean() {
 # Donner le nom de l'application dans $1
 check_exit_code() {
 	if [ ! $? -eq 0 ]; then
-		echo "--> Erreur : ${1} a échoué. Consulter log.${1} pour plus de détails"
-		exit ${2}
+		error "${1} a échoué. Consulter log.${1} pour plus de détails" ${2}
 	else
 		echo "${1} terminé"
 	fi
 }
+
+#Lancer un warning
+warning() {
+	echo 
+	echo "--> Warning : ${1}"
+}
+
+#Lancer une erreur avec un message et un code d'erreur 
+error() {
+	echo 
+	echo "--> Erreur : ${1}"
+
+	#Si il n'y a qu'un seul argument : erreur 42
+	if [ $# -eq 1 ] ; then
+		exit 42
+	else
+		exit ${2}
+	fi
+}
+
+#Copie du dossier 0
+copyZero() {
+	if [ -d "0" ] ; then
+		echo "Le dossier 0 existe déjà. Aucune action effectuée"
+	else
+		echo "Dossier 0 non trouvé. Recherche de 0.orig..."
+		ZERODIR=""
+
+		#Recherche de 0.orig
+		if [ -d "0.orig" ] ; then 
+			echo "0.orig trouvé" 
+			ZERODIR="0.orig" 
+
+		else 
+			echo "0.orig pas trouvé. Recherche de 0_orig..."
+
+			#Si pas trouvé, recherche de 0_orig
+			if [ -d "0_orig" ] ; then
+				echo "0_orig trouvé" 
+				ZERODIR="0_orig"
+			else 
+				echo "0_orig pas trouvé. Recherche de 0_org..."
+
+				#Si pas trouvé, recherche de 0_org
+				if [ -d "0_org" ] ; then 
+					echo "0_org trouvé"
+					ZERODIR="0_org"
+				else
+					#Si pas trouvé, renvoyer une erreur
+					echo "0_org pas trouvé."
+					error "aucun dossier 0, 0.orig, 0_orig ou 0_org trouvé"
+					exit 9
+				fi
+			fi
+		fi
+
+	cp -r "${ZERODIR}" 0  # Copie du dossier 0_org ou 0_orig vers 0
+	echo "Dossier 0 créé"
+	fi
+}
+
+#Vérifier les paramètres
+check_params() {
+
+	#Si l'utilisateur ne veut pas lancer reconstructpPar mais qu'il n'a pas 
+	#activé le calcul parallèle
+	if ! $PARALLEL && ! $RECONSTRUCT ; then
+		warning "option -r activée sans calcul parallèle:"
+		echo "     reconstructPar ne sera pas lancé"
+		echo
+		echo "  ** Conseil ** Utilisez l'option -p pour activer le calcul parallèle"
+	fi
+
+	#Si l'utilisateur veut lancer en parallèle mais pas lancer le solveur
+	if $PARALLEL && ! $SOLVE ; then
+		warning "option -p activée avec -n : "
+		echo "     Aucun calcul en parallèle n'aura lieu"
+		echo
+		echo "  ** Conseil ** Lorsque vous utilisez -n, pas besoin d'utiliser -p"
+	fi
+}
+
 
 #Variables pour la lecture des options
 #-------------------------------
@@ -96,6 +181,7 @@ DIR_WAS_CLEANED=false
 RECONSTRUCT=true
 SETFIELDS=false
 TOPOSET=false
+SOLVE=true
 #-------------------------------
 
 #Lire les arguments et options avec getopt
@@ -105,7 +191,7 @@ TOPOSET=false
 #	  -o cstprh : lecture d'options courtes de type -h, -s... etc ou -hs
 #	  -l clean,... : lecture d'options longues de type --clean, etc
 #     -- : signale la fin des options
-PARSED_ARGS=$(getopt -n Allrun -o cstprh -l clean,setfields,toposet,parallel,noreconstruct,help -- "$@")
+PARSED_ARGS=$(getopt -n Allrun -o cstprhn -l clean,setfields,toposet,parallel,noreconstruct,nosolve,help -- "$@")
 
 #Vérifier que tout s'est bien passé
 if [ ! "${?}" -eq 0 ] ; then
@@ -115,6 +201,10 @@ fi
 
 #Ranger les options lues par getopt dans $1, $2, etc
 eval set -- "${PARSED_ARGS}"
+
+echo
+echo "Lecture des paramètres"
+echo "------------------------"
 
 # On parcourt les paramètres donnés par l'utilisateur
 while [ ! "${#}" -eq 0 ] ; do
@@ -126,23 +216,33 @@ while [ ! "${#}" -eq 0 ] ; do
 		;;
 		-p|--parallel)        # activer le calcul parallèle
 		PARALLEL=true
+		echo "Calcul parallèle activé"
 		shift
 		;;
 		-c|--clean)           # nettoyer le dossier
 		clean
 		DIR_WAS_CLEANED=true
+		echo "Nettoyage complet du répertoire"
 		shift
 		;;
 		-r|--noreconstruct)   # Ne pas reconstruire après calcul parallèle
 		RECONSTRUCT=false
+		echo "Pas de reconstruction après le calcul parallèle"
 		shift
 		;;
 		-s|--setfields)       # Lancer setFields
 		SETFIELDS=true
+		echo "setFields activé"
 		shift
 		;;
 		-t|--toposet)         # Lancer topoSet
 		TOPOSET=true
+		echo "topoSet activé"
+		shift
+		;;
+		-n|--nosolve)
+		SOLVE=false
+		echo "Pas de lancement du solveur"
 		shift
 		;;
 		--)                   # Fin des arguments
@@ -159,65 +259,76 @@ while [ ! "${#}" -eq 0 ] ; do
 	
 done 
 
-if ! $PARALLEL && ! $RECONSTRUCT ; then
-	echo
-	echo "--> Warning : option -r activée sans calcul parallèle"
-	echo "  ** Conseil ** Utilisez l'option -p pour activer le calcul parallèle"
-fi
+echo "------------------------"
+echo "Fin de lecture des paramètres"
+
+#Vérifier les paramètres
+check_params
 
 #Copie du dossier 0
-if [ -d "0" ] ; then
-	echo "Le dossier 0 existe déjà. Aucune action effectuée"
-else
-	echo "Dossier 0 non trouvé. Recherche de 0.orig..."
-	ZERODIR=""
-
-	#Recherche de 0.orig
-	if [ -d "0.orig" ] ; then 
-		echo "0.orig trouvé" 
-		ZERODIR="0.orig" 
-
-	else 
-		echo "0.orig pas trouvé. Recherche de 0_orig..."
-
-		#Si pas trouvé, recherche de 0_orig
-		if [ -d "0_orig" ] ; then
-			echo "0_orig trouvé" 
-			ZERODIR="0_orig"
-		else 
-			echo "0_orig pas trouvé. Recherche de 0_org..."
-
-			#Si pas trouvé, recherche de 0_org
-			if [ -d "0_org" ] ; then 
-				echo "0_org trouvé"
-				ZERODIR="0_org"
-			else
-				#Si pas trouvé, renvoyer une erreur
-				echo "0_org pas trouvé."
-				echo 
-				echo "--> Erreur : aucun dossier 0, 0.orig, 0_orig ou 0_org trouvé"
-				exit 9
-			fi
-		fi
-	fi
-
-cp -r "${ZERODIR}" 0  # Copie du dossier 0_org ou 0_orig vers 0
-echo "Dossier 0 créé"
-fi
+echo
+copyZero
 
 #Lancement de setFields
 if $SETFIELDS ; then
-	runApplication setFields
-	check_exit_code "setFields" 10
+
+	# Si setFieldsDict existe
+	if [ -f "system/setFieldsDict" ] ; then
+		runApplication setFields
+		check_exit_code "setFields" 10
+	else
+		warning "system/setFieldsDict n'existe pas."
+		echo
+		echo "** Conseil ** Utilisez la commande foamGetDict :"
+		echo "         foamGetDict setFieldsDict"
+	fi
 fi
 
-#Lancement en parallèle
-if $PARALLEL ; then    
+#Lancer topoSet
+if $TOPOSET ; then
 
-	#Lancer decomposePar
-    runApplication decomposePar
-    check_exit_code "decomposePar" 4
-	rm -f log.decomposePar
+	# Si topoSetDict existe
+	if [ -f "system/topoSetDict" ] ; then
+		runApplication topoSet
+		check_exit_code "topoSet" 11
+	else
+		warning "system/topoSetDict n'existe pas."
+		echo
+		echo "** Conseil ** Utilisez la commande foamGetDict :"
+		echo "         foamGetDict topoSetDict"
+	fi
+fi
+
+#Lancement en parallèle et si on souhaite lancer solveur
+if $PARALLEL && $SOLVE; then    
+
+	DECOMPOSEPAR=true  #Par défaut, on lance decomposePar
+
+	#Si processor0 existe, demander à l'utilisateur pour la suppression
+	echo
+	if [ -d "processor0" ] ; then 
+
+		echo "Des fichiers processeurs existent, voulez-vous les garder? (o/N)"
+		read CHOIX
+
+		if [ "${CHOIX}" = "N" ] ; then
+			echo "Suppression des fichiers processeurs"
+			rm -rf processor* 
+		else 
+			echo "On garde les fichiers processeurs existants"
+			DECOMPOSEPAR=false     #Ne pas lancer decomposePar
+		fi
+
+	fi
+
+	#Lancer decomposePar si DECOMPOSEPAR=true
+	[ ! $DECOMPOSEPAR ]  || { 
+
+		#Lancer decomposePar
+		runApplication decomposePar
+		check_exit_code "decomposePar" 4
+		rm -f log.decomposePar
+	 }
 
 	#Lancer le solveur donné dans system/controlDict
     runParallel $(getApplication)
@@ -230,8 +341,8 @@ if $PARALLEL ; then
 		rm -rf processor*
 	fi
 
-#Lancement en séquentiel
-else
+#Lancement en séquentiel seulement si on souhaite lancer le solveur
+elif $SOLVE; then
     runApplication $(getApplication) 
     check_exit_code "$(getApplication)" 7
 fi
