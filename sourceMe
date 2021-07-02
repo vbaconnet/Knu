@@ -1,9 +1,11 @@
 #!/bin/bash
 
+KNU_PATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+echo $KNU_PATH
 #--------------- Ajout des scripts au PATH ---------------------
-export PATH="$(pwd)/Scripts/Automatisation-OpenFOAM/:${PATH}"
-export PATH="$(pwd)/Scripts/Post-traitement/:${PATH}"
+export PATH="${KNU_PATH}/Scripts/Automatisation-OpenFOAM/:${PATH}"
+export PATH="${KNU_PATH}/Scripts/Post-traitement/:${PATH}"
 
 #-------------- Librairies Python -----------------------------------
-export PYTHONPATH="$(pwd)/Scripts/Librairies/:${PYTHONPATH}"
-export PYTHONPATH="$(pwd)/Scripts/Librairies/outils/:${PYTHONPATH}"
+export PYTHONPATH="${KNU_PATH}/Scripts/Librairies/:${PYTHONPATH}"
+export PYTHONPATH="${KNU_PATH}/Scripts/Librairies/outils/:${PYTHONPATH}"
