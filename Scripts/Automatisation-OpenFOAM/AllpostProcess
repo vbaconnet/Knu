@@ -3,19 +3,26 @@
 . ${WM_PROJECT_DIR:?}/bin/tools/RunFunctions  #Charger les scripts OpenFOAM
 
 usage() {
-    echo "Utilisation : AllpostProcess [-h|--help] <script1> <script2> ... <scriptN>"
+    echo "Utilisation : AllpostProcess [OPTIONS] <script1> <script2> ... <scriptN>"
+    echo "  --log=<log_file> : définir un autre fichier log dans"
+    echo "      lequel lire."
+    echo "  -h, --help : afficher l'aide complète"
 }
 
 send_help() {
     echo
-    usage
+    echo "Utilisation : AllpostProcess [OPTIONS] <script1> <script2> ... <scriptN>"
     echo
     echo "Lance une série de scripts lorsque la simulation est terminée. La"
-    echo "fin de la simulation est basée sur le fichier log de sortie de simulation,"
-    echo "au format log.nomSolver, ou nomSolver est le nom du solveur donné dans controlDict."
+    echo "fin de la simulation est basée sur le fichier log de sortie de "
+    echo "simulation, au format log.nomSolver, où nomSolver est le nom du "
+    echo "solveur donné dans controlDict. Il est possible de changer le nom"
+    echo "du fichier avec l'option --log=<fichier_log>."
     echo
     echo "OPTIONS"
     echo "-------"
+    echo "   --log=<log_file> : définir un autre fichier log dans"
+    echo "      lequel lire."
     echo "   -h, --help: Afficher l'aide"
     echo
     echo "ERREURS"
@@ -48,22 +55,53 @@ execute_scripts() {
 
 #==============================================================================
 
+LOGFILE="log.$(getApplication)" #Définir fichier log
+
+# * * * * * * * * * * * * * Lecture des arguments * * * * * * * * * * * * * * *
+
+#Lire les arguments et options avec getopt
+#Explication : 
+#     -n Allpostprocess : permet que le message d'erreur soit "Allrun ..." et pas
+#			"getopt ..."
+#	  -o h : lecture d'options courtes de type -h
+#	  -l log,... : lecture d'options longues de type --log, etc
+#     -- : signale la fin des options
+PARSED_ARGS=$(getopt -n Allpostprocess -o h: -l log:,help -- "$@")
+
+#Vérifier que tout s'est bien passé
+if [ ! "${?}" -eq 0 ] ; then
+	usage
+	exit 1
+fi
+
+#Ranger les options lues par getopt dans $1, $2, etc
+eval set -- "${PARSED_ARGS}"
+
 # On parcourt les paramètres donnés par l'utilisateur
 for key in $@ ; do 
 
 	case $key in
-		-h|--help) #Afficher l'aide et quitter
-		send_help
-		exit 0
-		;;
+		-h|--help)     # Afficher l'aide et quitter
+		    send_help
+		    exit 0
+		    ;;
+        --log)      # Précise le fichier logfile
+            shift  #Le paramètre suivant est le nom du fichier log
+            LOGFILE=${1}
+            echo "Fichier log défini à : ${LOGFILE}"
+            ;;
+        --)        # Fin des paramètres
+            shift
+            break
+            ;;
 		*)   # Autre option 
-        #Si le paramètre donné commence par un tiret, il n'est pas accepté
-        if [ ! -z $(echo $key | grep -o "\-") ]; then
-            echo
-            echo "Erreur : argument invalide ${key}"
-            usage
-            exit 1
-        fi
+            #Si le paramètre donné commence par un tiret, il n'est pas accepté
+            if [ ! -z $(echo $key | grep -o "\-") ]; then
+                echo
+                echo "Erreur : argument invalide ${key}"
+                usage
+                exit 1
+            fi
 		;;
 	esac
 	
@@ -76,20 +114,17 @@ if [ $# -eq 0 ]; then
     exit 1
 fi
 
-#Récupérer le temps final dans controlDict
-LATEST_TIME=$(cat system/controlDict | grep endTime | grep -o "[0-9].*\.*[0-9]")
-check_exit_code "cat system/controlDict" 2
-echo "Temps maximal de simulation : ${LATEST_TIME}"
-
-LOGFILE="log.$(getApplication)"
+#==============================================================================
 
 #Lire le dernier temps de simulation
 TIME=$(tail -100 ${LOGFILE} | grep ^Time | tail -1 | grep -o "[0-9].*")
 check_exit_code "Lecture du fichier ${LOGFILE}" 2
 echo "Dernier temps dans le fichier ${LOGFILE} : ${TIME}"
 
+EMPTY_IF_END=$(tail ${LOGFILE} | grep "^End")
+
 #Boucler tant qu'on a pas terminé 
-while [ ! ${TIME} -eq ${LATEST_TIME} ] && [ ! -z "${TIME}" ] ; do
+while [ -z $EMPTY_IF_END ] && [ ! -z "${TIME}" ] ; do
 
     echo "Réexecution automatique dans 60 secondes"
     sleep 60
@@ -97,6 +132,8 @@ while [ ! ${TIME} -eq ${LATEST_TIME} ] && [ ! -z "${TIME}" ] ; do
     #Lire le dernier temps de simulation
     TIME=$(tail -100 ${LOGFILE} | grep ^Time | tail -1 | grep -o "[0-9].*") 
     echo "Dernier temps dans le fichier ${LOGFILE}: ${TIME}"
+
+    EMPTY_IF_END=$(tail ${LOGFILE} | grep "^End")
 
 done
 
