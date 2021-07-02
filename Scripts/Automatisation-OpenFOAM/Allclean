@@ -1,15 +1,95 @@
 #!/bin/sh
 
+usage() {
+	echo "Utilisation : Allclean [OPTIONS]"
+	echo
+	echo "  -n, --notmesh : Ne pas effacer le maillage"
+	echo "  -h, --help : Afficher l'aide "
+}
+
+send_help() {
+	echo 
+	echo "Utilisation : Allmesh [OPTIONS]"
+	echo
+	echo "Permet de lancer les outils de maillage d'OpenFOAM. Par défaut, ne "
+	echo "lance que blockMesh. Pour lancer snappyHexMesh, utilisez l'option  "
+	echo "-S ou --snappyhexmesh. Le script supprime le maillage existant par "
+	echo "défaut. blockMesh n'est jamais lancé en parallèle."
+	echo 
+	echo "OPTIONS"
+	echo "-------"
+	echo "  -n, --notmesh : Ne pas effacer le maillage"
+	echo "  -h, --help : Afficher l'aide "
+	echo
+	echo
+}
+
+RM_MESH=true
+
+#Lire les arguments et options avec getopt
+#Explication : 
+#     -n Allclean : permet que le message d'erreur soit "Allclean ..." et pas
+#			"getopt ..."
+#	  -o hn : lecture d'options courtes de type -h, -n... etc ou -hn
+#	  -l help,... : lecture d'options longues de type --help, etc
+#     -- : signale la fin des options
+PARSED_ARGS=$(getopt -n Allclean -o hn -l help,notmesh -- "$@")
+
+#Vérifier que tout s'est bien passé
+if [ ! "${?}" -eq 0 ] ; then
+	usage
+	exit 1
+fi
+
+#Ranger les options lues par getopt dans $1, $2, etc
+eval set -- "${PARSED_ARGS}"
+
+#Parcourir les paramètres
+while [ ! "${#}" -eq 0 ] ; do
+
+	case "${1}" in
+		-h|--help) #Afficher l'aide et quitter
+		send_help
+		exit 0
+		;;
+        -n|--notmesh)
+        RM_MESH=false
+        shift
+        ;;
+        --)   #Fin des arguments
+		shift
+		break
+		;;
+        *)   # Autre option invalide
+		echo
+		echo "Allclean : ${1} : argument invalide "
+		usage
+		exit 1
+		;;
+    esac
+    
+done
+
 # Remove the mesh
-foamCleanPolyMesh
+if $RM_MESH ; then
+echo "Removing mesh"
+    foamCleanPolyMesh > /dev/null
+fi
 
 # Remove time folders
-foamListTimes -rm -time 0: -withZero
+echo "Removing time folders"
+foamListTimes -withZero -rm 
 
 # Remove processor directories
-rm -rf  processor*
+echo "Removing processor directories"
+rm -rf processor*
 
 # Remove logs
+echo "Removing logs"
 rm  -f log.*
+
+# Remove dynamicCode
+echo "Removing dynamicCode"
+rm -rf dynamicCode
 
 #------------------------------------------------------------------------------
