@@ -2,6 +2,10 @@
 
 . ${WM_PROJECT_DIR:?}/bin/tools/RunFunctions #Quelques fonctions d'openfoam
 
+
+# * * * * * * * * * * * * Fonctions * * * * * * * * * * * * * * * * * * * * * *
+
+# Afficher l'utilisation
 usage() {
 	echo "Utilisation : Allmesh [OPTIONS]"
 	echo
@@ -16,6 +20,9 @@ usage() {
 	echo "  -h, --help : Afficher l'aide "
 }
 
+#------------------------------------------------------------------------------
+
+#Afficher l'aide
 send_help() {
 	echo 
 	echo "Utilisation : Allmesh [OPTIONS]"
@@ -24,6 +31,10 @@ send_help() {
 	echo "lance que blockMesh. Pour lancer snappyHexMesh, utilisez l'option  "
 	echo "-S ou --snappyhexmesh. Le script supprime le maillage existant par "
 	echo "défaut. blockMesh n'est jamais lancé en parallèle."
+	echo
+	echo "Les fichiers log suivants sont supprimés si les applications sont bien lancées:"
+	echo "   - log.decomposePar : parce que lancer decomposePar ultérieurement"
+	echo "       renverra une erreur si ce fichier est présent."
 	echo 
 	echo "OPTIONS"
 	echo "-------"
@@ -48,14 +59,16 @@ send_help() {
 	echo
 }
 
+#------------------------------------------------------------------------------
+
 #Nettoyer le répertoire 
 clean() {
 
     echo "Nettoyage du répertoire $(pwd)"
 
 	# Si Allclean existe, l'utiliser
-	if [ -f "Allclean" ]; then 
-		./Allclean
+	if command -v Allclean &> /dev/null ; then 
+		Allclean
 
 	# Sinon faire ça manuellement
 	else 					   
@@ -63,7 +76,7 @@ clean() {
 		foamCleanPolyMesh
 
 		# Remove time folders
-		foamListTimes -rm -time 0: -withZero
+		foamListTimes -withZero -rm
 
 		# Remove processor directories
 		rm -rf  processor*
@@ -72,6 +85,8 @@ clean() {
 		rm  -f log.*
 	fi
 }
+
+#------------------------------------------------------------------------------
 
 # Vérifier le code de sortie de $?. Si différent de 0, renvoie le code d'erreur $2
 # Donner le nom de l'application dans $1
@@ -84,6 +99,28 @@ check_exit_code() {
 	fi
 }
 
+#------------------------------------------------------------------------------
+
+#Lancer un warning
+warning() {
+	echo "--> Warning : ${1}"
+}
+
+#------------------------------------------------------------------------------
+
+#Lancer une erreur avec un message et un code d'erreur 
+error() {
+	echo "--> Erreur : ${1}"
+
+	#Si il n'y a qu'un seul argument : erreur 42
+	if [ $# -eq 1 ] ; then
+		exit 42
+	else
+		exit ${2}
+	fi
+}
+
+#******************************************************************************
 
 #Variables pour la lecture des options
 #-------------------------------
@@ -151,6 +188,7 @@ done
 
 #Lancer un warning si extrudeMesh mais pas snappyHexMesh
 if ! $SNAPPY  &&  $EXTRUDE ; then
+	echo
 	echo "--> Warning : extrudeMesh est activé mais snappyHexMesh ne l'est pas."
 	echo "              extrudeMesh ne sera pas exécuté."
 	echo
@@ -162,11 +200,12 @@ fi
 if ! $DIR_WAS_CLEANED ; then
 	echo "Nettoyage du maillage uniquement"
 	foamCleanPolyMesh
-	rm -f log.blockMesh log.snappyHexMesh log.decomposePar log.extrudeMesh 
+	rm -f log.blockMesh log.snappyHexMesh log.decomposePar log.extrudeMesh
+	rm -f log.reconstructParMesh log.checkMesh 
 fi
 
 #---------------------- blockMesh --------------------
-
+echo
 runApplication blockMesh         #Lancer l'application
 check_exit_code "blockMesh" 2  #Vérifier son code de sortie
 
@@ -179,10 +218,12 @@ if $SNAPPY ; then
 	#Si lancement en parallèle
 	if $PARALLEL ; then
 
+		echo 
 		runApplication decomposePar       #Décomposer le domaine
 		check_exit_code "decomposePar" 4
-		rm -rf log.decomposePar           #Pour relancer decomposePar plus tard 
+		rm -f log.decomposePar           #Pour relancer decomposePar plus tard 
 
+		echo
 		NPROCS=$(ls | grep "processor*" | wc -l) # Compter le nombre de processeurs
 		echo "${NPROCS} processeurs trouvés"
 
@@ -191,25 +232,48 @@ if $SNAPPY ; then
 		check_exit_code "snappyHexMesh" 3
 
 		#Reconstruire le maillage
+		echo
 		runApplication reconstructParMesh -constant
 		check_exit_code "reconstructParMesh" 6
 
+		echo
 		echo "Suppression des fichiers processeurs"
 		rm -rf processor*
 
 	#Sinon, lancement en séquentiel
 	else 
 		#Lancer snappyHexMesh en séquentiel
+		echo 
 		runApplication snappyHexMesh -overwrite
 		check_exit_code "snappyHexMesh" 3
 	fi
 
 	if $EXTRUDE ; then
 		#Lancer l'extrusion de maillage
+		echo 
 		runApplication extrudeMesh
 		check_exit_code "extrudeMesh" 5
 	fi
 
 fi
 
+echo 
+echo "Vérification du maillage"
+runApplication checkMesh
+MESH_OK=$(tail log.checkMesh | grep "Mesh OK.") #Sera vide si maillage pas ok
+
+echo
+if [ -z "${MESH_OK}" ] ; then
+	warning "Le maillage n'a pas passé tous les tests"
+	echo "   Consultez le fichier log.checkMesh pour plus de détails"
+	echo 
+	echo " ** Conseil ** Prenez le temps de faire un maillage correct,"
+	echo "    un mauvais maillage donnera des mauvais résultats!"
+else
+	echo "Le maillage a passé tous les tests"
+
+fi
+
+echo 
+echo "Terminé"
 #=====================================================
