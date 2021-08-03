@@ -20,33 +20,33 @@ internalField   uniform 0;
 
 boundaryField
 {
-    INLET
+    inlet
     {
         type            fixedFluxPressure;
         value           uniform 0;
     }
 
-    RIGHT
+    outlet
     {
         type            zeroGradient;
     }
 
-    BOTTOM
+    "(bottom|%geometry%)"
     {
         type            zeroGradient;
     }
 
-    frontPlane
+    front
     {
         type            empty;
     }
 
-    backPlane
+    back
     {
         type            empty;
     }
 
-    TOP
+    top
     {
         type            totalPressure;
         p0              uniform 0;

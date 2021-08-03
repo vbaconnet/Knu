@@ -10,54 +10,50 @@ FoamFile
     version     2.0;
     format      ascii;
     class       volScalarField;
-    object      nut;
+    object      k;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-dimensions      [0 2 -1 0 0 0 0];
+dimensions      [0 2 -2 0 0 0 0];
 
-internalField   uniform 0.0;
+internalField   uniform 0.00000001;
 
 boundaryField
 {
-    BOTTOM
+    "(bottom|%geometry%)"
     {
-        type            nutkWallFunction;
-        Cmu             0.09;
-        kappa           0.41;
-        E               9.8;
-	value           $internalField;
-    }
-
-    RIGHT
-    {
-        type            nutkWallFunction;
-        Cmu             0.09;
-        kappa           0.41;
-        E               9.8;
+        type            kqRWallFunction;
         value           $internalField;
     }
 
-    INLET
+    outlet
     {
-        type            calculated;
+        type            kqRWallFunction;
         value           $internalField;
     }
 
-    TOP
+    inlet
     {
-	type		calculated;
+        type            inletOutlet;
+        inletValue      $internalField;
 	value		$internalField;
     }
 
-    frontPlane
-    {
-	type		empty;
-    }
-
-    backPlane
+    front
     {
         type            empty;
+    }
+
+    back
+    {
+        type            empty;
+    }
+
+    top
+    {
+        type		inletOutlet;
+	inletValue	$internalField;
+	value		$internalField;
     }
 
 }

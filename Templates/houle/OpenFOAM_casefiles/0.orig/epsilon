@@ -20,38 +20,38 @@ internalField   uniform 0.0001;
 
 boundaryField
 {
-    BOTTOM
+    "(bottom|%geometry%)"
     {
         type            epsilonWallFunction;
         value           $internalField;
     }
 
-    RIGHT
+    outlet
     {
         type            epsilonWallFunction;
         value           $internalField;
     }
 
-    INLET
+    inlet
     {
         type            inletOutlet;
         inletValue      $internalField;
 	value		$internalField;
     }
 
-    TOP
+    top
     {
 	type		inletOutlet;
 	inletValue	$internalField;
 	value		$internalField;
     }
 
-    frontPlane
+    front
     {
 	type 		empty;
     }
 
-    backPlane
+    back
     {
         type            empty;
     }

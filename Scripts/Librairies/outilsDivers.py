@@ -48,3 +48,45 @@ def RMSE(y1, y2):
         res += (y1[i] - y2[i])**2
     
     return sqrt(res)/len(y1)
+
+def error(message: str, errorType: Exception):
+    """Afficher un message d'erreur et quitter le programme
+    :param message: message à afficher
+    :type message: ``str``
+    :param errorType:
+    :type errorType: ``Exception``
+    :raises ``errorType``: Lever exception
+    """
+    print("\n** Erreur **", message)
+    raise errorType
+
+def warning(message: str):
+    """Afficher un warning
+    """
+    print("\n** Warning **", message)
+
+def trace(x, y, fig, ax, label = "", xlabel = "", ylabel = "", title = "", grid = True,
+        tick_fontsize = 14, label_fontsize = 16, xmin = None, xmax = None, ymin = None,
+        ymax = None, legend = None, tight_layout = True):
+
+    if legend is None:
+        legend = True if label != "" else False
+
+    ax.plot(x, y, label = label)
+    if legend:
+        ax.legend()
+
+    ax.set_xlim((xmin, xmax))
+    ax.set_ylim((ymin, ymax))
+
+    ax.set_xlabel(xlabel, fontsize = label_fontsize)
+    ax.set_ylabel(ylabel, fontsize = label_fontsize)
+    ax.set_title(title, fontsize = label_fontsize)
+
+    ax.tick_params(labelsize = tick_fontsize)
+    
+    if grid:
+        ax.grid()
+
+    if tight_layout:
+        fig.tight_layout()

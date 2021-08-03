@@ -1,11 +1,15 @@
 #!/bin/sh
 
+#* * * * * * * * * * * * * Fonctions * * * * * * * * * * * * * * * * * * * * * 
+
 usage() {
 	echo "Utilisation : Allclean [OPTIONS]"
 	echo
 	echo "  -n, --notmesh : Ne pas effacer le maillage"
 	echo "  -h, --help : Afficher l'aide "
 }
+
+#------------------------------------------------------------------------------
 
 send_help() {
 	echo 
@@ -23,6 +27,10 @@ send_help() {
 	echo
 	echo
 }
+
+#******************************************************************************
+
+# * * * * * * * * * * * * * Lecture des arguments * * * * * * * * * * * * * * *
 
 RM_MESH=true
 
@@ -70,10 +78,12 @@ while [ ! "${#}" -eq 0 ] ; do
     
 done
 
+#******************************************************************************
+
 # Remove the mesh
 if $RM_MESH ; then
 echo "Removing mesh"
-    foamCleanPolyMesh > /dev/null
+    foamCleanPolyMesh > /dev/null 2>&1
 fi
 
 # Remove time folders

@@ -9,47 +9,47 @@ FoamFile
 {
     version     2.0;
     format      ascii;
-    class       volVectorField;
-    object      U;
+    class       volScalarField;
+    object      alpha.water;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-dimensions      [0 1 -1 0 0 0 0];
+dimensions      [0 0 0 0 0 0 0];
 
-internalField   uniform (0 0 0);
+internalField   uniform 0;
 
 boundaryField
 {
-    INLET
+    inlet
     {
-        type            waveVelocity;
-        value           uniform (0 0 0);
+        type            waveAlpha;
+        value           uniform 0;
+	//waveDictName    waveProperties;
     }
 
-    RIGHT
+    outlet
     {
-        type            waveVelocity;
-        value           uniform (0 0 0);
+        type            zeroGradient;
     }
 
-    BOTTOM
+    "(bottom|%geometry%)"
     {
-        type            fixedValue;
-        value           uniform (0 0 0);
+        type		zeroGradient;
     }
 
-    TOP
+    top
     {
-        type            pressureInletOutletVelocity;
-        value           uniform (0 0 0);
+        type            inletOutlet;
+        inletValue      uniform 0;
+        value           uniform 0;
     }
 
-    frontPlane
+    front
     {
-        type            empty;
+	type		empty;
     }
 
-    backPlane
+    back
     {
         type            empty;
     }

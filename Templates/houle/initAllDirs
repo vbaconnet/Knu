@@ -1,0 +1,344 @@
+#!/bin/bash
+
+INFO=0 # Mettre à 1 pour afficher informations détaillées
+
+#==============================================================================
+#--------------------------------- FONCTIONS ----------------------------------
+#==============================================================================
+
+#Afficher une erreur
+error() {
+    echo "** Erreur ** ${1}"
+    exit 2
+}
+
+# Afficher un warning
+warning() {
+    echo "** Warning ** ${1}"
+}
+
+#Afficher une info si la variable globale INFO est à 1
+Info() {
+    if [ ${INFO} -eq 1 ] ; then
+        echo "${1}"
+    fi
+}
+
+# Ecrire une information dans initAlldirs.log
+log() {
+    echo ${1} >> initAllDirs.log
+}
+
+#-------------------------- Géométrie -----------------------------------------
+
+# Renvoie le nom de dossier à partir du nom d'une géométrie
+geom_to_dirname() {
+    echo "${1}"
+}
+
+# Remplace les paramètres de géométrie
+# Paramètres:
+# - ${1} : Paramètres de géometrie de type "geom"
+replace_geom_params() {
+    local geom=${1}
+
+    # Copier surface de la geometrie
+    cp "Template/Geometries/${geom}.stl" "${final_path}/constant/triSurface/."
+    Info "${geom} copié dans ${final_path}/constant/triSurface/." 
+
+    # Remplacer nom de la géometrie dans le template
+    submot "%geometry%" "${geom}" "${final_path}/system/snappyHexMeshDict"
+    submot "%geometry%" "${geom}" "${final_path}/system/surfaceFeatureExtractDict"
+    Info "%geometry% is ${geom}"  
+}
+
+#------------------------------- Houle ----------------------------------------
+
+# Renvoie le nom de dossier à partir du nom d'une condition de houle
+# Note : ${1} doit être de la forme "irregular Tmin Tmax Tp Hs gamma scale"
+houle_to_dirname() {
+    local vars=(${1//:/ })
+    echo "nivEau${vars[0]}_irregular_Tmin${vars[2]}s_Tmax${vars[3]}s_Tp${vars[4]}s_Hs${vars[5]}m_gamma${vars[6]}_scale${vars[7]}"
+}
+
+# Remplace les paramètres de houle
+# Paramètres:
+# - ${1} : Paramètres de géometrie de type "nivEau:irregular:Tmin:Tmax:Tp...etc"
+replace_houle_params() {
+    local houle=${1}
+    local houle_params=(${houle//:/ }) # Split par rapport à :
+
+    # Remplacer niveau d'eau dans setFieldsDict
+    submot "%waterLevel%" "${houle_params[0]}" "${final_path}/system/setFieldsDict"
+    Info "%waterLevel% is ${houle_params[0]}"
+
+    local file="${final_path}/jonswapDict"
+
+    # Ecrire les paramètres dans jonswapDict
+    submot "%Tmin%" "${houle_params[2]}" "${file}"
+    Info "%Tmin% is ${houle_params[2]}"
+
+    submot "%Tmax%" "${houle_params[3]}" "${file}"
+    Info "%Tmax% is ${houle_params[3]}"
+
+    submot "%Tp%" "${houle_params[4]}" "${file}"
+    Info "%Tp% is ${houle_params[4]}"
+
+    submot "%Hs%" "${houle_params[5]}" "${file}"
+    Info "%Hs% is ${houle_params[5]}"
+
+    submot "%gamma%" "${houle_params[6]}" "${file}"
+    Info "%gamma% is ${houle_params[6]}"
+
+    submot "%scale%" "${houle_params[7]}" "${file}"
+    Info "%scale% is ${houle_params[7]}"
+}
+
+#--------------------------------- Milieu poreux -----------------------------
+
+# Renvoie le nom de dossier à partir du nom d'une zone poreuse
+# Note : ${1} doit être de la forme "nom a b c D50 porosity"
+porous_to_dirname() {
+    local vars=(${1//:/ })
+    echo "${vars[0]}_a${vars[1]}_b${vars[2]}_c${vars[3]}_D${vars[4]}_porosity${vars[5]}"
+}
+
+# Remplace les paramètres de milieu poreux
+# Paramètres:
+# - ${1} : Paramètres du milieu poreux de type "nom:a:b:c:D:porosity"
+replace_porous_params() {
+
+    local porous=${1} # Zone poreuse
+    local porous_params=(${porous//:/ }) # Découper les paramètres poreux
+
+    # Récupérer les paramètres numériques
+    local name=${porous_params[0]}
+    local a=${porous_params[1]}
+    local b=${porous_params[2]}
+    local c=${porous_params[3]}
+    local D=${porous_params[4]}
+    local porosity=${porous_params[4]}
+
+    # D'abord copier la surface dans triSurface
+    cp "Template/Geometries/${name}.stl" "${final_path}/constant/triSurface/."
+    Info "${name} copié dans ${final_path}/constant/triSurface/." 
+
+    # Ensuite remplacer les paramètres dans les fichiers
+    submot "%porousZoneName%" "${name}" "${final_path}/system/setFieldsDict"
+    submot "%porousIndex%" "1" "${final_path}/system/setFieldsDict"
+    Info "%porousZoneName% is ${name}"
+    Info "%porousIndex% is 1"
+}
+
+#--------------------------- Maillage -----------------------------------------
+
+# Renvoie le nom de dossier à partir d'un maillage
+mesh_to_dirname() {
+    echo "Nz${1}"
+}
+
+# Remplace les paramètres de maillage
+# Paramètres:
+# - ${1} : Paramètres de géometrie de type "Nz"
+replace_mesh_params() {
+    local mesh=${1}
+
+    # Remplacer le maillage dans blockMeshDict
+    submot "%Nz%" "${mesh}" "${final_path}/system/blockMeshDict"
+    Info "%Nz% is ${mesh}"
+}
+
+#----------------------------- Turbulence -------------------------------------
+
+# Renvoie le nom de dossier à partir d'un modèle de turbulence
+# Note : ${1} doit être de la forme "RAS|laminar RASModel|none"
+turb_to_dirname() {
+    local vars=(${1//:/ })
+    echo "${vars[0]}_${vars[1]}"
+}
+
+# Remplace les paramètres de turbulence
+# Paramètres:
+# - ${1} : Paramètres de turbulence de type "RAS|laminar:RASModel|none"
+replace_turb_params() {
+    local turb=${1}
+    local turb_params=(${turb//:/ }) # Split par rapport à :
+
+    local file="${final_path}/constant/turbulenceProperties"
+
+    # Remplacer dans constant/turbulenceProperties
+    submot "%RASorLaminar%" "${turb_params[0]}" "${file}"
+    Info "%RASorLaminar% is ${turb_params[0]}"
+
+    submot "%turbulenceModel%" "${turb_params[1]}" "${file}"
+    Info "%turbulenceModel% is ${turb_params[1]}"
+}
+
+#---------------------------------- Génération de dossiers --------------------
+
+#Créer l'arborescence et copier depuis le template
+create_and_init() {
+
+    RUNDIRS=() #Liste vide où on va injecter le chemin d'accès vers chaque dossier
+    # où la simulation sera lancée
+
+    for geom in ${GEOMS[@]} ; do   # Parcourir les géometries
+
+        local geom_path=$(geom_to_dirname $geom)  # Chemin géométrie
+        mkdir -p ${geom_path}
+        Info "${geom_path} créé"
+
+        for houle in ${HOULES[@]} ; do   # Parcourir les conditions de houle
+
+            local houle_path="${geom_path}/$(houle_to_dirname $houle)"   # Chemin houle
+            mkdir -p ${houle_path}
+            Info "${houle_path} créé"
+
+            for porous in ${POROUS[@]} ; do   # Parcourir les zones poreuses
+
+                local porous_path="${houle_path}/$(porous_to_dirname $porous)"  # Chemin poreux
+                mkdir -p ${porous_path}
+                Info "${porous_path} créé"
+
+                for mesh in ${MESHES[@]} ; do   # Parcourir les maillages
+
+                    local mesh_path="${porous_path}/$(mesh_to_dirname $mesh)"  # Chemin maillage
+                    mkdir -p ${mesh_path}
+                    Info "${mesh_path} créé"
+
+                    for turb in ${TURBS[@]} ; do   # Parcourir les modèles de turbulence
+
+                        local turb_path="${mesh_path}/$(turb_to_dirname $turb)"  # Chemin modèle turbulence
+                        mkdir -p ${turb_path}
+                        Info "${turb_path} créé"
+
+                        local final_path=${turb_path}  # Chemin final
+                        cp -r Template/OpenFOAM_casefiles/* "${final_path}/." # Copier templates 
+
+                        Info
+                        Info "++ ${final_path} est un chemin final ++"
+                        Info 
+
+                        RUNDIRS+=("${final_path}")  # Ajouter chemin dans array global
+
+                        # Effectuer les remplacement nécessaires
+                        replace_geom_params $geom 
+                        replace_houle_params $houle
+                        replace_porous_params $porous
+                        replace_mesh_params $mesh
+                        replace_turb_params $turb
+
+                    done  # Fin turbulence
+
+                done # Fin maillage
+
+            done # Fin poreux
+
+        done # Fin houle
+
+    done # Fin géométrie
+}
+
+
+#Exporter les informations dans un fichier info.log
+export_dir_info() {
+
+    log "# Paramètres "
+
+    log " Geometries (${Ngeoms})"
+    for geom in ${GEOMS[@]} ; do
+        log "  --> ${geom}"
+    done
+
+    log " Conditions de houle (${Nhoules})"
+    for houle in ${HOULES[@]} ; do
+        log "  --> ${houle}"
+    done
+
+    log " Zones poreuses (${Nporous})"
+    for porous in ${POROUS[@]} ; do
+        log "  --> ${porous}"
+    done
+
+    log " Maillages (${Nmesh})"
+    for mesh in ${MESHES[@]} ; do
+        log "  --> ${mesh}"
+    done
+
+    log " Modèles de turbulence (${Nturb})"
+    for turb in ${TURBS[@]} ; do
+        log "  --> ${turb}"
+    done
+
+    log ""
+    log "# Nombre de calculs total : ${#RUNDIRS[@]} "
+
+    NPROCS=$(cat /proc/cpuinfo | grep "processor" | wc -l)
+    log "# Nombre de processeurs disponibles : ${NPROCS}"
+
+    NCASES=$((${Ngeoms} * ${Nhoules} * ${Nporous} * ${Nmesh} * ${Nturb}))
+    NPROCS_PER_CASE=$(( ${NPROCS} / ${NCASES} ))
+
+    if [ ! ${NPROCS_PER_CASE} -eq 0 ] ; then
+        log "# Vous pouvez lancer chaque cas avec au maximum : ${NPROCS_PER_CASE} processeurs"
+    else
+        log "!! Il y a trop de cas pour que tout soit lancé avec 1 processeur !!"
+        log "!! Réduisez le nombre de cas ou trouvez une machine avec plus de coeurs !!"
+    fi
+
+    log ""
+    log "# Paths (${#RUNDIRS[@]})"
+    for filepath in ${RUNDIRS[@]} ; do
+        log "${filepath}"
+    done
+}
+
+#==============================================================================
+#--------------------------- Définition des paramètres ------------------------
+#==============================================================================
+
+# Liste des géométries
+# Syntaxe: <nom du fichier stl>
+# Exemple: actuel2.stl --> "actuel2"
+GEOM1="actuel2"
+GEOMS=($GEOM1)
+Ngeoms=${#GEOMS[@]} # Nombre de géométries
+
+# Liste des conditions de houle JONSWAP
+# Syntaxe: "nivEau:irregular:Tmin:Tmax:Tp:Hs:gamma:scale"
+HOULE1="0.864:irregular:5.3:12.3:9.5:2.8:1.0:28.6"
+HOULES=($HOULE1)
+Nhoules=${#HOULES[@]} # Nombre de conditions de houle
+
+# Liste des milieux poreux
+# Syntaxe: "nom:a:b:c:D50:porosity"
+POROUS1="actuel2_enrochements:50.0:2.0:0.34:0.03:0.3"
+POROUS=($POROUS1)
+Nporous=${#POROUS[@]} # Nombre de zones poreuses
+
+# Liste des valeurs de Nz (maillage)
+# Syntaxe: "Nz"
+MESH1=70
+MESH2=80
+MESHES=($MESH1 $MESH2)
+Nmesh=${#MESHES[@]} # Nombre de maillages
+
+# Liste des modèles de turbulence
+# Syntaxe: "RAS:RASModel" ou "laminar:none"
+TURB1="laminar:none"
+TURB2="RAS:kEpsilon"
+TURB3="RAS:kOmegaSST"
+TURB4="RAS:kOmegaSSTBuoyancy"
+TURBS=($TURB1 $TURB2 $TURB3 $TURB4)
+Nturb=${#TURBS[@]} # Nombre de modèles de turbulence
+
+#==============================================================================
+#---------------------------- Exécution des fonctions -------------------------
+#==============================================================================
+
+rm -f initAllDirs.log # Effacer le fichier log pour y écrire propremement
+
+create_and_init  # Créer les fichiers et remplacer les paramètres
+export_dir_info  # Exporter les informations dans un fichier log
+
+# !! Le fichier log doit être consulté avant de lancer les calculs !!

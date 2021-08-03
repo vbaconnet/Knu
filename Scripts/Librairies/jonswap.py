@@ -101,7 +101,6 @@ def spectreJonswap(a, Hs, Tp, gamma, w):
     :type w: ``numpy.ndarray``
     :return: vecteur densité spectrale de puissance de la même taille que w
     """
-
     wp = 2.0*np.pi/Tp
     t1 = a * Hs**2 * wp**4 * w**(-5)
     t2 = np.exp( -1.25*(w/wp)**(-4) )
@@ -155,7 +154,7 @@ def genJonswapParams(Hs, Tp, gamma, w):
     spectreJonswap = jonswap(Hs, Tp, gamma, w)
     
     amplitudes = np.sqrt(2.0 * spectreJonswap * dw) #Génération d'amplitudes
-    dephasages = 2.0*np.pi*np.random.rand(len(w))      #Génération de déphasage entre 0 et 2pi
+    dephasages = 2.0*np.pi*np.random.rand(len(w))   #Génération de déphasage entre 0 et 2pi
     
     return amplitudes, dephasages, spectreJonswap
 
@@ -167,14 +166,14 @@ if __name__ == "__main__":
     import matplotlib.pyplot as plt
     import genWaveProperties as gwp
     import outilsLecture as olec
+    from outilsDivers import trace
     import sys
-    import ondes as on
     
+    # Sauvegarde des figures ou pas
     savefigs = olec.readOption(sys.argv, ["-savefigs","--savefigs"])
     
     #On essaie de récupérer les paramètres dans jonswapDict
     try: 
-        
         param_dict = gwp.readParams("jonswapDict")
         Tmin,Tmax,Tp = param_dict["tmin"], param_dict["tmax"], param_dict["tp"]
         Hs,gamma = param_dict["hs"],param_dict["gamma"]
@@ -182,60 +181,64 @@ if __name__ == "__main__":
     #Sinon on utilise les coefficients ci-dessous
     except: 
         
-        Tmin = 0.991
-        Tmax = 2.47
-        Tp = 1.78
-        Hs = 0.098
-        gamma = 1.0
+        Tmin = 0.87
+        Tmax = 2.19
+        Tp = 1.57
+        Hs = 0.125
+        gamma = 3.3
 
-    wmin = 2.0*np.pi/Tmax            #Fréquence min
-    wmax = 2.0*np.pi/Tmin           #Fréquence max
+    wmin = 2.0*np.pi/Tmax #Fréquence min
+    wmax = 2.0*np.pi/Tmin #Fréquence max
     wp   = 2.0*np.pi/Tp   #Pulsation pic
+    Ncomposantes = 1000
+    dw = (wmax - wmin)/Ncomposantes #Incrément de fréquence
+    w = np.arange(wmin,wmax+dw,dw)  #Génération du vecteur de fréquences
     
-    dw = 0.001                          #Incrément de fréquence
-    w = np.arange(wmin,wmax+dw,dw)      #Génération du vecteur de fréquences
-    
-    spectreJonswap1 = jonswap(Hs, Tp, gamma, w)    #Calcul du spectre de jonswap par la "formule magique"
-    spectreJonswap2  = jonswap(Hs, Tp, 3.3, w)     #Calcul du spectre de jonswap par la méthode de Goda
-    spectreJonswap3 = jonswap(Hs, Tp, 6.0, w)     #Calcul du spectre de jonswap par la méthode intégrale
+    spectreJonswap1 = jonswap(Hs, Tp, gamma, w) #Calcul du spectre de jonswap
+    spectreJonswap2  = jonswap(Hs, Tp, 3.3, w)  #Calcul du spectre de jonswap avec gamma = 3.3
+    spectreJonswap3 = jonswap(Hs, Tp, 6.0, w)   #Calcul du spectre de jonswap avec gamma = 6.0
 
-    amplitudeGoda  = np.sqrt(2.0*spectreJonswap2*dw)     #Générer amplitudes avec Goda
-    amplitudeMagic = np.sqrt(2.0*spectreJonswap1*dw)    #Générer amplitudes avec magic
-    amplitudeIntegral = np.sqrt(2.0*spectreJonswap3*dw)    #Générer amplitudes avec integral
+    amplitude1 = np.sqrt(2.0*spectreJonswap2*dw)   #Générer amplitudes
+    amplitude2 = np.sqrt(2.0*spectreJonswap1*dw)    #Générer amplitudes gamma = 3.3
+    amplitude3 = np.sqrt(2.0*spectreJonswap3*dw)    #Générer amplitudes gamma = 6.0
     
-
+    #==========================================================================
+    #-------------------- Affichage des figures de spectres -------------------
+    #==========================================================================    
     
-    try:
-        plt.close('all')
-        
-        plt.figure(figsize=(8, 7))
-        plt.tick_params(labelsize = 16)
-        plt.plot(w,spectreJonswap1,label=fr"$\gamma = {gamma}$")
-        plt.plot(w,spectreJonswap2, label=r"$\gamma = 3.3$")
-        plt.plot(w,spectreJonswap3, label=r"$\gamma = 6.0$")
-        plt.grid()
-        plt.legend(fontsize = 16)
-        plt.xlim((wmin,wmax))
-        plt.xlabel(r"$\omega$ (rad/s)", fontsize = 16)
-        plt.ylabel(r"$S(\omega)$ ($m^2 s$)", fontsize = 16)
-        plt.title(r"Hs = {:.3f} m, Tp = {:.3f} s, $\omega_p$ = {:.3f}".format(Hs,Tp,wp), fontsize = 16)
-        
-        if savefigs:
-            plt.savefig(f"spectre_Tp{Tp}_Hs{Hs}_gamma{gamma}.png")
-            
-        t = np.linspace(0.0,100.0,1000)
-        A, phi, spectre = genJonswapParams(Hs, Tp, gamma, w)
-        k = np.zeros_like(A)
-        houleIrreg = on.sommeOndes(A, w, phi, t, k, 0)
-        plt.figure(figsize=(8, 7))
-        plt.title(r"Hs = {:.3f} m, Tp = {:.3f} s, $\omega_p$ = {:.3f}, $\gamma$ = {:.2f}".format(Hs,Tp,wp, gamma), fontsize = 16)
-        plt.plot(t,houleIrreg)
-        plt.tick_params(labelsize=16)
-        plt.xlabel("t (s)", fontsize = 16)
-        plt.ylabel(r"$\eta(t)$ (m)", fontsize = 16)
-        plt.grid()
-        
+    plt.close('all')
+    
+    fig, axs = plt.subplots(figsize = (10,8), nrows = 2)
 
-        
-    except NameError:
-        print("Unable to plot jonswap.py demo (probably because Matplotlib wasn't imported properly.)")
+    trace(
+        w, spectreJonswap1, 
+        fig, axs[0],
+        #label = fr"$\gamma = {gamma}$", 
+        xmin = wmin, xmax = wmax, 
+        xlabel = r"$\omega$ (rad/s)",
+        ylabel = r"$S(\omega)$ ($m^2 s$)",
+        title = r"Hs = {:.3f} m, Tp = {:.3f} s, $\omega_p$ = {:.3f}".format(Hs,Tp,wp),
+        tight_layout = False
+    )
+
+    t = np.linspace(0.0,0.224*3600,1000)
+    A, phi, spectre = genJonswapParams(Hs, Tp, gamma, w)
+
+    houleIrreg = 0.0
+    for i in range(len(A)):
+        houleIrreg += A[i]*np.sin(w[i]*t + phi[i])
+
+    trace(
+        t, houleIrreg,
+        fig, axs[1],
+        #title = r"Hs = {:.3f} m, Tp = {:.3f} s, $\omega_p$ = {:.3f}, $\gamma$ = {:.2f}".format(Hs,Tp,wp, gamma),
+        xlabel = "t (s)",
+        ylabel = r"$\eta(t)$ (m)",
+        xmin = t[0],
+        xmax = t[-1]
+    )
+
+    if savefigs:
+        plt.savefig(f"jonswap_Tp{Tp}_Hs{Hs}_gamma{gamma}.png")
+
+    plt.show()

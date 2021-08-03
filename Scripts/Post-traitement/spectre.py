@@ -91,7 +91,7 @@ Dépendances (les modules qu'il faut avoir installé au préalable)
 #------- ces modules sont indispensables -----
 import sys
 import numpy as np
-import jonswap as jswp #le fichier jonswap.py doit être dans le même dossier
+import jonswap as jswp 
 import genWaveProperties as gwp
 import os
 import outilsLecture as olec
@@ -107,14 +107,14 @@ def getSondeData(sondeFile, tmin, tmax):
     """
     Lecture des mesures de sondes dans le fichier sondeFile (le plus souvent sondes.csv)
     
-    Paramètres d'entrée:
-    --------------------
-        - sondeFile (string) : Nom du fichier .csv où il y a le résultat des sondes
-        - tmin, tmax (float) : Temps minimal et maximal d'affichage
-    
-    Sortie:
-    -------
-        - DataFrame avec les valeurs et les noms des sondes 
+    :param sondeFile: Nom du fichier .csv où il y a le résultat des sondes
+    :type sondeFile: str
+    :param tmin: Temps minimal 
+    :type tmin: float
+    :param tmax: Temps maximal 
+    :type tmax: float
+    :returns: DataFrame avec les valeurs et les noms des sondes
+    :rtype: pandas.DataFrame
     """
             
     sondeData = pd.read_csv(sondeFile) #ouvrir le fichier
@@ -135,7 +135,9 @@ def getSondeData(sondeFile, tmin, tmax):
 
 if __name__ == "__main__":
 
-    #+++++++++++++++++++++++++ Lecture des options ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    #==========================================================================
+    #------------------- Lecture des options ----------------------------------
+    #==========================================================================
     
     print("\nLecture des options")
     print("--------------------------")
@@ -150,7 +152,7 @@ if __name__ == "__main__":
     #Fichier .csv qui contient le résultat des mesures des sondes en fonction du temps
     sondeFile   = olec.readFileOption(sys.argv, ['-sondeFile','--sondeFile', 
                                                  '--sondesFile', '-sondesFile'],
-                                      default = "line_probes.csv")
+                                      default = "RESAMPLED_line_probes.csv")
     
     #Nombre de points (longueur) de chaque segment de calcul par la méthode de Welch
     Npoints = olec.readValueOption(sys.argv, ["-Npoints", "--Npoints"],
@@ -160,7 +162,9 @@ if __name__ == "__main__":
     print("---------------------------")
     print("Fin de lecture des options")
     
-    #=============================================================================================================
+    #==========================================================================
+    #------------------- Lecture du fichier sondes ----------------------------
+    #==========================================================================
     
     print("\nLecture du fichier {}".format(sondeFile))
     
@@ -169,9 +173,10 @@ if __name__ == "__main__":
         
         sondeData = pd.read_csv(sondeFile)
         sondeData.set_index(sondeData.columns[0], inplace = True) #Pour mettre le temps comme index
-        
+
     else:
-        raise NameError("\n{} n'existe pas".format(sondeFile))
+        raise NameError("\n{} n'existe pas\nVeuillez spécifier un fichier\
+ de sondes avec l'option --sondeFile <fichier>".format(sondeFile))
 
     #Nombre de sondes
     Nsondes = len(sondeData.columns)
@@ -185,6 +190,10 @@ if __name__ == "__main__":
     # Calcul du pas de temps supposé constant
     timestep = time[1] - time[0]
     print("Pas de temps :  {}".format(timestep))
+
+    #==========================================================================
+    #--------------------------- Rééchantillonnage ----------------------------
+    #==========================================================================
 
     #Fréquence d'échantillonnage
     samplingFreq = 1.0/timestep
@@ -210,7 +219,12 @@ if __name__ == "__main__":
     w = 2.0*np.pi*f
     spectresSondes /= 2.0*np.pi #Facteur 1/2pi pour passer en rad/s
     
-    #------------------------------- Tracé ---------------------------------------------
+    #==========================================================================
+    #--------------------------------- Tracé ----------------------------------
+    #==========================================================================
+
+    # -------------- Tracé des spectres de sondes -----------------------------
+
     plt.figure(figsize=(8,7))
     
     for i in range(Nsondes):
@@ -223,8 +237,10 @@ if __name__ == "__main__":
     plt.tick_params(axis = 'both', which = "major", labelsize = 15)
     plt.grid()
     
-    
-    #Si on trouve le fichier contenant les paramètres Tp, Hs, etc, on peut tracer le spectre idéal
+    # ------------------ Tracé avec le spectre idéal --------------------------
+
+    # Si on trouve le fichier contenant les paramètres Tp, Hs, etc, on peut tracer
+    # le spectre idéal
     if os.path.exists(jonswapFile):
         
         print("\n{} trouvé".format(jonswapFile))
@@ -246,11 +262,15 @@ if __name__ == "__main__":
         #Calcul du spectre de JONSWAP
         spectre = jswp.jonswap(Hs, Tp, gamma, w)
         
-        plt.plot(w, spectre, label = "Spectre idéal")
+        # Tracé du spectre de JONSWAP théorique
+        plt.plot(w, spectre, label = "Spectre théorique")
         plt.legend(fontsize = 16)
         plt.tight_layout()
-        
-        
+
+        #==========================================================================
+        #---------------------- Calcul d'erreur quadratique -----------------------
+        #==========================================================================
+
         #Calcul de l'erreur quadratique moyenne par rapport au spectre inlet
         err_moy = 0.0
         spectreRef = None
@@ -265,10 +285,12 @@ if __name__ == "__main__":
                 print("\n---- Erreur quadratique moyenne (RMSE) avec le spectre INLET -----")
                 break
         
+        # Si on a pas trouvé inlet, on le fait avec le spectre théorique
         if spectreRef is None:
             spectreRef = spectre
             print("\n---- Erreur quadratique moyenne (RMSE) avec le spectre idéal -----")
         
+        # Calcul d'erreur pour chaque sonde par rapport au spectre de référence
         NsondesMoyenne = 0
         for i in range(Nsondes):
             if i != inletIdx:
@@ -294,6 +316,7 @@ if __name__ == "__main__":
             
         plt.show()
     
+    # Si jonswapDict n'existe pas
     else:
         print("{} n'existe pas".format(jonswapFile))
         plt.legend(fontsize = 16)

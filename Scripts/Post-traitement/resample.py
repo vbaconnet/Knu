@@ -14,62 +14,65 @@ import sys
 import os
 import pandas as pd
 
-#Lecture du fichier source (.csv)
-file = olec.readFileOption(sys.argv, ["--file","-file"],
-                           default = "line_probes.csv",
-                           extension = "csv")
+if __name__ == "__main__":
 
-#Donne une fréquence d'échantillonnage pour rééchantillonner le signal
-samplingFreq = olec.readValueOption(sys.argv, ["-samplingFreq", "--samplingFreq"],
-                                      default = 50.0,
-                                      valueType = float)
+    #Lecture du fichier source (.csv)
+    file = olec.readFileOption(sys.argv, ["--file","-file"],
+                            default = "line_probes.csv",
+                            extension = "csv")
 
-
-#Récupérer les données de mesure des sondes
-if os.path.exists(file):
-    print("Lecture dans {}".format(file))
-    data = pd.read_csv(file)
-    data.set_index(data.columns[0], inplace = True) #Pour mettre le temps comme index
-else:
-    raise NameError("\n{} n'existe pas".format(file))
-
-#Nombre de sondes
-Nsondes = len(data.columns)
-
-print("\n{} sondes détectées".format(Nsondes))
-
-#On récupère le temps final
-time_read = data.index.values
-tmax = time_read[-1]
-
-# Calcul du pas de temps à la fréquence d'échantillonnage donnée
-timestep = 1.0/samplingFreq
-
-# Vecteur temps échantillonné tous les pas de temps. Exemple [0.02, 0.04, 0.06, ... , tmax]
-new_N = int(np.floor(tmax/timestep))
-time = np.linspace(timestep, new_N*timestep, new_N)
-
-#Récupère les valeurs des sondes
-valeursSondes_read = data.values     
-
-#Initialisation du tableau qui contiendra les valeurs rééchantillonnées
-valeursSondes = np.zeros( (new_N, Nsondes) )
-
-print("Temps maximal : {}".format(tmax))
-print("Fréquence d'échantillonnage : {}".format(samplingFreq))
-print("Nombre de points avant rééchantillonnage : {}".format(len(valeursSondes_read[:,0])))
-print("Nombre de points après rééchantillonnage : {}".format(new_N))
+    #Donne une fréquence d'échantillonnage pour rééchantillonner le signal
+    samplingFreq = olec.readValueOption(sys.argv, ["-samplingFreq", "--samplingFreq"],
+                                        default = 50.0,
+                                        valueType = float)
 
 
-# Interpolation pour échantillonner à la fréquence donnée
-for i in range(Nsondes):
-    f = interpolate.interp1d(time_read, valeursSondes_read[:,i])
-    valeursSondes[:,i] = f(time)
+    #Récupérer les données de mesure des sondes
+    if os.path.exists(file):
+        print("Lecture dans {}".format(file))
+        data = pd.read_csv(file)
+        data.set_index(data.columns[0], inplace = True) #Pour mettre le temps comme index
+    else:
+        raise NameError("\n{} n'existe pas".format(file))
 
-reSampledData = pd.DataFrame(data = valeursSondes,
-                             columns = data.columns,
-                             index = time)
+    #Nombre de sondes
+    Nsondes = len(data.columns)
 
-reSampledData.index.name = data.index.name
+    print("\n{} sondes détectées".format(Nsondes))
 
-reSampledData.to_csv("RESAMPLED_"+file)
+    #On récupère le temps final
+    time_read = data.index.values
+    tmax = time_read[-1]
+
+    # Calcul du pas de temps à la fréquence d'échantillonnage donnée
+    timestep = 1.0/samplingFreq
+
+    # Vecteur temps échantillonné tous les pas de temps. Exemple [0.02, 0.04, 0.06, ... , tmax]
+    new_N = int(np.floor(tmax/timestep))
+    time = np.linspace(timestep, new_N*timestep, new_N)
+    #time = np.arange(timestep, (new_N+1)*timestep, timestep)
+
+    #Récupère les valeurs des sondes
+    valeursSondes_read = data.values     
+
+    #Initialisation du tableau qui contiendra les valeurs rééchantillonnées
+    valeursSondes = np.zeros( (new_N, Nsondes) )
+
+    print("Temps maximal : {}".format(tmax))
+    print("Fréquence d'échantillonnage : {}".format(samplingFreq))
+    print("Nombre de points avant rééchantillonnage : {}".format(len(valeursSondes_read[:,0])))
+    print("Nombre de points après rééchantillonnage : {}".format(new_N))
+
+
+    # Interpolation pour échantillonner à la fréquence donnée
+    for i in range(Nsondes):
+        f = interpolate.interp1d(time_read, valeursSondes_read[:,i])
+        valeursSondes[:,i] = f(time)
+
+    reSampledData = pd.DataFrame(data = valeursSondes,
+                                columns = data.columns,
+                                index = time)
+
+    reSampledData.index.name = data.index.name
+
+    reSampledData.to_csv("RESAMPLED_"+file)

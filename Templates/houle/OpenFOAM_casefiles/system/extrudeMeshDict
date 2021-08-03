@@ -19,9 +19,9 @@ FoamFile
 constructFrom patch;    //surface;
 
 // If construct from (flipped) patch
-sourceCase "/mount/internal/work-in/projects/I0042_Knu/vBaconnet/IN647-A1586_PORT_LA_GALERE/Runs/actuel2/turbulent/irreguliere_Tp9.5s_Hs2.8m_gamma1.0_RAFFINE2";
-sourcePatches (backPlane);
-exposedPatchName backPlane;
+sourceCase ".";
+sourcePatches (back);
+exposedPatchName front;
 
 // Flip surface normals before usage.
 flipNormals false;

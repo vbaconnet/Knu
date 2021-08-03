@@ -9,52 +9,58 @@ FoamFile
 {
     version     2.0;
     format      ascii;
-    class       dictionary;
-    location    "system";
-    object      fvSchemes;
+    class       volScalarField;
+    object      nut;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-ddtSchemes
+dimensions      [0 2 -1 0 0 0 0];
+
+internalField   uniform 0.0;
+
+boundaryField
 {
-    default         Euler;
+    "(bottom|%geometry%)"
+    {
+        type            nutkWallFunction;
+        Cmu             0.09;
+        kappa           0.41;
+        E               9.8;
+	value           $internalField;
+    }
+
+    outlet
+    {
+        type            nutkWallFunction;
+        Cmu             0.09;
+        kappa           0.41;
+        E               9.8;
+        value           $internalField;
+    }
+
+    inlet
+    {
+        type            calculated;
+        value           $internalField;
+    }
+
+    top
+    {
+	type		calculated;
+	value		$internalField;
+    }
+
+    front
+    {
+	type		empty;
+    }
+
+    back
+    {
+        type            empty;
+    }
+
 }
 
-gradSchemes
-{
-    default         Gauss linear;
-}
-
-divSchemes
-{
-    div(rhoPhi,U)  				Gauss limitedLinear 1;
-    div(U)  					Gauss linear; 
-    div(phi,alpha)  				Gauss vanLeer;
-    div(phirb,alpha) 				Gauss interfaceCompression;
-    div(((rho*nuEff)*dev2(T(grad(U))))) 	Gauss linear;
-    div((interpolate(rho)*phi),k) 		Gauss linear;
-    div(phi,epsilon) 				Gauss linear;
-    div((interpolate(rho)*phi),omega)		Gauss linear;
-}
-
-laplacianSchemes
-{
-    default         Gauss linear corrected;
-}
-
-interpolationSchemes
-{
-    default         linear;
-}
-
-snGradSchemes
-{
-    default         orthogonal;
-}
-
-wallDist
-{
-    method		meshWave;
-}
 
 // ************************************************************************* //

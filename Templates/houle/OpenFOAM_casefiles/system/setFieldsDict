@@ -18,16 +18,40 @@ FoamFile
 defaultFieldValues
 (
     volScalarFieldValue alpha.water 0
+    volScalarFieldValue porosityIndex 0
 );
 
 regions
 (
+//* * * * * * Niveau d'eau * * * * * * * * * * * 
+
     boxToCell
     {
-        box (-5 -2 -0.1) (27.0 2 0.864);
+        box (-0.1 -1.5 -0.1) (21.0 1.5 %waterLevel%);
         fieldValues
         (
             volScalarFieldValue alpha.water 1
+        );
+    }
+
+//* * * * * * * * * Milieu poreux * * * * * * * *
+
+    surfaceToCell
+    {
+        file            "./constant/triSurface/%porousZoneName%.stl";
+        outsidePoints   ((21.21 0.5 1.356));    // definition of outside
+        includeCut      true;              // cells cut by surface
+        includeInside   true;              // cells not on outside of surf
+        includeOutside  false;              // cells on outside of surf
+        nearDistance    -1;                 // cells with centre near surf
+                                            // (set to -1 if not used)
+        curvature       -100;                // cells within nearDistance
+                                            // and near surf curvature
+                                            // (set to -100 if not used)
+
+        fieldValues
+        (
+            volScalarFieldValue porosityIndex %porousIndex%
         );
     }
 );

@@ -15,7 +15,7 @@ FoamFile
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-application     interFoam;
+application     olaFlow;
 
 startFrom       latestTime; //!!!!!!!!
 
@@ -23,7 +23,7 @@ startTime       0;
 
 stopAt          endTime;
 
-endTime         300;
+endTime         1500;
 
 deltaT          0.001;
 
@@ -63,6 +63,31 @@ libs
 
 functions
 {
+
+    waterVolume
+    {
+        type            volFieldValue;
+        libs            ("libfieldFunctionObjects.so");
+        log             true;
+
+        enabled         true;
+
+        writeControl    timeStep; //adjustableRunTime;
+        writeInterval   1000;
+
+        writeFields     true;
+
+        regionType      cellZone;
+        name            bac;
+
+        operation       volIntegrate;
+        fields
+        (
+            alpha.water
+        );
+
+    }
+/*
     line
     {
         type            sets;
@@ -75,38 +100,6 @@ functions
         setFormat       raw;
         sets
         (
-            S3-9.517
-            {
-                type uniform;
-                axis distance;
-                start   ( 9.517 -0.05 0 );
-                end     ( 9.517 -0.05 2.155 );
-                nPoints 201;
-            }
-            S4-9.927
-            {
-                type uniform;
-                axis distance;
-                start   ( 9.927 -0.05 0 );
-                end     ( 9.927 -0.05 2.155 );
-                nPoints 201;
-            }
-	    S5-10.927
-            {
-                type uniform;
-                axis distance;
-         	start   ( 10.927 -0.05 0 );
-          	end     ( 10.927 -0.05 2.155 );
-                nPoints 201;
-            }
-	    S6-11.657
-            {
-                type uniform;
-                axis distance;
-         	start   ( 11.657 -0.05 0 );
-          	end     ( 11.657 -0.05 2.155 );
-                nPoints 201;
-            }
             inlet-0.0
             {
                 type uniform;
@@ -120,5 +113,6 @@ functions
             alpha.water 
         );
     }
+*/
 }
 

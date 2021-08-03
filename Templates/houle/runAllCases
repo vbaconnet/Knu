@@ -1,0 +1,201 @@
+#!/bin/bash
+
+INFO=1 # Mettre à 1 pour afficher informations détaillées
+
+#==============================================================================
+#--------------------------------- FONCTIONS ----------------------------------
+#==============================================================================
+
+#Afficher une erreur
+error() {
+    echo "** Erreur ** ${1}"
+    exit 2
+}
+
+# Afficher un warning
+warning() {
+    echo "** Warning ** ${1}"
+}
+
+#Afficher une info si la variable globale INFO est à 1
+Info() {
+    if [ ${INFO} -eq 1 ] ; then
+        echo "${1}"
+    fi
+}
+
+# Récupérer le nombre de cas à lancer et le chemin vers chacun
+# en lisant dans le fichier log généré par initAllDirs
+get_paths() {
+
+    LOGFILE="initAllDirs.log"
+
+    # Lire le fichier initAllDirs.log et grep là où il y a "Paths"
+    # l'option -n de grep donne la syntaxe suivante:
+    # <numero de ligne>:# <pattern>
+    local pathgrep=$(cat ${LOGFILE} | grep -n "Paths") 
+
+    #Récupérer le numéro de ligne de Path (<numero de ligne>)
+    local pathline=$(echo "${pathgrep}" | grep -o "[0-9][0-9]*" | head -1)
+    Info "Path trouvé à la ligne : ${pathline}"
+
+    #Récupérer le nombre total de cas (<pattern> = Paths (Npaths))
+    NPATHS=$(echo "${pathgrep}" | grep -o "[0-9][0-9]*" | tail -1)
+    Info "Nombre de cas lus dans ${LOGFILE} : ${NPATHS}"
+
+
+    local start=$(( ${pathline} + 1 ))     # Ligne de départ
+    local end=$(( ${start} + ${NPATHS} ))  # Ligne de fin
+
+    # Récupération des chemins et décomposition en liste
+    local raw_paths=$(sed -n "${start},${end} p" "${LOGFILE}") 
+    DIRPATHS=(${raw_paths// / })
+    
+    Info "Nombre de paths lus : ${#DIRPATHS[@]}"
+
+    Ngeoms=$(cat ${LOGFILE} | grep "Geometries" | grep -o "[0-9][0-9]*")
+    Nhoules=$(cat ${LOGFILE} | grep "houle" | grep -o "[0-9][0-9]*")
+    Nporous=$(cat ${LOGFILE} | grep "poreuses" | grep -o "[0-9][0-9]*")
+    Nmesh=$(cat ${LOGFILE} | grep "Maillages" | grep -o "[0-9][0-9]*")
+    Nturb=$(cat ${LOGFILE} | grep "turbulence" | grep -o "[0-9][0-9]*")
+
+    Info ""
+    Info "Géométries = ${Ngeoms}"
+    Info "Houles = ${Nhoules}"
+    Info "Zoes poreuses = ${Nporous}"
+    Info "Maillages = ${Nmesh}"
+    Info "Modèles de turbulence = ${Nturb}"
+
+}
+
+#Vérifier que les paths dans DIRPATHS sont bien corrects
+check_paths() {
+    for i in ${DIRPATHS[@]} ; do 
+        [ -d $i ] || error "${i} n'est pas un chemin valide"
+    done 
+}
+
+# Générer la houle irrégulière avec les options données dans wave_properties_opt
+generate_wave_properties() {
+    Info "generate_wave_properties"
+}
+
+# Met la variable is_in_array à true si ${1} est dans ${2}
+value_in_array() {
+
+    is_in_array=false
+    value="${1}"
+    shift
+    array=("$@")
+
+    for elem in "${array[@]}" ; do 
+        if [ "${elem}" = "${value}" ] ; then
+            Info "#value_in_array : ${value} trouvée"
+            is_in_array=true
+            break
+        fi
+    done 
+}
+
+#Chercher les dossiers dans lequels lancer le maillage
+look_for_mesh_cases() {
+    
+    local firstpath=${DIRPATHS[0]}   # Premier chemin
+    local splitpath=(${firstpath//\/Nz/ }) #Splitter en fonction de Nz
+    RUN_MESH_DIR=${splitpath[0]}  #Contient les dossiers maillage
+
+    Info ""
+    Info "Dossiers trouvés : "
+    Info "$(ls ${RUN_MESH_DIR})"
+    
+    for meshdir in $(ls ${RUN_MESH_DIR}) ; do    # Parcourir les dossiers maillage
+
+        # Chemin du dossier maillage
+        local meshpath="${RUN_MESH_DIR}/${meshdir}" 
+        local submeshdirlist=$(ls ${meshpath}) # Regarder ce qu'il y a dedans
+        local temp_list=(${submeshdirlist// / }) # et en faire une liste
+
+        # On prend le premier dossier qui vient, aka le 0ième
+        where_to_launch_mesh+=("${meshpath}/${temp_list[0]}")
+        Info "On garde ${meshdir}/${temp_list[0]}"
+    done
+
+}
+
+#Copier le maillage dans les dossiers qui n'ont pas de maillage
+copy_mesh_to_others() {
+
+    Info ""
+    for casepath in "${DIRPATHS[@]}" ; do
+        
+        #Info " CASEPATH ${casepath}"
+
+        # On regarde si on a déjà lancé le maillage dans ce dossier
+        value_in_array "${casepath}" "${where_to_launch_mesh[@]}" 
+
+        if ! $is_in_array ; then 
+            #ls > /dev/null
+            Info " Copier dans $(basename "${casepath}")"
+        else 
+            #Info " Ne pas copier dans ${casepath}"
+            ls > /dev/null
+        fi
+
+    done
+}
+
+# Lancer le maillage dans les dossiers donnés par ${1} en fonction 
+# des options données dans allmesh_opt
+run_mesh() {
+
+    Info ""
+
+    for path in "${where_to_launch_mesh[@]}" ; do
+        (
+            cd "${path}"
+            Info "Lancement du maillage dans ${path}"
+            Allmesh "${allmesh_opt}"
+            [ $? -eq 0 ] || {
+                error "Erreur de maillage dans ${path}"
+            }
+        )
+    done 
+}
+
+run_application() {
+    Info "run_application"
+}
+
+#==============================================================================
+#--------------------------- Définition des paramètres ------------------------
+#==============================================================================
+
+# Options de lancement des scripts 
+#  --> genWaveProperties pour générer la houle irrégulière
+#  --> Allmesh pour mailler
+#  --> Allrun pour lancer les solveurs
+
+wave_properties_opt=""
+allmesh_opt=""
+allrun_opt=""
+
+#==============================================================================
+#----------- Exécution des fonctions et génération de houle -------------------
+#==============================================================================
+
+get_paths    # Récupérer les chemins à partir du fichier log
+check_paths  # Vérifier qu'ils sont bons (en théorie oui, c'est juste une sécurité)
+
+# Etape 1 : Ne lancer le maillage que pour le nombre de maillages différents
+where_to_launch_mesh=()
+look_for_mesh_cases
+run_mesh
+copy_mesh_to_others
+
+# Etape 2 : Générer les composantes de houle irrégulière
+generate_wave_properties
+
+# Etape 3 : Lancer tous les cas
+#Allrun "${allrun_opt}" 
+
+ 

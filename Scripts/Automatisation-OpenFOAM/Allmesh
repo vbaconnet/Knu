@@ -103,6 +103,7 @@ check_exit_code() {
 
 #Lancer un warning
 warning() {
+	echo
 	echo "--> Warning : ${1}"
 }
 
@@ -110,7 +111,8 @@ warning() {
 
 #Lancer une erreur avec un message et un code d'erreur 
 error() {
-	echo "--> Erreur : ${1}"
+	echo
+	echo "--> Erreur : ${1}" 1>&2
 
 	#Si il n'y a qu'un seul argument : erreur 42
 	if [ $# -eq 1 ] ; then
@@ -120,7 +122,74 @@ error() {
 	fi
 }
 
+#------------------------------------------------------------------------------
+
+#Lancer une application en vérifiant que son Dict existe
+# Utilisation : launch_app <nom_app> 
+# Arguments optionnels (dans l'ordre):
+#   - <code_erreur> : code d'erreur
+#   - "constant"|"system" pour préciser un fichier dict
+launch_app() {
+
+	local APP=${1}       # Nom de l'application
+	local exit_code=42   # Code erreur par défaut
+
+	# Si il y a 2 paramètres, code d'erreur
+	if [ $# -eq 2 ] ; then  
+		local exit_code=${2}
+	fi
+
+	# Si il y a 3 paramètres, vérifier dict
+	if [ $# -gt 2 ] ; then
+
+		local DIR=$(basename "${3}")   # Répertoire où chercher
+
+		# Si le dossier donné n'est pas un répertoire
+		if [ ! -d "${DIR}" ] ; then
+			error "${DIR} non reconnu. Doit être un répertoire"
+		fi
+		
+		local DICTPATH="${DIR}/${APP}Dict" # Chemin complet
+
+		# Si le dict n'existe pas
+		if [ ! -f "${DICTPATH}" ] ; then 
+			error "${DICTPATH} n'existe pas encore."
+			echo
+			echo " ** Conseil ** Utilisez la commande foamGetDict : "
+			echo "                foamGetDict ${APP}Dict"
+		fi
+
+	fi
+
+	# * * * * Vérifier si le fichier log existe * * * * *
+
+	if [ -f "log.${APP}" ] ; then   #Si le fichier log existe déjà
+
+		#Demander si il faut relancer
+		echo -n "${APP} a déjà été lancé. Voulez-vous relancer l'application? (o/N) : "
+		read CHOIX 
+
+		#Si c'est non, on ne fait rien
+		if [ "${CHOIX}" = "N" ] ; then
+			echo "${APP} pas relancé"
+		
+		#Sinon, on lance
+		else
+			rm "log.${APP}"
+			runApplication ${APP}
+			check_exit_code "${APP}" ${exit_code}
+		fi
+
+	else  #Si le fichier log n'existe pas
+		runApplication ${APP}
+		check_exit_code "${APP}" ${exit_code}
+	fi
+
+}
+
 #******************************************************************************
+
+# * * * * * * * * * * * * * Lecture des arguments * * * * * * * * * * * * * * *
 
 #Variables pour la lecture des options
 #-------------------------------
@@ -186,6 +255,8 @@ while [ ! "${#}" -eq 0 ] ; do
 	esac
 done
 
+#******************************************************************************
+
 #Lancer un warning si extrudeMesh mais pas snappyHexMesh
 if ! $SNAPPY  &&  $EXTRUDE ; then
 	echo
@@ -204,12 +275,12 @@ if ! $DIR_WAS_CLEANED ; then
 	rm -f log.reconstructParMesh log.checkMesh 
 fi
 
-#---------------------- blockMesh --------------------
-echo
-runApplication blockMesh         #Lancer l'application
-check_exit_code "blockMesh" 2  #Vérifier son code de sortie
+#Création du fichier .foam pour paraView
+touch $(basename $(pwd)).foam
 
-#=====================================================
+#blockMesh
+echo
+launch_app "blockMesh" 2 "system"
 
 #---------------------- snappyHexMesh ----------------
 
@@ -218,10 +289,32 @@ if $SNAPPY ; then
 	#Si lancement en parallèle
 	if $PARALLEL ; then
 
-		echo 
-		runApplication decomposePar       #Décomposer le domaine
-		check_exit_code "decomposePar" 4
-		rm -f log.decomposePar           #Pour relancer decomposePar plus tard 
+		DECOMPOSEPAR=true  #Par défaut, on lance decomposePar
+
+		#Si processor0 existe, demander à l'utilisateur pour la suppression
+		echo
+		if [ -d "processor0" ] ; then 
+
+			echo "Des fichiers processeurs existent, voulez-vous les garder? (o/N)"
+			read CHOIX
+
+			if [ "${CHOIX}" = "N" ] ; then
+				echo "Suppression des fichiers processeurs"
+				rm -rf processor* 
+			else 
+				echo "On garde les fichiers processeurs existants"
+				DECOMPOSEPAR=false     #Ne pas lancer decomposePar
+			fi
+
+		fi
+
+		#Lancer decomposePar si DECOMPOSEPAR=true
+		[ ! $DECOMPOSEPAR ]  || { 
+
+			#Lancer decomposePar
+			launch_app "decomposePar" 4 "system"
+			rm -f log.decomposePar
+		}
 
 		echo
 		NPROCS=$(ls | grep "processor*" | wc -l) # Compter le nombre de processeurs
@@ -243,16 +336,13 @@ if $SNAPPY ; then
 	#Sinon, lancement en séquentiel
 	else 
 		#Lancer snappyHexMesh en séquentiel
-		echo 
 		runApplication snappyHexMesh -overwrite
 		check_exit_code "snappyHexMesh" 3
 	fi
 
 	if $EXTRUDE ; then
 		#Lancer l'extrusion de maillage
-		echo 
-		runApplication extrudeMesh
-		check_exit_code "extrudeMesh" 5
+		launch_app "extrudeMesh" 5 "system" 
 	fi
 
 fi

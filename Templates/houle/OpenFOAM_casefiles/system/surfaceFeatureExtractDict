@@ -9,54 +9,32 @@ FoamFile
 {
     version     2.0;
     format      ascii;
-    class       volScalarField;
-    object      omega;
+    class       dictionary;
+    object      surfaceFeatureExtractDict;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-dimensions      [0 0 -1 0 0 0 0];
 
-internalField   uniform 0.001;
-
-boundaryField
+%geometry%.stl
 {
-    BOTTOM
-    {
-        type            omegaWallFunction;
-        value           $internalField;
-    }
+	extractionMethod    extractFromSurface;
 
-    INLET
-    {
-        type            inletOutlet;
-        inletValue      $internalField;
-	value           $internalField;
-    }
+	extractFromSurfaceCoeffs
+	{
+		includedAngle 150;
+	}
 
-    RIGHT
-    {
-        type            inletOutlet;
-        inletValue      $internalField;
-        value           $internalField;
-    }
+	subsetFeatures
+	{
+		nonManifoldEdges	yes;
+		openEdges		yes;
+	}
+	
 
-    TOP
-    {
-	type		inletOutlet;
-	inletValue	$internalField;
-	value		$internalField;
-    }
-
-    frontPlane
-    {
-	type 		empty;
-    }
-
-    backPlane
-    {
-        type            empty;
-    }
+	writeObs yes;
 }
+
+
 
 
 // ************************************************************************* //

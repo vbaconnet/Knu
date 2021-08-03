@@ -1,8 +1,8 @@
 /*--------------------------------*- C++ -*----------------------------------*\
 | =========                 |                                                 |
 | \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
-|  \\    /   O peration     | Version:  v2006                                 |
-|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|  \\    /   O peration     | Version:  2.1.0                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
 |    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
 FoamFile
@@ -10,7 +10,8 @@ FoamFile
     version     2.0;
     format      ascii;
     class       volScalarField;
-    object      alpha.water;
+    location    "0";
+    object      porosityIndex;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -20,39 +21,28 @@ internalField   uniform 0;
 
 boundaryField
 {
-    INLET
+    inlet
     {
-        type            waveAlpha;
-        value           uniform 0;
+        type            zeroGradient;
     }
-
-    RIGHT
+    outlet
     {
-        type            waveAlpha;
-        value           uniform 0;
+        type            zeroGradient;
     }
-
-    BOTTOM
+    bottom
     {
-        type		zeroGradient;
+        type            zeroGradient;
     }
-
-    TOP
+    %geometry%
     {
-        type            inletOutlet;
-        inletValue      uniform 0;
-        value           uniform 0;
+        type            zeroGradient;
     }
-
-    frontPlane
-    {
-	type		empty;
-    }
-
-    backPlane
+    "(front|back)"
     {
         type            empty;
     }
+    top
+    {
+        type            zeroGradient;
+    }
 }
-
-// ************************************************************************* //

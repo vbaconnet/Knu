@@ -1,8 +1,8 @@
 /*--------------------------------*- C++ -*----------------------------------*\
 | =========                 |                                                 |
 | \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
-|  \\    /   O peration     | Version:  v2012                                 |
-|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|  \\    /   O peration     | Version:  2.1.0                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
 |    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
 FoamFile
@@ -11,17 +11,16 @@ FoamFile
     format      ascii;
     class       dictionary;
     location    "constant";
-    object      turbulenceProperties;
+    object      porosityDict;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-simulationType  RAS;
 
-RAS
-{
-    RASModel        kOmegaSSTBuoyancy; //kOmegaBuoyancy;
-    turbulence      on;
-    printCoeffs     on;
-};
+a               2(0 %a1%);
+b               2(0 %b1%);
+c               2(0 %c1%);
+
+D50             2(1 %D1%);
+porosity        2(1 %porosity1%);
 
 // ************************************************************************* //

@@ -9,18 +9,51 @@ FoamFile
 {
     version     2.0;
     format      ascii;
-    class       dictionary;
-    object      decomposeParDict;
+    class       volVectorField;
+    object      U;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-numberOfSubdomains 4;
+dimensions      [0 1 -1 0 0 0 0];
 
-method          hierarchical;
+internalField   uniform (0 0 0);
 
-coeffs
+boundaryField
 {
-    n           (4 1 1);
+    inlet
+    {
+        type            waveVelocity;
+	//waveDictName    waveProperties;
+        value           uniform (0 0 0);
+    }
+
+    outlet
+    {
+        type            fixedValue;
+        value           uniform (0 0 0);
+    }
+
+    "(bottom|%geometry%)"
+    {
+        type            fixedValue;
+        value           uniform (0 0 0);
+    }
+
+    top
+    {
+        type            pressureInletOutletVelocity;
+        value           uniform (0 0 0);
+    }
+
+    front
+    {
+        type            empty;
+    }
+
+    back
+    {
+        type            empty;
+    }
 }
 
 // ************************************************************************* //

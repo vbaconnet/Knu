@@ -23,6 +23,8 @@ usage() {
     echo "  -h, --help : afficher l'aide"
 }
 
+#------------------------------------------------------------------------------
+
 #Aide
 send_help() {
 	echo "Utilisation : Allrun [OPTIONS]"
@@ -37,6 +39,7 @@ send_help() {
     echo "     -ats, dossiers de processeurs, fichiers log)"
 	echo "  -s, --setfields : Lancer setFields selon les critères de "
 	echo "      setFieldsDict"
+	echo "  -e, --surfacefeature : Lancer surfaceFeatureExtract"
 	echo "  -t, --toposet : Lancer topoSet selon les critères de topoSetDict"
 	echo "  -p, --parallel : Lancer le calcul en parallèle avec le nombre de pro"
     echo "     -cesseurs défini dans decomposeParDict"
@@ -55,21 +58,22 @@ send_help() {
 	echo "  9 si erreur dans la copie du dossier 0"
 	echo "  10 si erreur dans setFields"
 	echo "  11 si erreur dans topoSet"
+	echo "  12 si erreur dans surfaceFeatureExtract"
 }
 
-#Nettoyer le répertoire 
+#------------------------------------------------------------------------------
+
+#Nettoyer le répertoire mais pas le maillage!
 clean() {
 
     echo "Nettoyage du répertoire $(pwd)"
 
 	# Si Allclean existe, l'utiliser
-	if [ -f "Allclean" ]; then 
-		./Allclean
+	if [ command -v "Allclean" &> /dev/null ]; then 
+		Allclean --notmesh
 	
 	# Sinon faire ça manuellement
 	else 					   
-		# Remove the mesh
-		foamCleanPolyMesh
 
 		# Remove time folders
 		foamListTimes -rm -time 0: -withZero
@@ -82,6 +86,8 @@ clean() {
 	fi
 }
 
+#------------------------------------------------------------------------------
+
 # Vérifier le code de sortie de $?. Si différent de 0, renvoie le code d'erreur $2
 # Donner le nom de l'application dans $1
 check_exit_code() {
@@ -92,16 +98,20 @@ check_exit_code() {
 	fi
 }
 
+#------------------------------------------------------------------------------
+
 #Lancer un warning
 warning() {
 	echo 
 	echo "--> Warning : ${1}"
 }
 
+#------------------------------------------------------------------------------
+
 #Lancer une erreur avec un message et un code d'erreur 
 error() {
 	echo 
-	echo "--> Erreur : ${1}"
+	echo "--> Erreur : ${1}" 1>&2
 
 	#Si il n'y a qu'un seul argument : erreur 42
 	if [ $# -eq 1 ] ; then
@@ -111,18 +121,20 @@ error() {
 	fi
 }
 
+#------------------------------------------------------------------------------
+
 #Copie du dossier 0
 copyZero() {
 	if [ -d "0" ] ; then
 		echo "Le dossier 0 existe déjà. Aucune action effectuée"
 	else
 		echo "Dossier 0 non trouvé. Recherche de 0.orig..."
-		ZERODIR=""
+		local ZERODIR=""
 
 		#Recherche de 0.orig
 		if [ -d "0.orig" ] ; then 
 			echo "0.orig trouvé" 
-			ZERODIR="0.orig" 
+			local ZERODIR="0.orig" 
 
 		else 
 			echo "0.orig pas trouvé. Recherche de 0_orig..."
@@ -130,19 +142,18 @@ copyZero() {
 			#Si pas trouvé, recherche de 0_orig
 			if [ -d "0_orig" ] ; then
 				echo "0_orig trouvé" 
-				ZERODIR="0_orig"
+				local ZERODIR="0_orig"
 			else 
 				echo "0_orig pas trouvé. Recherche de 0_org..."
 
 				#Si pas trouvé, recherche de 0_org
 				if [ -d "0_org" ] ; then 
 					echo "0_org trouvé"
-					ZERODIR="0_org"
+					local ZERODIR="0_org"
 				else
 					#Si pas trouvé, renvoyer une erreur
 					echo "0_org pas trouvé."
-					error "aucun dossier 0, 0.orig, 0_orig ou 0_org trouvé"
-					exit 9
+					error "aucun dossier 0, 0.orig, 0_orig ou 0_org trouvé" 9
 				fi
 			fi
 		fi
@@ -151,6 +162,8 @@ copyZero() {
 	echo "Dossier 0 créé"
 	fi
 }
+
+#------------------------------------------------------------------------------
 
 #Vérifier les paramètres
 check_params() {
@@ -173,6 +186,72 @@ check_params() {
 	fi
 }
 
+#------------------------------------------------------------------------------
+
+#Lancer une application en vérifiant que son Dict existe
+# Utilisation : launch_app <nom_app> 
+# Arguments optionnels (dans l'ordre):
+#   - <code_erreur> : code d'erreur
+#   - "constant"|"system" pour préciser un fichier dict
+launch_app() {
+
+	local APP=${1}       # Nom de l'application
+	local exit_code=42   # Code erreur par défaut
+
+	# Si il y a 2 paramètres, code d'erreur
+	if [ $# -eq 2 ] ; then  
+		local exit_code=${2}
+	fi
+
+	# Si il y a 3 paramètres, vérifier dict
+	if [ $# -gt 2 ] ; then
+
+		local DIR=$(basename "${3}")   # Répertoire où chercher
+
+		# Si le dossier donné n'est pas un répertoire
+		if [ ! -d "${DIR}" ] ; then
+			error "${DIR} non reconnu. Doit être un répertoire"
+		fi
+		
+		local DICTPATH="${DIR}/${APP}Dict" # Chemin complet
+
+		# Si le dict n'existe pas
+		if [ ! -f "${DICTPATH}" ] ; then 
+			error "${DICTPATH} n'existe pas encore."
+			echo
+			echo " ** Conseil ** Utilisez la commande foamGetDict : "
+			echo "                foamGetDict ${APP}Dict"
+		fi
+
+	fi
+
+	# * * * * Vérifier si le fichier log existe * * * * *
+
+	if [ -f "log.${APP}" ] ; then   #Si le fichier log existe déjà
+
+		#Demander si il faut relancer
+		echo -n "${APP} a déjà été lancé. Voulez-vous relancer l'application? (o/N) : "
+		read CHOIX 
+
+		#Si c'est non, on ne fait rien
+		if [ "${CHOIX}" = "N" ] ; then
+			echo "${APP} pas relancé"
+		
+		#Sinon, on lance
+		else
+			rm "log.${APP}"
+			runApplication ${APP}
+			check_exit_code "${APP}" ${exit_code}
+		fi
+
+	else  #Si le fichier log n'existe pas
+		runApplication ${APP}
+		check_exit_code "${APP}" ${exit_code}
+	fi
+
+}
+
+#******************************************************************************
 
 #Variables pour la lecture des options
 #-------------------------------
@@ -181,6 +260,7 @@ DIR_WAS_CLEANED=false
 RECONSTRUCT=true
 SETFIELDS=false
 TOPOSET=false
+SURFACE_EXTRACT=false
 SOLVE=true
 #-------------------------------
 
@@ -222,7 +302,6 @@ while [ ! "${#}" -eq 0 ] ; do
 		-c|--clean)           # nettoyer le dossier
 		clean
 		DIR_WAS_CLEANED=true
-		echo "Nettoyage complet du répertoire"
 		shift
 		;;
 		-r|--noreconstruct)   # Ne pas reconstruire après calcul parallèle
@@ -243,6 +322,11 @@ while [ ! "${#}" -eq 0 ] ; do
 		-n|--nosolve)
 		SOLVE=false
 		echo "Pas de lancement du solveur"
+		shift
+		;;
+		-e|--surfacefeature)
+		SURFACE_EXTRACT=true
+		echo "Extraction de surface"
 		shift
 		;;
 		--)                   # Fin des arguments
@@ -269,34 +353,19 @@ check_params
 echo
 copyZero
 
-#Lancement de setFields
-if $SETFIELDS ; then
-
-	# Si setFieldsDict existe
-	if [ -f "system/setFieldsDict" ] ; then
-		runApplication setFields
-		check_exit_code "setFields" 10
-	else
-		warning "system/setFieldsDict n'existe pas."
-		echo
-		echo "** Conseil ** Utilisez la commande foamGetDict :"
-		echo "         foamGetDict setFieldsDict"
-	fi
-fi
-
 #Lancer topoSet
 if $TOPOSET ; then
+	launch_app "topoSet" 11 "system"
+fi
 
-	# Si topoSetDict existe
-	if [ -f "system/topoSetDict" ] ; then
-		runApplication topoSet
-		check_exit_code "topoSet" 11
-	else
-		warning "system/topoSetDict n'existe pas."
-		echo
-		echo "** Conseil ** Utilisez la commande foamGetDict :"
-		echo "         foamGetDict topoSetDict"
-	fi
+#Lancement de setFields
+if $SETFIELDS ; then
+	launch_app "setFields" 10 "system"
+fi
+
+#Lancer surfaceFeatureExtract
+if $SURFACE_EXTRACT ; then
+	launch_app "surfaceFeatureExtract" 12 "system"
 fi
 
 #Lancement en parallèle et si on souhaite lancer solveur
@@ -308,7 +377,7 @@ if $PARALLEL && $SOLVE; then
 	echo
 	if [ -d "processor0" ] ; then 
 
-		echo "Des fichiers processeurs existent, voulez-vous les garder? (o/N)"
+		echo -n "Des fichiers processeurs existent, voulez-vous les garder? (o/N)"
 		read CHOIX
 
 		if [ "${CHOIX}" = "N" ] ; then
@@ -325,26 +394,27 @@ if $PARALLEL && $SOLVE; then
 	[ ! $DECOMPOSEPAR ]  || { 
 
 		#Lancer decomposePar
-		runApplication decomposePar
-		check_exit_code "decomposePar" 4
-		rm -f log.decomposePar
+		launch_app "decomposePar" 4 "system" 
 	 }
 
+	# Lancer renumberMesh : réarrange le maillage pour calculs plus rapides
+	# runParallel renumberMesh -overwrite
+	# check_exit_code "renumberMesh" 42
+
 	#Lancer le solveur donné dans system/controlDict
-    runParallel $(getApplication)
-    check_exit_code "$(getApplication)" 7
+	runParallel $(getApplication) 
+	check_exit_code $(getApplication) 7
 
 	#Reconstruction des fichiers et effaçage des dossiers si succès 
 	if $RECONSTRUCT ; then
-		runApplication reconstructPar 
-		check_exit_code "reconstructPar" 8
+		launch_app "reconstructPar" 8
 		rm -rf processor*
 	fi
 
 #Lancement en séquentiel seulement si on souhaite lancer le solveur
 elif $SOLVE; then
-    runApplication $(getApplication) 
-    check_exit_code "$(getApplication)" 7
+	launch_app "renumberMesh" 42
+    launch_app $(getApplication) 7 
 fi
 
 echo "Terminé."
