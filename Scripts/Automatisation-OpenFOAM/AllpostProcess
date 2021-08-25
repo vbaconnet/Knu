@@ -65,17 +65,6 @@ check_exit_code() {
 	fi
 }
 
-#------------------------------------------------------------------------------
-
-execute_scripts() {
-    #Pour chaque paramètre, l'exécuter
-    for script in $@ ; do
-        echo "Execution de ${script}"
-        $script
-        check_exit_code "${script}" 2
-    done
-}
-
 
 #******************************************************************************
 
@@ -90,7 +79,7 @@ LOGFILE="log.$(getApplication)" #Définir fichier log
 #	  -o h : lecture d'options courtes de type -h
 #	  -l log,... : lecture d'options longues de type --log, etc
 #     -- : signale la fin des options
-PARSED_ARGS=$(getopt -n Allpostprocess -o h: -l log:,help -- "$@")
+PARSED_ARGS=$(getopt -n Allpostprocess -o h -l log:,help -- "$@")
 
 #Vérifier que tout s'est bien passé
 if [ ! "${?}" -eq 0 ] ; then
@@ -140,7 +129,7 @@ fi
 #******************************************************************************
 
 #Lire le dernier temps de simulation
-TIME=$(tail -300 ${LOGFILE} | grep ^Time | tail -1 | grep -o "[0-9].*")
+TIME=$(tail -300 ${LOGFILE} | grep ^Time | tail -1 | grep -Eo '[+-]?[0-9]+([.][0-9]+)?')
 check_exit_code "Lecture du fichier ${LOGFILE}" 2
 echo "Dernier temps dans le fichier ${LOGFILE} : ${TIME}"
 
@@ -154,16 +143,28 @@ while [ -z $EMPTY_IF_RUNNING ] && [ ! -z "${TIME}" ] ; do
 
     #Lire le dernier temps de simulation
     TIME=$(tail -300 ${LOGFILE} | grep ^Time | tail -1 | grep -Eo '[+-]?[0-9]+([.][0-9]+)?') 
-    dT=$(tail -300 ${LOGFILE} | grep ^deltaT | tail -1) 
-    echo "Dernier temps dans le fichier ${LOGFILE}: ${TIME}"
-    echo "${dT}"
+    dT=$(tail -300 ${LOGFILE} | grep ^deltaT | tail -1 | grep -Eo '[+-]?[0-9]+([.][0-9]+)?') 
+    end_time=$(cat system/controlDict | grep "endTime" | tail -1 | grep -Eo '[+-]?[0-9]+([.][0-9]+)?')
+    execution_time=$(tail -300 ${LOGFILE} | grep "ExecutionTime" | tail -1 | grep -Eo '[+-]?[0-9]+([.][0-9]+)?' | head -1)
+
+    remaining_time=$(awk "BEGIN {print ${execution_time} * (${end_time} / ${TIME} - 1.0)}")
+
+    echo "Temps de simulation  : ${TIME} / ${end_time}"
+    echo "Pas de temps         : ${dT}"
+    echo "Temps d'exécution    : $(decompose_seconds ${execution_time})"
+    echo "Temps restant estimé : $(decompose_seconds ${remaining_time})"
 
     EMPTY_IF_RUNNING=$(tail ${LOGFILE} | grep "^End")
 
 done
 
 echo "Simulation terminée"
-execute_scripts $@
+#Pour chaque paramètre, l'exécuter
+for script in $@ ; do
+    echo "Execution de ${script}"
+    $script
+    check_exit_code "${script}" 2
+done
 
 echo
 echo "Terminé"

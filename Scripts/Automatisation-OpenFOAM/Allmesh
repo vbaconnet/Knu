@@ -286,6 +286,8 @@ launch_app "blockMesh" 2 "system"
 
 if $SNAPPY ; then
 
+	submot "empty" "emptyy" "system/blockMeshDict"
+
 	#Si lancement en parallèle
 	if $PARALLEL ; then
 
@@ -338,7 +340,10 @@ if $SNAPPY ; then
 		#Lancer snappyHexMesh en séquentiel
 		runApplication snappyHexMesh -overwrite
 		check_exit_code "snappyHexMesh" 3
-	fi
+	fi	
+
+	submot "emptyy" "empty" "constant/polyMesh/boundary"
+	submot "emptyy" "empty" "system/blockMeshDict"
 
 	if $EXTRUDE ; then
 		#Lancer l'extrusion de maillage

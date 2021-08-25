@@ -26,31 +26,4 @@ Allez dans le dossier ``Knu`` et initialisez les variables d'environnement
 cd Knu
 source sourceMe
 ```
-Compilez les solveurs OpenFOAM ``sedFoam``, ``interFranchissementFoam``,
-``olaFlow`` ainsi que les modèles de turbulence modifiés
-``buoyancyModifiedTurbulenceModels`` et ``stabRAS``.
-```bash
-Allwmake
-```
-Si vous ne voulez pas tout compiler, allez dans le dossier qui vous intéresse
-et lancez
-```bash
-<solver>/Allwmake
-```
-Où ``<solver>`` est le nom du solveur qui vous intéresse. 
 
-Pour utiliser les scripts Python, il est préférable d'installer les versions 
-de ``numpy``, ``scipy`` et ``matplotlib`` données dans ``requirements.txt``:
-```
-pip install requirements.txt
-```
-
-**ATTENTION**
-Pour l'instant, le calcul du débit de franchissement nécéssite que le module
- `paraview.simple` puisse être importé. Il faut avoir installé paraview. 
-Ce script va prochainement être modifié pour ne pas avoir à se reposer sur 
-Paraview et utiliser directement l'intégration volumique d'OpenFOAM.
-
-## Support
-
-victor.baconnet@acri-in.fr

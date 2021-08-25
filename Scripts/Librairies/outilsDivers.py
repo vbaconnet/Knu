@@ -65,14 +65,15 @@ def warning(message: str):
     """
     print("\n** Warning **", message)
 
-def trace(x, y, fig, ax, label = "", xlabel = "", ylabel = "", title = "", grid = True,
+def plot(x, y, fig, ax, label = "", xlabel = "", ylabel = "", title = "", grid = True,
         tick_fontsize = 14, label_fontsize = 16, xmin = None, xmax = None, ymin = None,
         ymax = None, legend = None, tight_layout = True):
 
     if legend is None:
         legend = True if label != "" else False
 
-    ax.plot(x, y, label = label)
+    line, = ax.plot(x, y, label = label)
+
     if legend:
         ax.legend()
 
@@ -90,3 +91,71 @@ def trace(x, y, fig, ax, label = "", xlabel = "", ylabel = "", title = "", grid 
 
     if tight_layout:
         fig.tight_layout()
+
+    return line
+
+
+def plot_multi(xs, ys, fig, axs, labels=[], xlabels = None, ylabels = None,
+               titles = None, grids = True, tick_fontsize = 14, 
+               label_fontsize = 16, xmins = None, xmaxs = None, ymins = None, 
+               ymaxs = None, legend = None, tight_layout = True):
+
+    assert len(xs) == len(ys)
+    
+    from numpy import size
+    
+    lines = []
+
+    if legend is None:
+        legend = True if len(labels) != 0 else False
+
+    if size(axs) == 1:
+        for idx in range(len(xs)):
+            line, = axs.plot(xs[idx], ys[idx], label = labels[idx])
+            lines.append(line)
+    elif size(axs) == len(xs):
+        for idx in range(len(xs)):
+            line, = axs[idx].plot(xs[idx], ys[idx], label = labels[idx])
+    else:
+        raise ValueError(f"axs invalide. Doit être de taille 1 ou {size(axs)}")
+
+    if legend:
+        try:
+            axs.legend()
+        except AttributeError:
+            for ax in axs:
+                ax.legend()
+
+    try:
+
+        axs.set_xlim((xmins, xmaxs))
+        axs.set_ylim((ymins, ymaxs))
+    
+        axs.set_xlabel(xlabels, fontsize = label_fontsize)
+        axs.set_ylabel(ylabels, fontsize = label_fontsize)
+        axs.set_title(titles, fontsize = label_fontsize)
+        axs.tick_params(labelsize = tick_fontsize)
+    
+        if grids:
+            axs.grid()
+    
+    except AttributeError:
+        
+        for idx, ax in enumerate(axs):
+            
+            ax.set_xlim((xmins, xmaxs))
+            ax.set_ylim((ymins, ymaxs))
+        
+            ax.set_xlabel(xlabels, fontsize = label_fontsize)
+            ax.set_ylabel(ylabels, fontsize = label_fontsize)
+            ax.set_title(titles, fontsize = label_fontsize)
+
+            ax.tick_params(labelsize = tick_fontsize)
+            
+            if grid[idx]:
+                ax.grid()
+
+    if tight_layout:
+        fig.tight_layout()
+
+    return lines

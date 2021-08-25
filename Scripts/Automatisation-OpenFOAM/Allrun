@@ -19,7 +19,9 @@ usage() {
     echo "     -cesseurs défini dans decomposeParDict"
 	echo "  -r, --noreconstruct : pour ne pas reconstruire les fichiers après "
 	echo "      le calcul parallèle"
-	echo "  -d, --nosolve : Ne pas lancer le solveur"
+	echo "  -n, --nosolve : Ne pas lancer le solveur"
+	echo "  -d, --dryrun : Lancer uniquement un pas de temps pour tester le "
+	echo "      solveur"
     echo "  -h, --help : afficher l'aide"
 }
 
@@ -47,6 +49,8 @@ send_help() {
 	echo "      le calcul parallèle"
 	echo "  -n, --nosolve : ne pas lancer le solveur. Si -p ou -r sont activées,"
 	echo "      elles ne seront pas prises en compte et généreront un warning"
+	echo "  -d, --dryrun : Lancer uniquement un pas de temps pour tester le "
+	echo "      solveur"
     echo "  -h, --help : afficher l'aide"
 	echo
 	echo "ERREURS"
@@ -262,6 +266,7 @@ SETFIELDS=false
 TOPOSET=false
 SURFACE_EXTRACT=false
 SOLVE=true
+DRYRUN=false
 #-------------------------------
 
 #Lire les arguments et options avec getopt
@@ -271,7 +276,7 @@ SOLVE=true
 #	  -o cstprh : lecture d'options courtes de type -h, -s... etc ou -hs
 #	  -l clean,... : lecture d'options longues de type --clean, etc
 #     -- : signale la fin des options
-PARSED_ARGS=$(getopt -n Allrun -o cstprhn -l clean,setfields,toposet,parallel,noreconstruct,nosolve,help -- "$@")
+PARSED_ARGS=$(getopt -n Allrun -o cstdprhn -l clean,setfields,toposet,parallel,noreconstruct,nosolve,help,dryrun -- "$@")
 
 #Vérifier que tout s'est bien passé
 if [ ! "${?}" -eq 0 ] ; then
@@ -327,6 +332,11 @@ while [ ! "${#}" -eq 0 ] ; do
 		-e|--surfacefeature)
 		SURFACE_EXTRACT=true
 		echo "Extraction de surface"
+		shift
+		;;
+		-d|--dryrun)
+		DRYRUN=true
+		echo "Lancement en dry-run"
 		shift
 		;;
 		--)                   # Fin des arguments
@@ -397,24 +407,38 @@ if $PARALLEL && $SOLVE; then
 		launch_app "decomposePar" 4 "system" 
 	 }
 
-	# Lancer renumberMesh : réarrange le maillage pour calculs plus rapides
-	# runParallel renumberMesh -overwrite
-	# check_exit_code "renumberMesh" 42
-
 	#Lancer le solveur donné dans system/controlDict
-	runParallel $(getApplication) 
-	check_exit_code $(getApplication) 7
+	if ! ${DRYRUN}; then
+		runParallel $(getApplication) 
+		check_exit_code $(getApplication) 7
+	else
+		runParallel $(getApplication) -dry-run
+		check_exit_code $(getApplication) 7
+	fi
 
 	#Reconstruction des fichiers et effaçage des dossiers si succès 
 	if $RECONSTRUCT ; then
-		launch_app "reconstructPar" 8
-		rm -rf processor*
+
+		if [ -z "$(foamListTimes -processor)" ] ; then
+			echo "Rien à reconstruire"
+		else	
+			launch_app "reconstructPar" 8
+			rm -rf processor*
+		
+		fi
 	fi
 
 #Lancement en séquentiel seulement si on souhaite lancer le solveur
 elif $SOLVE; then
-	launch_app "renumberMesh" 42
-    launch_app $(getApplication) 7 
+ 
+	#Lancer le solveur donné dans system/controlDict
+	if ! ${DRYRUN}; then
+		launch_app $(getApplication) 7
+	else
+		runApplication $(getApplication) -dry-run
+		check_exit_code $(getApplication) 7
+	fi
+     
 fi
 
 echo "Terminé."

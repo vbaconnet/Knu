@@ -17,6 +17,7 @@ import openpyxl.drawing.text as odt
 
 def write(data, sheet):
     """Ajoute (append) des données d'un DataFrame dans une feuille excel
+    
     :param data: Tableau de données de type dataframe
     :type data: pandas.core.frame.DataFrame
     :param sheet: Feuille dans laquelle écrire
@@ -29,6 +30,7 @@ def make_plot(chart, data_sheet, x_col, y_col, x_min_row = 2, y_min_row = 2,
     get_title = True):
     """Tracer un graphique sur une feuille à partir de données d'une autre 
     feuille. Trace colonne par colonne.
+
     :param chart: Objet LineChart sur lequel tracer
     :type chart: openpyxl.chart.line_chart.LineChart
     :param plot_sheet: Feuille sur laquelle tracer
@@ -73,13 +75,14 @@ def make_plot(chart, data_sheet, x_col, y_col, x_min_row = 2, y_min_row = 2,
 def plot(chart, cols, data_sheet, plot_sheet, where, title = "",
  xlabel = "", ylabel = "", y_min_row = 1, x_min_row = 2, height = 15,
   width = 20, legend_position = "t", display_legend = True,
-   xlim = None, ylim = None, get_title = True):
+   xlim = None, ylim = None, get_title = True, additional_info = ""):
     """Tracer plusieurs jeux de données sur un même graphique
+
     :param chart: Object chart sur lequel faire le graphique. Se crée avec la
-        commande : ``chart = ScatterChart(auto_axis = False)``
+      commande : ``chart = ScatterChart(auto_axis = False)``
     :type chart: ScatterChart
     :param cols: Colonnes à tracer. Syntaxe: ``[(x1,y1), (x2,y2), ...]``,
-      où les ``xi`` et ``yi``sont des entiers correspondant aux colonnes à tracer.
+      où les ``xi`` et ``yi`` sont des entiers correspondant aux colonnes à tracer.
       La colonne A est la numéro 1, et ainsi de suite.
     :type cols: list(tuple(int))
     :param data_sheet: Feuille dans laquelle récupérer les données
@@ -106,10 +109,11 @@ def plot(chart, cols, data_sheet, plot_sheet, where, title = "",
     :param width: largeur du graphique
     :type width: int
     :param legend_position: Position de la légende. 
-        * Top :``t``
-        * Bottom : ``b``
-        * Left : ``l``
-        * Right : ``r``
+
+      * Top : ``t``
+      * Bottom : ``b``
+      * Left : ``l``
+      * Right : ``r``
     """
     # Tracer chaque graphique
     for to_plot in cols:

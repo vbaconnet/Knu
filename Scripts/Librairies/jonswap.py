@@ -153,11 +153,40 @@ def genJonswapParams(Hs, Tp, gamma, w):
     dw = w[1] - w[0]
     spectreJonswap = jonswap(Hs, Tp, gamma, w)
     
-    amplitudes = np.sqrt(2.0 * spectreJonswap * dw) #Génération d'amplitudes
+    H = 2.0 * np.sqrt(2.0 * spectreJonswap * dw) #Génération d'amplitudes
     dephasages = 2.0*np.pi*np.random.rand(len(w))   #Génération de déphasage entre 0 et 2pi
     
-    return amplitudes, dephasages, spectreJonswap
+    return H, dephasages, spectreJonswap
 
+def dispersion(T,h):
+
+    Nmax = 100 # Nomre maximal d'itérations
+    
+    L0 = 9.81 * T**2 / (2.0*np.pi)
+    L = L0
+    Lnew = L0 * np.tanh(2.0*np.pi/L*h)
+    
+    N = 0
+    while abs(Lnew - L) > 0.001 and N < Nmax:
+        L = Lnew
+        Lnew = L0 * np.tanh(2.0*np.pi/L*h)
+        N = N+1
+
+    return L
+
+def deplacementBatteur(t, H, T, h, phi):
+
+    L = dispersion(T,h) # Calcul de longueur d'onde
+    k = 2.0 * np.pi / L   # Nombre d'onde
+    
+    # Formule modifiée pour correspondre avec des valeurs générées en canal,
+    # devrait normalement être HoS = 2.0 * ...
+    HoS = 2.0 * (np.cosh(2*k*h) - 1.0) / (np.sinh(2*k*h) + 2*k*h)
+    S = H/HoS
+    
+    x = S*0.5 * np.cos(-2.0*np.pi*t/T + np.pi*0.5 + phi)
+
+    return x
 
 # ============================= MAIN =======================================================
 
@@ -166,7 +195,7 @@ if __name__ == "__main__":
     import matplotlib.pyplot as plt
     import genWaveProperties as gwp
     import outilsLecture as olec
-    from outilsDivers import trace
+    from outilsDivers import plot
     import sys
     
     # Sauvegarde des figures ou pas
@@ -193,15 +222,9 @@ if __name__ == "__main__":
     Ncomposantes = 1000
     dw = (wmax - wmin)/Ncomposantes #Incrément de fréquence
     w = np.arange(wmin,wmax+dw,dw)  #Génération du vecteur de fréquences
-    
-    spectreJonswap1 = jonswap(Hs, Tp, gamma, w) #Calcul du spectre de jonswap
-    spectreJonswap2  = jonswap(Hs, Tp, 3.3, w)  #Calcul du spectre de jonswap avec gamma = 3.3
-    spectreJonswap3 = jonswap(Hs, Tp, 6.0, w)   #Calcul du spectre de jonswap avec gamma = 6.0
 
-    amplitude1 = np.sqrt(2.0*spectreJonswap2*dw)   #Générer amplitudes
-    amplitude2 = np.sqrt(2.0*spectreJonswap1*dw)    #Générer amplitudes gamma = 3.3
-    amplitude3 = np.sqrt(2.0*spectreJonswap3*dw)    #Générer amplitudes gamma = 6.0
-    
+    H, phi, spectre = genJonswapParams(Hs, Tp, gamma, w)
+
     #==========================================================================
     #-------------------- Affichage des figures de spectres -------------------
     #==========================================================================    
@@ -210,8 +233,8 @@ if __name__ == "__main__":
     
     fig, axs = plt.subplots(figsize = (10,8), nrows = 2)
 
-    trace(
-        w, spectreJonswap1, 
+    plot(
+        w, spectre, 
         fig, axs[0],
         #label = fr"$\gamma = {gamma}$", 
         xmin = wmin, xmax = wmax, 
@@ -221,22 +244,27 @@ if __name__ == "__main__":
         tight_layout = False
     )
 
-    t = np.linspace(0.0,0.224*3600,1000)
-    A, phi, spectre = genJonswapParams(Hs, Tp, gamma, w)
+    t = np.linspace(0.0,0.224*3600,161281)
 
-    houleIrreg = 0.0
-    for i in range(len(A)):
-        houleIrreg += A[i]*np.sin(w[i]*t + phi[i])
+    #houleIrreg = 0.0
+    #for i in range(len(H)):
+    #    houleIrreg += 0.5*H[i]*np.sin(w[i]*t + phi[i])
 
-    trace(
-        t, houleIrreg,
+    x_batteur = np.zeros_like(t)
+    for i in range(len(H)):
+        x_batteur += deplacementBatteur(t,H[i],2.0*np.pi/w[i],1.38,phi[i])
+
+    plot(
+        t, x_batteur*1000,
         fig, axs[1],
         #title = r"Hs = {:.3f} m, Tp = {:.3f} s, $\omega_p$ = {:.3f}, $\gamma$ = {:.2f}".format(Hs,Tp,wp, gamma),
         xlabel = "t (s)",
-        ylabel = r"$\eta(t)$ (m)",
+        ylabel = r"$\eta(t)$ (mm)",
         xmin = t[0],
         xmax = t[-1]
     )
+
+    print(np.std(x_batteur), np.average(x_batteur))
 
     if savefigs:
         plt.savefig(f"jonswap_Tp{Tp}_Hs{Hs}_gamma{gamma}.png")

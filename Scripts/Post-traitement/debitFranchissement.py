@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 from paraview.simple import OpenFOAMReader
 import sys
 import numpy as np

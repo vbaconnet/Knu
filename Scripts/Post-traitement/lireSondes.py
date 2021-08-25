@@ -23,6 +23,7 @@ if __name__ == "__main__":
                                     default = "line_probes.csv",
                                     extension = "csv")
 
+    # normalisation des résultats pour avoir un signal centré en y=0
     normalize = olec.readOption(sys.argv, ["-normalize", "--normalize"])
 
     #==========================================================================

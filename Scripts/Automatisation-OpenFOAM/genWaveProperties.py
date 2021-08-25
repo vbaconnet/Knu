@@ -317,6 +317,8 @@ def readParams(filename = "jonswapDict"):
     return param_dict
 
 def help_message():
+    """Affiche le messge d'aide
+    """
     warning("L'aide détaillée est rédigée en en-tête du fichier")
     print("genWaveProperties. Vous pouvez consulter l'aide directement")
     print("en ouvrant le fichier situé dans\n")
@@ -355,7 +357,7 @@ if __name__  == "__main__":
     #----------------- Lecture des options d'éxecution ------------------------
     
     send_help = olec.readOption(sys.argv,
-                                ['-h','--help'])
+                                ['-h','--help','-help'])
 
     if send_help :
         help_message()

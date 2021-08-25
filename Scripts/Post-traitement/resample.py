@@ -22,7 +22,7 @@ if __name__ == "__main__":
                             extension = "csv")
 
     #Donne une fréquence d'échantillonnage pour rééchantillonner le signal
-    samplingFreq = olec.readValueOption(sys.argv, ["-samplingFreq", "--samplingFreq"],
+    samplingFreq = olec.readValueOption(sys.argv, ["-samplingfreq", "--samplingfreq"],
                                         default = 50.0,
                                         valueType = float)
 

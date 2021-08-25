@@ -12,93 +12,48 @@ https://github.com/victor13165/
 
 All rights reserved
 
-Que fait ce programme? (spectre.py)
-----------------------------------
+Description
+------------------------------------
 
 Reconstruit et affiche les spectres de densité de puissance à partir de mesures de sondes 
 
 
 Entrées/sorties
----------------
+----------------
 
-1. Les mesures des sondes doivent être données dans un fichier au format csv, par défaut
-"line_probes.csv" mais peut être modifié avec l'option -sondeFile
+* Les mesures des sondes doivent être données dans un fichier au format csv, par défaut
+  "line_probes.csv" mais peut être modifié avec l'option --sondeFile
 
-2. Si vous souhaitez comparer les spectres calculés avec un spectre théorique de JONSWAP,
-les paramètres Tp, Hs, Tmin, Tmax, gamma doivent être donnés dans un fichier par défaut 
-"jonswapDict", mais peut être modifié avec l'option -jonswapFile
+* Si vous souhaitez comparer les spectres calculés avec un spectre théorique de JONSWAP,
+  les paramètres Tp, Hs, Tmin, Tmax, gamma doivent être donnés dans un fichier par défaut 
+  "jonswapDict", mais peut être modifié avec l'option --jonswapFile
+  
 
-
-Ce programme peut s'éxecuter avec les options suivantes:
+Ce programme peut s'éxecuter avec les options suivantes
 --------------------------------------------------------
-    
-    - --savefigs : Permet de sauvegarder les graphiques générés
 
-    - --sondeFile chemin/vers/fichier.csv : chemin d'accès vers le fichier sondes au format csv 
-    
-    - --jonswapFile chemin/vers/fichier : chemin d'accès vers le fichier paramètres JONSWAP
-    
-    - --Npoints n : Nombre de points (longueur) de chaque segment de calcul par la méthode de 
-    Welch (https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.welch.html#r34b375daf612-1)
-    
 
-Exemples d'utilisation (à lancer dans un terminal)
---------------------------------------------------
+--savefigs                        Sauvegarder les graphiques générés
+--sondeFile chemin/fichier.csv    Chemin d'accès vers le répertoire d'écriture
+                                  du fichier waveProperties    
+--jonswapFile file                chemin d'accès vers le fichier contenant les 
+                                  paramètres de spectre JONSWAP                                 
+--Npoints n                       Nombre de points (longueur) de chaque segment 
+                                  de calcul par la méthode de Welch (https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.welch.html#r34b375daf612-1)
 
-python3 spectre.py 
+Dépendances
+------------
 
-    --> Lit fichier sondes line_probes.csv et jonswapDict
-
-python3 spectre.py --sondeFile sondes.csv 
-
-    --> lit le fichier sondes sondes.csv et jonswapDict
-
-python3 spectre.py --jonswapFile jonswapParams 
-
-    --> lit le fichier sondes line_probes.csv et paramètres jonswap dans jonswapParams
-
-Dépendances (les modules qu'il faut avoir installé au préalable)
-----------------------------------------------------------------
-
-    - numpy : s'installe avec 
-    
-                pip install numpy
-                
-    - scipy : s'installe avec
-        
-                pip install scipy
-        
-    - matplotlib : s'installe avec
-        
-                pip install matplotlib
-            
-    - pandas : s'installe avec
-        
-                pip install pandas
-    
-    - jonswap, genWaveProperties, outilsParaview, outilsLecture, outilsDivers : il faut avoir les 
-    fichiers respectifs dans le répertoire à partir duquel vous exécutez votre programme, 
-    ou mettre leur chemin d'accès dans la variable $PYTHONPATH. 
-    
-        export PYTHONPATH=/chemin/vers/dossier_jonswap:chemin/vers/dossier_outils:$PYTHONPATH
-    
-    S'installe en clonant le répertoire à partir de GitHub : 
-        
-                git clone https://github.com/victor13165/scripts-python-ACRI
+* numpy       
+* scipy
+* matplotlib
+* pandas
+* jonswap, genWaveProperties, outilsParaview, outilsLecture, outilsDivers
 
 """
 
 #------- ces modules sont indispensables -----
-import sys
-import numpy as np
-import jonswap as jswp 
-import genWaveProperties as gwp
-import os
-import outilsLecture as olec
-from scipy import signal
-import matplotlib.pyplot as plt
 import pandas as pd
-from datetime import datetime
 import outilsDivers as odiv
 #---------------------------------------------
 
@@ -135,6 +90,16 @@ def getSondeData(sondeFile, tmin, tmax):
 
 if __name__ == "__main__":
 
+    import sys
+    import numpy as np
+    import jonswap as jswp 
+    import genWaveProperties as gwp
+    import os
+    import outilsLecture as olec
+    from scipy import signal
+    import matplotlib.pyplot as plt
+    from datetime import datetime
+
     #==========================================================================
     #------------------- Lecture des options ----------------------------------
     #==========================================================================
@@ -159,6 +124,10 @@ if __name__ == "__main__":
                                    default = 1024,
                                    valueType = int)
     
+    scaling = olec.readValueOption(sys.argv, ["-scaling", "--scaling"],
+                                   default = 1.0,
+                                   valueType = float)
+
     print("---------------------------")
     print("Fin de lecture des options")
     
@@ -184,11 +153,12 @@ if __name__ == "__main__":
     print("\n{} sondes détectées".format(Nsondes))
 
     #On récupère le temps final
-    time = sondeData.index.values
-    tmax = time[-1]
+    #time = sondeData.index.values
+    #tmax = time[-1]
 
     # Calcul du pas de temps supposé constant
-    timestep = time[1] - time[0]
+    #timestep = time[1] - time[0]
+    timestep = 1.0/50.0
     print("Pas de temps :  {}".format(timestep))
 
     #==========================================================================
@@ -200,7 +170,7 @@ if __name__ == "__main__":
     print("Fréquence d'échantillonnage : {}".format(samplingFreq))
 
     #Récupère les valeurs des sondes
-    valeursSondes = sondeData.values
+    valeursSondes = sondeData.values*scaling
 
     #Calcul du premier spectre pour déterminer la taille de chaque spectre
     f, p0 = signal.welch(valeursSondes[:,0], samplingFreq, nperseg = Npoints)   
@@ -230,13 +200,13 @@ if __name__ == "__main__":
     for i in range(Nsondes):
         plt.plot(w, spectresSondes[:,i], label = "{}".format(sondeData.columns[i]))
     
-    
     plt.xlabel(r"$\omega$ (rad $s^{-1}$)", fontsize = 17)
     plt.ylabel(r"$S(\omega)$ ($m^2$ s)"     , fontsize = 17)
     plt.title("Spectre reconstruit par chaque sonde", fontsize = 17)
     plt.tick_params(axis = 'both', which = "major", labelsize = 15)
     plt.grid()
     
+
     # ------------------ Tracé avec le spectre idéal --------------------------
 
     # Si on trouve le fichier contenant les paramètres Tp, Hs, etc, on peut tracer
@@ -254,52 +224,18 @@ if __name__ == "__main__":
         wmin = 2.0*np.pi/Tmax   #Fréquence min
         wmax = 2.0*np.pi/Tmin   #Fréquence max
         plt.xlim((wmin,wmax))
-            
-        #Enlever le premier élement de w si il vaut 0
-        if abs(w[0]) < 1e-8:
-            w = w[1:]
+        
+        w_theo = np.linspace(wmin, wmax, 1000)
             
         #Calcul du spectre de JONSWAP
-        spectre = jswp.jonswap(Hs, Tp, gamma, w)
-        
+        spectre = jswp.jonswap(Hs, Tp, gamma, w_theo)
+        Hs_theo = 4.0 * np.sqrt(jswp.integre(spectre,w_theo[1]-w_theo[0]))
+        print("\nHs obtenu théoriquement :", Hs_theo)
+
         # Tracé du spectre de JONSWAP théorique
-        plt.plot(w, spectre, label = "Spectre théorique")
+        plt.plot(w_theo, spectre, label = "Spectre théorique")
         plt.legend(fontsize = 16)
         plt.tight_layout()
-
-        #==========================================================================
-        #---------------------- Calcul d'erreur quadratique -----------------------
-        #==========================================================================
-
-        #Calcul de l'erreur quadratique moyenne par rapport au spectre inlet
-        err_moy = 0.0
-        spectreRef = None
-        inletIdx = None
-
-        #Chercher si la sonde "inlet" existe
-        for idx, i in enumerate(sondeData.columns):
-            if i.split("-")[0].lower() == "inlet" \
-                or i.split("_")[0].lower() == "inlet":
-                spectreRef = spectresSondes[1:,idx]
-                inletIdx = idx
-                print("\n---- Erreur quadratique moyenne (RMSE) avec le spectre INLET -----")
-                break
-        
-        # Si on a pas trouvé inlet, on le fait avec le spectre théorique
-        if spectreRef is None:
-            spectreRef = spectre
-            print("\n---- Erreur quadratique moyenne (RMSE) avec le spectre idéal -----")
-        
-        # Calcul d'erreur pour chaque sonde par rapport au spectre de référence
-        NsondesMoyenne = 0
-        for i in range(Nsondes):
-            if i != inletIdx:
-                NsondesMoyenne += 1
-                err = odiv.RMSE(spectreRef,spectresSondes[1:,i])
-                err_moy += err 
-                print("{} : {}".format(sondeData.columns[i], err))
-        print("\nMoyenne : {}".format(err_moy/NsondesMoyenne))
-        print(  "+------------------------------------------------------------------")
         
         if savefigs:
             if os.path.exists("postProcessing"):
@@ -315,9 +251,37 @@ if __name__ == "__main__":
             plt.savefig(saveFilePath)  
             
         plt.show()
+
+        # ------------------- Calcul de Hs --------------------------------------
+        print("\n----------------- Calcul des Hs ---------------------------")
+        moyenne = 0.0
+        for i in range(Nsondes):
+            new_Hs = 4.0 * np.sqrt(jswp.integre(spectresSondes[:,i], w[1]-w[0]))
+            moyenne += new_Hs
+            err_rel = abs(Hs_theo - new_Hs) / Hs_theo
+            print("{} : {:.3} m ==> erreur {:.2f} %".format(
+                sondeData.columns[i],
+                new_Hs,
+                err_rel*100
+            ))
+        moyenne /= Nsondes
+        print("Moyenne : {:.3} m ==> erreur {:.2f} %".format(
+            moyenne,
+            abs(moyenne - Hs_theo) / Hs_theo * 100
+        ))
+
+        print("------------------------------------------------------------")
     
     # Si jonswapDict n'existe pas
     else:
+
+        # ------------------- Calcul de Hs --------------------------------------
+        print("\n ----------- Calcul des Hs --------------")
+        for i in range(Nsondes):
+            new_Hs = 4.0 * np.sqrt(jswp.integre(spectresSondes[:,i], w[1]-w[0]))
+            print(f"{sondeData.columns[i]} : {new_Hs} m")
+        print("-------------------------------------------")
+
         print("{} n'existe pas".format(jonswapFile))
         plt.legend(fontsize = 16)
         plt.tight_layout()
