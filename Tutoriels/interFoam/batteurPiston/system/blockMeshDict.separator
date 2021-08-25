@@ -1,0 +1,208 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| #calc========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2006                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version         2.0;
+    format          ascii;
+    class           dictionary;
+    object          blockMeshDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+scale   1;
+
+//Dimensions du canal
+xmin  0.0;
+xmax  26.0;
+xsep  4.0; //zone de séparation pour le premier bloc
+xsepI 4.01; //zone de séparation pour le deuxième bloc
+ymin -0.1;
+ymax  0.0;
+zmin  0.0;
+zmax  2.0;
+
+xLen #calc "$xmax - $xmin";
+zLen #calc "$zmax - $zmin";
+
+//Nombre de points dans la direction z (verticale)
+nz 40.0; //Doit être un double!
+
+//Taux de croissance du pas dx 
+xgrad 0.5;
+
+//Nombre de points dans le direction x du maillage constant
+nx #calc "($xmax - $xsep)/($zmax - $zmin) * $nz";
+
+//Pas de discrétisation dans la direction x
+dx #calc "($xmax - $xsep) / $nx";
+
+//Nombre de points dans la partie non constante
+nxGauche #calc "log( $xgrad ) / log( ($xsep - $dx / $xgrad) / ($xsep - $dx) ) + 1.0";
+
+//Ne pas oublier de reconvertir en int
+Ng #calc "std::floor($nxGauche)";
+Nz #calc "std::floor($nz)";
+Nx #calc "std::floor($nx)";
+
+//Affichage des dimensions
+#codeStream
+{
+
+    code
+    #{
+	Info << "\n" << "Nz : " << $Nz << "\nNx-sep : " << $Ng << "\nNx : " << $Nx << "\nxgrad : " << $xgrad << endl;
+	Info << "\n" << endl;
+	Info << "------------- Dimensions du canal numérique ------------" << endl;
+	Info << endl;
+	Info << "                 Longueur totale " << $xLen << " m"  << endl;
+	Info << "        " << $xsep << " m" << endl;
+	Info << "    <------->" << endl;
+	Info << "     ____________________________________________________  ___"  << endl;
+	Info << " B  |       |                                            |  |" << endl;
+	Info << " A  |       |                                            |  |" << endl;
+	Info << " T  |       |                                            |  |" << endl;
+	Info << " T  |       |                                            |  | " << $zLen << " m" << endl;
+	Info << " E  |       |                                            |  |" << endl;
+	Info << " U  |       |                                            |  |" << endl;	
+	Info << " R  |_______|____________________________________________| _|_" << endl;
+	Info << "\n------------------------------------------------------------\n" << endl;
+    #};
+}
+
+vertices
+(
+   ($xmin  $ymin  $zmin) //0
+   ($xsep  $ymin  $zmin) //1
+   ($xsep  $ymin  $zmax) //2
+   ($xmin  $ymin  $zmax) //3
+
+   ($xmin  $ymax  $zmin) //4
+   ($xsep  $ymax  $zmin) //5
+   ($xsep  $ymax  $zmax) //6
+   ($xmin  $ymax  $zmax) //7
+
+   ($xsepI  $ymin  $zmin) //8
+   ($xmax   $ymin  $zmin) //9
+   ($xmax   $ymin  $zmax) //10
+   ($xsepI  $ymin  $zmax) //11
+
+   ($xsepI  $ymax  $zmin) //12
+   ($xmax   $ymax  $zmin) //13
+   ($xmax   $ymax  $zmax) //14
+   ($xsepI  $ymax  $zmax) //15
+);
+
+blocks
+(
+    hex (0 1 5  4 3 2 6  7)       ( $Ng 1 $Nz) simpleGrading ($xgrad 1 1)
+    hex (8 9 13 12 11 10 14 15)   ( $Nx 1 $Nz) simpleGrading (  1    1 1)
+);
+
+edges
+(
+);
+
+boundary
+(
+    bottom1
+    {
+        type wall;
+        faces
+        (
+            (0 1 5 4)
+        );
+    }
+    bottom2
+    {
+        type wall;
+        faces
+        (
+            (8 9 13 12)
+        );
+    }
+    front
+    {
+        type empty;
+        faces
+        (
+            (0 1 2 3)
+            (8 9 10 11)
+        );
+    }
+    back
+    {
+        type empty;
+        faces
+        (
+            (4 5 6 7)
+            (12 13 14 15)
+        );
+    }
+    leftwall
+    {
+        type patch;
+        faces
+        (
+            (0 4 7 3)
+        );
+    }
+    rightwall
+    {
+        type patch;
+        faces
+        (
+            (9 10 14 13)
+        );
+    }
+    top1
+    {
+        type wall;
+        faces
+        (
+            (3 2 6 7)
+        );
+    }
+
+    top2
+    {
+        type wall;
+        faces
+        (
+            (10 11 15 14)
+        );
+    }
+
+    leftInterface
+    {
+        type cyclic;
+	neighbourPatch rightInterface;
+        faces
+        (
+            (1 2 6 5)
+        );
+    }
+
+    rightInterface
+    {
+        type cyclic;
+        neighbourPatch leftInterface;
+        faces
+        (
+            (8 11 15 12)
+        );
+    }
+
+
+);
+
+mergePatchPairs
+(
+   //(leftInterface rightInterface)
+);
+
+// ************************************************************************* //

@@ -1,0 +1,407 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="fr" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>jonswap &mdash; Documentation Outils Canal Numérique 0.0.1</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/translations.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Recherche" href="../search.html" />
+    <link rel="next" title="Exportation de mesures de sondes : lireSondes.py" href="lireSondes.html" />
+    <link rel="prev" title="genWaveProperties" href="genWaveProperties.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Outils Canal Numérique
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Rechercher docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../modules.html">Documentation des scripts</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../modules.html#automatisation-des-calculs-openfoam">Automatisation des calculs OpenFOAM</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../modules.html#generation-de-houle">Génération de houle</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="genWaveProperties.html">genWaveProperties</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">jonswap</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#informations">Informations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#description">Description</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#utilisation">Utilisation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#options-d-execution">Options d’exécution</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dependances">Dépendances</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fonctions">Fonctions</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../modules.html#sondes-et-reconstruction-de-spectre">Sondes et reconstruction de spectre</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules.html#lancement-de-calculs-en-arborescence">Lancement de calculs en arborescence</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules.html#outils-de-manipulation-lecture-et-calcul">Outils de manipulation, lecture et calcul</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../support.html">Support</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Outils Canal Numérique</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../modules.html">Documentation des scripts</a> &raquo;</li>
+        
+      <li>jonswap</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/fonctions/jonswap.rst.txt" rel="nofollow"> Afficher la source de la page</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-jonswap">
+<span id="jonswap"></span><h1>jonswap<a class="headerlink" href="#module-jonswap" title="Lien permanent vers ce titre">¶</a></h1>
+<div class="section" id="informations">
+<h2>Informations<a class="headerlink" href="#informations" title="Lien permanent vers ce titre">¶</a></h2>
+<blockquote>
+<div><ul class="simple">
+<li><p>Auteur: Victor Baconnet</p></li>
+<li><p>Date de dernière modification: 31 mai 2021</p></li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="description">
+<h2>Description<a class="headerlink" href="#description" title="Lien permanent vers ce titre">¶</a></h2>
+<p>Fonctions pour générer un spectre JONSWAP et les coefficients d’amplitude, périodes,
+et déphasages pour générer le signal de houle irrégulière.</p>
+</div>
+<div class="section" id="utilisation">
+<h2>Utilisation<a class="headerlink" href="#utilisation" title="Lien permanent vers ce titre">¶</a></h2>
+<p>Les fonctions contenues dans ce fichier sont à réutiliser dans d’autres fichiers 
+pour générer de la houle irrégulière, comme dans <code class="docutils literal notranslate"><span class="pre">genWaveProperties</span></code>.</p>
+<p>L’éxecution de ce fichier affichera 2 graphiques:</p>
+<ul class="simple">
+<li><p>Spectres de JONSWAP pour différents coefficients d’élancement</p></li>
+<li><p>Exemple de signal de houle irrégulière</p></li>
+</ul>
+<p>Les coefficients pour le spectre JONSWAP peuvent être spécifiés dans un fichier
+nommé « jonswapDict » formaté comme suit:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Tp</span> <span class="mf">1.78</span>
+<span class="n">Tmin</span> <span class="mf">1.0</span>
+<span class="n">Tmax</span> <span class="mf">3.0</span>
+<span class="n">Hs</span> <span class="mf">1.5</span>
+<span class="n">gamma</span> <span class="mf">3.2</span>
+<span class="n">scale</span> <span class="p">(</span><span class="n">ou</span> <span class="n">échelle</span><span class="p">)</span> <span class="mf">25.0</span> <span class="o">//</span><span class="n">optionnel</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="options-d-execution">
+<h2>Options d’exécution<a class="headerlink" href="#options-d-execution" title="Lien permanent vers ce titre">¶</a></h2>
+<dl class="option-list">
+<dt><kbd><span class="option">--savefigs</span></kbd></dt>
+<dd><p>sauvegarder les graphiques générés dans le dossier d’éxection</p>
+</dd>
+</dl>
+</div>
+<div class="section" id="dependances">
+<h2>Dépendances<a class="headerlink" href="#dependances" title="Lien permanent vers ce titre">¶</a></h2>
+<ul class="simple">
+<li><p>Pour l’utilisation des fonctions uniquement: <code class="docutils literal notranslate"><span class="pre">numpy</span></code></p></li>
+<li><p>Pour exécuter le fichier : <code class="docutils literal notranslate"><span class="pre">numpy</span></code>, <code class="docutils literal notranslate"><span class="pre">matplotlib</span></code>, <code class="docutils literal notranslate"><span class="pre">sys</span></code>, 
+<code class="docutils literal notranslate"><span class="pre">genWaveProperties</span></code>, <code class="docutils literal notranslate"><span class="pre">outilsLecture</span></code>, <code class="docutils literal notranslate"><span class="pre">onde</span></code></p></li>
+</ul>
+</div>
+<div class="section" id="fonctions">
+<h2>Fonctions<a class="headerlink" href="#fonctions" title="Lien permanent vers ce titre">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="jonswap.deplacementBatteur">
+<span class="sig-prename descclassname"><span class="pre">jonswap.</span></span><span class="sig-name descname"><span class="pre">deplacementBatteur</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">H</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">T</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phi</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jonswap.deplacementBatteur" title="Lien permanent vers cette définition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="jonswap.dispersion">
+<span class="sig-prename descclassname"><span class="pre">jonswap.</span></span><span class="sig-name descname"><span class="pre">dispersion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">T</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jonswap.dispersion" title="Lien permanent vers cette définition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="jonswap.genJonswapParams">
+<span class="sig-prename descclassname"><span class="pre">jonswap.</span></span><span class="sig-name descname"><span class="pre">genJonswapParams</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Hs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Tp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gamma</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jonswap.genJonswapParams" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Calcule les amplitudes et déphasages pour générer une onde irrégulière</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Hs</strong> (<code class="docutils literal notranslate"><span class="pre">float</span></code>) – Hauteur caractéristique</p></li>
+<li><p><strong>Tp</strong> (<code class="docutils literal notranslate"><span class="pre">float</span></code>) – Période pic</p></li>
+<li><p><strong>gamma</strong> (<code class="docutils literal notranslate"><span class="pre">float</span></code>) – Coefficient d’élancement</p></li>
+<li><p><strong>w</strong> (<code class="docutils literal notranslate"><span class="pre">float</span></code> ou <code class="docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>) – Fréquence en rad/s</p></li>
+</ul>
+</dd>
+<dt class="field-even">Renvoie</dt>
+<dd class="field-even"><p>Amplitudes, déphasages (aléatoires entre 0 et 2pi) et Spectre Jonswap</p>
+</dd>
+<dt class="field-odd">Type renvoyé</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">float</span></code> ou <code class="docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="jonswap.integre">
+<span class="sig-prename descclassname"><span class="pre">jonswap.</span></span><span class="sig-name descname"><span class="pre">integre</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dx</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jonswap.integre" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Intègre un vecteur selon la méthode des trapèzes</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>vec</strong> (<code class="docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> ou itérable) – Vecteur de valeurs à intégrer</p></li>
+<li><p><strong>dx</strong> (<code class="docutils literal notranslate"><span class="pre">float</span></code>) – Pas de discrétisation</p></li>
+</ul>
+</dd>
+<dt class="field-even">Renvoie</dt>
+<dd class="field-even"><p>res : scalaire correspondant à l’intégrale du vecteur</p>
+</dd>
+<dt class="field-odd">Type renvoyé</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">float</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="jonswap.jonswap">
+<span class="sig-prename descclassname"><span class="pre">jonswap.</span></span><span class="sig-name descname"><span class="pre">jonswap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Hs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Tp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gamma</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jonswap.jonswap" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Renvoie une densité spectrale de puissance selon le modèle JONSWAP, avec </dt><dd><p>le calcul de la constante a</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Hs</strong> (<code class="docutils literal notranslate"><span class="pre">float</span></code>) – Hauteur caractéristique</p></li>
+<li><p><strong>Tp</strong> (<code class="docutils literal notranslate"><span class="pre">float</span></code>) – Période pic</p></li>
+<li><p><strong>gamma</strong> (<code class="docutils literal notranslate"><span class="pre">float</span></code>) – Coefficient d’élancement</p></li>
+<li><p><strong>w</strong> (<code class="docutils literal notranslate"><span class="pre">float</span></code> ou <code class="docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>) – Fréquence en rad/s</p></li>
+</ul>
+</dd>
+<dt class="field-even">Renvoie</dt>
+<dd class="field-even"><p>Densité spectrale de puissance selon le modèle JONSWAP</p>
+</dd>
+<dt class="field-odd">Type renvoyé</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">float</span></code> ou <code class="docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="jonswap.sigma">
+<span class="sig-prename descclassname"><span class="pre">jonswap.</span></span><span class="sig-name descname"><span class="pre">sigma</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wp</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jonswap.sigma" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Calcule le coefficient sigma = 0.07 si w &lt; wp et 0.09 si w &gt; wp, à partir d’une combinaison de
+fonctions de Heaviside. Cela permet de ne pas écrire avec des « if » pour gagner du temps si on utilise
+un vecteur w très grand. Sinon aucune utilité :)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>w</strong> (<code class="docutils literal notranslate"><span class="pre">float</span></code> ou <code class="docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>) – Valeur ou vecteur de fréquences en rad/s</p></li>
+<li><p><strong>wp</strong> (<code class="docutils literal notranslate"><span class="pre">float</span></code>) – fréquence pic en rad/s</p></li>
+</ul>
+</dd>
+<dt class="field-even">Renvoie</dt>
+<dd class="field-even"><p>0.07 si w &lt; wp, 0.09 sinon</p>
+</dd>
+<dt class="field-odd">Type renvoyé</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">float</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="jonswap.spectreJonswap">
+<span class="sig-prename descclassname"><span class="pre">jonswap.</span></span><span class="sig-name descname"><span class="pre">spectreJonswap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Hs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Tp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gamma</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jonswap.spectreJonswap" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Calcule le spectre de Jonswap avec la formule donnée dans le manuel du canal à houle</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>a</strong> (<code class="docutils literal notranslate"><span class="pre">float</span></code>) – le coefficient qui doit faire l’objet de l’optimisation</p></li>
+<li><p><strong>Hs</strong> (<code class="docutils literal notranslate"><span class="pre">float</span></code>) – hauteur caractéristique</p></li>
+<li><p><strong>Tp</strong> (<code class="docutils literal notranslate"><span class="pre">float</span></code>) – période pic</p></li>
+<li><p><strong>gamma</strong> (<code class="docutils literal notranslate"><span class="pre">float</span></code>) – Coefficient d’élancement</p></li>
+<li><p><strong>w</strong> (<code class="docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>) – vecteur de fréquences en rad/s</p></li>
+</ul>
+</dd>
+<dt class="field-even">Renvoie</dt>
+<dd class="field-even"><p>vecteur densité spectrale de puissance de la même taille que w</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="lireSondes.html" class="btn btn-neutral float-right" title="Exportation de mesures de sondes : lireSondes.py" accesskey="n" rel="next">Suivant <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="genWaveProperties.html" class="btn btn-neutral float-left" title="genWaveProperties" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Précédent</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Victor Baconnet.
+
+    </p>
+  </div>
+    
+    
+    
+    Compilé avec <a href="https://www.sphinx-doc.org/">Sphinx</a> en utilisant un
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">thème</a>
+    
+    fourni par <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,145 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2006                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      controlDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+application     interFoam;
+
+startFrom       latestTime;
+
+startTime       0;
+
+stopAt          endTime;
+
+endTime         20;
+
+deltaT          0.001;
+
+writeControl    adjustable;
+
+writeInterval   0.1;
+
+purgeWrite      0;
+
+writeFormat     ascii;
+
+writePrecision  7;
+
+writeCompression off;
+
+timeFormat      general;
+
+timePrecision   6;
+
+runTimeModifiable yes;
+
+adjustTimeStep  yes;
+
+maxCo           0.5;
+
+maxAlphaCo      0.5;
+
+maxDeltaT       1.0;
+
+
+// ************************************************************************* //
+
+// Indiquer ici les sondes et leurs coordonnées (position x en m)
+sonde1	    S1-5.0;
+x1	    5.0;
+sonde2      S2-10.0;
+x2          10.0;
+sonde3      S3-17.0;
+x3          17.0;
+sonde4      S4-24.0;
+x4          24.0;
+sonde5      inlet;
+x5          0.0;
+
+// Coordonnées des points de mesure
+ystart      0.0;
+yend	    0.0;
+zstart      0.0;
+zend        2.0;
+N           201; // Nombre de points
+
+functions
+{
+
+    line
+    {
+        type            sets;
+        libs            ("libsampling.so");
+        enabled         false; // Mettre à false pour désactiver les sondes
+ 	
+	// Contrôle d'écriture : 
+	//  - timeStep   : pas de temps
+	//  - adjustable : temps (si pas de temps adaptatif)
+	//  - runTime    : temps (si pas de temps constant)
+        writeControl     timeStep;
+        writeInterval    2;
+
+        fixedLocations false;
+        interpolationScheme cellPoint;
+        setFormat       raw;
+        sets
+        (
+            $sonde1
+            {
+                type uniform;
+                axis distance;
+                start   ( $x1 $ystart $zstart );
+                end     ( $x1 $yend   $zend   );
+                nPoints $N;
+            }
+            $sonde2
+            {
+                type uniform;
+                axis distance;
+                start   ( $x2 $ystart $zstart );
+                end     ( $x2 $yend   $zend   );
+                nPoints $N;
+            }
+	    $sonde3
+            {
+                type uniform;
+                axis distance;
+          	start   ( $x3 $ystart $zstart );
+                end     ( $x3 $yend   $zend   );
+                nPoints $N;
+            }
+	    $sonde4
+            {
+                type uniform;
+                axis distance;
+                start   ( $x4 $ystart $zstart );
+                end     ( $x4 $yend   $zend   );
+                nPoints $N;
+            }
+            $sonde5
+            {
+                type uniform;
+                axis distance;
+                start   ( $x5 $ystart $zstart );
+                end     ( $x5 $yend   $zend   );
+                nPoints $N;
+            }
+        );
+        fields (
+            alpha.water 
+        );
+    }
+}
+

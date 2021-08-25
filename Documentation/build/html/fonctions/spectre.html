@@ -1,0 +1,306 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="fr" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Reconstruction de spectre : spectre.py &mdash; Documentation Outils Canal Numérique 0.0.1</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/translations.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Recherche" href="../search.html" />
+    <link rel="next" title="outilsDivers module" href="outilsDivers.html" />
+    <link rel="prev" title="Rééchantillonnage des données de sondes : resample.py" href="resample.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Outils Canal Numérique
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Rechercher docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../modules.html">Documentation des scripts</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../modules.html#automatisation-des-calculs-openfoam">Automatisation des calculs OpenFOAM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules.html#generation-de-houle">Génération de houle</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../modules.html#sondes-et-reconstruction-de-spectre">Sondes et reconstruction de spectre</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="lireSondes.html">Exportation de mesures de sondes : lireSondes.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="resample.html">Rééchantillonnage des données de sondes : resample.py</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Reconstruction de spectre : spectre.py</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#description">Description</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#entrees-sorties">Entrées/sorties</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ce-programme-peut-s-executer-avec-les-options-suivantes">Ce programme peut s’éxecuter avec les options suivantes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dependances">Dépendances</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../modules.html#lancement-de-calculs-en-arborescence">Lancement de calculs en arborescence</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules.html#outils-de-manipulation-lecture-et-calcul">Outils de manipulation, lecture et calcul</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../support.html">Support</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Outils Canal Numérique</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../modules.html">Documentation des scripts</a> &raquo;</li>
+        
+      <li>Reconstruction de spectre : spectre.py</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/fonctions/spectre.rst.txt" rel="nofollow"> Afficher la source de la page</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-spectre">
+<span id="reconstruction-de-spectre-spectre-py"></span><h1>Reconstruction de spectre : spectre.py<a class="headerlink" href="#module-spectre" title="Lien permanent vers ce titre">¶</a></h1>
+<p>Created on Tue Mar 30 14:12:22 2021</p>
+<p>&#64;author: Victor Baconnet</p>
+<p>&#64;contact:<a class="reference external" href="mailto:victor&#46;baconnet&#37;&#52;&#48;acri-in&#46;fr">victor<span>&#46;</span>baconnet<span>&#64;</span>acri-in<span>&#46;</span>fr</a></p>
+<p><a class="reference external" href="https://github.com/victor13165/">https://github.com/victor13165/</a></p>
+<p>All rights reserved</p>
+<div class="section" id="description">
+<h2>Description<a class="headerlink" href="#description" title="Lien permanent vers ce titre">¶</a></h2>
+<p>Reconstruit et affiche les spectres de densité de puissance à partir de mesures de sondes</p>
+</div>
+<div class="section" id="entrees-sorties">
+<h2>Entrées/sorties<a class="headerlink" href="#entrees-sorties" title="Lien permanent vers ce titre">¶</a></h2>
+<ul class="simple">
+<li><p>Les mesures des sondes doivent être données dans un fichier au format csv, par défaut
+« line_probes.csv » mais peut être modifié avec l’option –sondeFile</p></li>
+<li><p>Si vous souhaitez comparer les spectres calculés avec un spectre théorique de JONSWAP,
+les paramètres Tp, Hs, Tmin, Tmax, gamma doivent être donnés dans un fichier par défaut 
+« jonswapDict », mais peut être modifié avec l’option –jonswapFile</p></li>
+</ul>
+</div>
+<div class="section" id="ce-programme-peut-s-executer-avec-les-options-suivantes">
+<h2>Ce programme peut s’éxecuter avec les options suivantes<a class="headerlink" href="#ce-programme-peut-s-executer-avec-les-options-suivantes" title="Lien permanent vers ce titre">¶</a></h2>
+<dl class="option-list">
+<dt><kbd><span class="option">--savefigs</span></kbd></dt>
+<dd><p>Sauvegarder les graphiques générés</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>–sondeFile chemin/fichier.csv    Chemin d’accès vers le répertoire d’écriture</dt><dd><p>du fichier waveProperties</p>
+</dd>
+</dl>
+<dl class="option-list">
+<dt><kbd><span class="option">--jonswapFile <var>file</var></span></kbd></dt>
+<dd><p>chemin d’accès vers le fichier contenant les 
+paramètres de spectre JONSWAP</p>
+</dd>
+<dt><kbd><span class="option">--Npoints <var>n</var></span></kbd></dt>
+<dd><p>Nombre de points (longueur) de chaque segment 
+de calcul par la méthode de Welch (<a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.welch.html#r34b375daf612-1">https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.welch.html#r34b375daf612-1</a>)</p>
+</dd>
+</dl>
+</div>
+<div class="section" id="dependances">
+<h2>Dépendances<a class="headerlink" href="#dependances" title="Lien permanent vers ce titre">¶</a></h2>
+<ul class="simple">
+<li><p>numpy</p></li>
+<li><p>scipy</p></li>
+<li><p>matplotlib</p></li>
+<li><p>pandas</p></li>
+<li><p>jonswap, genWaveProperties, outilsParaview, outilsLecture, outilsDivers</p></li>
+</ul>
+<dl class="py function">
+<dt class="sig sig-object py" id="spectre.getSondeData">
+<span class="sig-prename descclassname"><span class="pre">spectre.</span></span><span class="sig-name descname"><span class="pre">getSondeData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sondeFile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tmin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tmax</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spectre.getSondeData" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Lecture des mesures de sondes dans le fichier sondeFile (le plus souvent sondes.csv)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sondeFile</strong> (<em>str</em>) – Nom du fichier .csv où il y a le résultat des sondes</p></li>
+<li><p><strong>tmin</strong> (<em>float</em>) – Temps minimal</p></li>
+<li><p><strong>tmax</strong> (<em>float</em>) – Temps maximal</p></li>
+</ul>
+</dd>
+<dt class="field-even">Renvoie</dt>
+<dd class="field-even"><p>DataFrame avec les valeurs et les noms des sondes</p>
+</dd>
+<dt class="field-odd">Type renvoyé</dt>
+<dd class="field-odd"><p>pandas.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="outilsDivers.html" class="btn btn-neutral float-right" title="outilsDivers module" accesskey="n" rel="next">Suivant <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="resample.html" class="btn btn-neutral float-left" title="Rééchantillonnage des données de sondes : resample.py" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Précédent</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Victor Baconnet.
+
+    </p>
+  </div>
+    
+    
+    
+    Compilé avec <a href="https://www.sphinx-doc.org/">Sphinx</a> en utilisant un
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">thème</a>
+    
+    fourni par <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
