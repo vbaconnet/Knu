@@ -1,0 +1,48 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2012                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      topoSetDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+actions
+(
+    // Choisir toutes les cellules 
+    {
+        name    box;
+        type    cellSet;
+        action  new;
+        source  regionToCell;
+        insidePoints ((-0.014 0.006 0.005));
+    }
+
+    // Choisir les cellules dans la boîte 
+    {
+        name    box;
+        type    cellSet;
+        action  subset;
+        source  boxToCell;
+        boxes
+        (
+            (-0.005 0.015 -100)(0.005 0.025 100)
+        );
+    }
+
+    // Inverser la sélection
+    {
+        name    box;
+        type    cellSet;
+        action  invert;
+    }
+);
+
+// ************************************************************************* //

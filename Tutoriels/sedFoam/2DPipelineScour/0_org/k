@@ -1,0 +1,94 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2.4.0                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volScalarField;
+    location    "0";
+    object      k;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+dimensions      [0 2 -2 0 0 0 0];
+
+internalField     uniform 1e-6;
+
+boundaryField
+{
+    cylinder
+    {
+	type		fixedValue;
+	value		uniform 0.000000001;
+    }
+    inlet
+    {
+        type            codedFixedValue;
+        value           uniform 1e-6;
+        
+        name    inlet;
+
+        codeInclude
+        #{
+            #include "fvCFD.H"
+        #};
+
+        codeOptions
+        #{
+            -I$(LIB_SRC)/finiteVolume/lnInclude \
+            -I$(LIB_SRC)/meshTools/lnInclude
+        #};
+        codeLibs
+        #{
+            -lfiniteVolume \
+            -lmeshTools
+        #};
+        code
+        #{
+            const fvPatch& boundaryPatch = patch();
+            const vectorField& Cf = boundaryPatch.Cf();
+            scalarField& field = *this;
+            scalar t = this->db().time().value();
+            forAll(Cf, faceI)
+            {
+                 if (t <= 4.0)
+                 {
+                     field[faceI] = (t/4.0)*(t/4.0)*8.7e-5;
+                 }
+                 else
+                 {
+                     field[faceI] = 8.7e-5;
+                 }
+            }
+        #};      
+    }
+    outlet
+    {
+        type            zeroGradient;
+    }
+    lateralfront
+    {
+        type            empty;
+    }
+    lateralback
+    {
+        type            empty;
+    }
+    bottom
+    {
+        type            kqRWallFunction;
+        value           uniform 2.5e-3;
+    }
+    surface
+    {
+        type            symmetryPlane;
+    }
+}
+
+
+// ************************************************************************* //

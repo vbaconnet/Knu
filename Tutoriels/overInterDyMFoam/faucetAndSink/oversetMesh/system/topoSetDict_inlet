@@ -1,0 +1,68 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2012                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      topoSetDict;
+}
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+actions
+(
+
+    // Sélectionner les faces de "hole"
+    {
+        name    boundaryFaces;
+        type    faceSet;
+        action  new;
+        source  patchToFace;
+        patch   hole;
+    }
+
+    // Reprendre les faces sélectionneézs
+    {
+        name    inletFaces;
+        type    faceSet;
+        action  new;
+        source  faceToFace;
+        set     boundaryFaces;
+    }
+
+    // Sélectionner la face inlet (normale +y)
+    {
+        name    inletFaces;
+        type    faceSet;
+        action  subset;
+        source  normalToFace;
+        normal  (0 1 0);
+        cos     0.3;    // Tolerance (max cos of angle)
+    }
+
+    // Reprendre toutes les faces
+    {
+        name    faucetFaces;
+        type    faceSet;
+        action  new;
+        source  faceToFace;
+        set     boundaryFaces;
+    }
+
+    // Soustraire la face inlet
+    {
+        name    faucetFaces;
+        type    faceSet;
+        action  subtract;
+        source  faceToFace;
+        set     inletFaces;
+    }
+);
+
+// ************************************************************************* //

@@ -1,0 +1,21 @@
+#!/bin/sh
+cd "${0%/*}" || exit                                # Run from this directory
+. ${WM_PROJECT_DIR:?}/bin/tools/RunFunctions        # Tutorial run functions
+#------------------------------------------------------------------------------
+
+# Créer le maillage
+Allmesh
+
+# Select center
+runApplication -s 1 topoSet -dict system/topoSetDict_hole
+
+# Cut out center
+runApplication subsetMesh box -patch hole -overwrite
+
+# Select inlet
+runApplication -s 2 topoSet -dict system/topoSetDict_inlet
+
+# Create inlet boundary and faucet wall
+runApplication createPatch -overwrite
+
+#------------------------------------------------------------------------------

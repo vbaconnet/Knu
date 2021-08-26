@@ -1,0 +1,108 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2.4.0                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volScalarField;
+    location    "0";
+    object      omega;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+dimensions      [0 0 -1 0 0 0 0];
+
+internalField   uniform 10.; 
+
+boundaryField
+{
+    cylinder
+    {
+        type            omegaWallFunction;
+        value           uniform 10.;
+        kn              0.536e-5;
+    }
+    inlet
+    {
+        type            codedFixedValue;
+        value           uniform 10;
+        
+        name    inlet;
+
+        codeInclude
+        #{
+            #include "fvCFD.H"
+        #};
+
+        codeOptions
+        #{
+            -I$(LIB_SRC)/finiteVolume/lnInclude \
+            -I$(LIB_SRC)/meshTools/lnInclude
+        #};
+        codeLibs
+        #{
+            -lfiniteVolume \
+            -lmeshTools
+        #};
+        code
+        #{
+            const fvPatch& boundaryPatch = patch();
+            const vectorField& Cf = boundaryPatch.Cf();
+            scalarField& field = *this;
+            scalar t = this->db().time().value(); 
+            forAll(Cf, faceI)
+            {
+                if (Cf[faceI].y() >= -0.024)
+                {
+                    if (t <= 4.0)
+                    {   
+                        field[faceI] = 100
+                                       *pow((t/4.0)*(t/4.0)*8.7e-5, 0.5)
+                                       /(0.09*0.1*0.23);
+                    }
+                    else
+                    {
+                        field[faceI] = 100*pow(8.7e-5, 0.5)/(0.09*0.1*0.23);
+                    }
+                 }
+                 else
+                 {
+                     field[faceI] = 1000;
+                 }
+            }
+        #};
+    }
+    outlet
+    {
+        type            zeroGradient;
+    }
+
+    lateralfront
+    {
+        type            empty;
+    }
+    lateralback
+    {
+        type            empty;
+    }
+    surface
+    {
+        type            symmetryPlane;
+    }
+    bottom
+    {
+        type            zeroGradient;
+    }
+    defaultFaces
+    {
+        type            empty;
+    }
+}
+
+
+// ************************************************************************* //

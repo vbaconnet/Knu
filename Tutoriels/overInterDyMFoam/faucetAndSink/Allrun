@@ -1,0 +1,19 @@
+#!/bin/sh
+cd "${0%/*}" || exit                                # Run from this directory
+. ${WM_PROJECT_DIR:?}/bin/tools/RunFunctions        # Tutorial run functions
+#------------------------------------------------------------------------------
+
+cd oversetMesh
+
+./Allrun.pre
+
+cd ../backgroundMesh
+
+./Allrun.pre
+
+# Parallel
+Allrun -p &
+
+cd ..
+
+#------------------------------------------------------------------------------

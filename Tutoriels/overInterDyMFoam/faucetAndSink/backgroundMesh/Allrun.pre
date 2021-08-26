@@ -1,0 +1,21 @@
+#!/bin/sh
+cd "${0%/*}" || exit                                # Run from this directory
+. ${WM_PROJECT_DIR:?}/bin/tools/RunFunctions        # Tutorial run functions
+#------------------------------------------------------------------------------
+
+# Run blockMesh
+Allmesh
+
+# Merge overset and background meshes
+runApplication mergeMeshes . ../oversetMesh -overwrite
+
+# Select zones as sets for setFields
+runApplication -s 1 topoSet -dict system/topoSetDict_zones
+
+# Create 0 folder
+restore0Dir
+
+# Use cellSets to write zoneID and optionally fill the geometry with water
+runApplication setFields
+
+#------------------------------------------------------------------------------

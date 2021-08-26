@@ -1,0 +1,19 @@
+#!/bin/bash
+
+. ${WM_PROJECT_DIR:?}/bin/tools/RunFunctions  #Charger les scripts OpenFOAM
+
+# Lancer le maillage
+Allmesh -ec
+
+# Générer la houle irrégulière
+genHouleIrreguliere
+
+# Lancer le calcul. L'option -s lance setFields
+Allrun -st &
+
+# Attendre 5 secondes avant de lancer le monitoring
+sleep 5
+
+# Suivre la progression du calcul et lancer la commande
+# ls lorsque le calcul est terminé
+AllpostProcess ls

@@ -1,0 +1,106 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2012                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volVectorField;
+    object      U;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+dimensions      [0 1 -1 0 0 0 0];
+
+internalField   uniform (0 0 0);
+
+boundaryField
+{
+    sink
+    {
+        type            uniformFixedValue;
+        uniformValue    (0 0 0);
+    }
+
+    faucet
+    {
+        type            movingWallVelocity;
+        value           uniform (0 0 0);
+    }
+
+    outlet
+    {
+        type            pressureInletOutletVelocity;
+        value			uniform (0 0 0);
+    }
+
+	inlet1
+    {
+             name    movingInlet;
+        type    codedFixedValue;
+        codeInclude
+        #{
+            #include "fvCFD.H";
+        #};
+
+        codeOptions
+        #{
+            -I$(LIB_SRC)/finiteVolume/lnInclude \
+            -I$(LIB_SRC)/meshTools/lnInclude
+        #};
+
+        codeLibs
+        #{
+            -lmeshTools \
+            -lfiniteVolume
+        #};
+
+        code
+        #{
+            const vector vel = vector(0,-0.5,0);
+
+        const fvMesh& mesh = refCast<const fvMesh>(this->db());
+        const fvPatch& p = patch();
+        const polyPatch& pp = p.patch();
+        const pointField& oldPoints = mesh.oldPoints();
+
+        vectorField oldFc(pp.size());
+
+        forAll(oldFc, i)
+        {
+        oldFc[i] = pp[i].centre(oldPoints);
+        }
+
+        const scalar deltaT = mesh.time().deltaTValue();
+
+        const vectorField Up((pp.faceCentres() - oldFc)/deltaT);
+
+        const volVectorField& U =
+        static_cast<const volVectorField&>(internalField());
+
+        scalarField phip
+        (
+        p.patchField<surfaceScalarField, scalar>(fvc::meshPhi(U))
+        );
+
+        const vectorField n(p.nf());
+        const scalarField& magSf = p.magSf();
+        tmp<scalarField> Un = phip/(magSf + VSMALL);
+
+            operator==(vel + Up );
+        #};
+        value   uniform (0 0 0);
+
+    }
+
+    overset1
+    {
+        type            overset;
+    }
+}
+
+// ************************************************************************* //

@@ -1,0 +1,15 @@
+#!/bin/sh
+cd "${0%/*}" || exit                                # Run from this directory
+. ${WM_PROJECT_DIR:?}/bin/tools/RunFunctions        # Tutorial run functions
+#------------------------------------------------------------------------------
+
+# Maillage
+Allmesh
+
+# Combiner le maillage dynamique et le maillage statique
+runApplication mergeMeshes . ../floatingBody -overwrite
+
+# Lancer le calcul, avec topoSet et setFields
+Allrun -ts &
+
+#------------------------------------------------------------------------------

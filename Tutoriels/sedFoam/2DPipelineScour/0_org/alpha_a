@@ -1,0 +1,116 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2.4.0                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volScalarField;
+    location    "0";
+    object      alpha_a;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+dimensions      [0 0 0 0 0 0 0];
+
+internalField   #codeStream
+{
+    codeInclude
+    #{
+        #include "fvCFD.H"
+    #};
+
+    codeOptions
+    #{
+        -I$(LIB_SRC)/finiteVolume/lnInclude \
+        -I$(LIB_SRC)/meshTools/lnInclude
+    #};
+    codeLibs
+    #{
+        -lfiniteVolume \
+        -lmeshTools
+    #};
+    code
+    #{
+        const IOdictionary& d = static_cast<const IOdictionary&>(dict);
+        const fvMesh& mesh = refCast<const fvMesh>(d.db());
+        scalarField alpha_a(mesh.nCells(), 0);
+        forAll(mesh.C(), i)
+        {
+           scalar y = mesh.C()[i].y();
+           alpha_a[i] = 0.6128*0.5*(1.0+tanh((-0.026-y)*2000))+1e-100;
+        }
+        alpha_a.writeEntry("", os);
+    #};
+
+};
+
+boundaryField
+{
+    cylinder
+    {
+	type            zeroGradient;
+    }
+    inlet
+    {
+        type            codedFixedValue;
+        value           uniform 0;
+        
+        name    inlet;
+
+        codeInclude
+        #{
+            #include "fvCFD.H"
+        #};
+
+        codeOptions
+        #{
+            -I$(LIB_SRC)/finiteVolume/lnInclude \
+            -I$(LIB_SRC)/meshTools/lnInclude
+        #};
+        codeLibs
+        #{
+            -lfiniteVolume \
+            -lmeshTools
+        #};
+        code
+        #{
+            const fvPatch& boundaryPatch = patch();
+            const vectorField& Cf = boundaryPatch.Cf();
+            scalarField& field = *this; 
+            forAll(Cf, faceI)
+            {
+                 field[faceI] = 0.6128*0.5
+                               *(1.0+tanh((-0.026-Cf[faceI].y())*5000))
+                               +1e-100;
+            }
+        #};
+    }
+    outlet
+    {
+        type            zeroGradient;
+    }
+    lateralfront
+    {
+        type            empty;
+    }
+    lateralback
+    {
+        type            empty;
+    }
+    bottom
+    {
+        type            zeroGradient;
+    }
+    surface
+    {
+        type            symmetryPlane;
+    }
+}
+
+
+// ************************************************************************* //
