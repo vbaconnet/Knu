@@ -20,13 +20,13 @@ internalField   uniform 0;
 
 boundaryField
 {
-    INLET
+    inlet
     {
         type            fixedFluxPressure;
         value           uniform 0;
     }
 
-    RIGHT
+    outlet
     {
         type            zeroGradient;
     }

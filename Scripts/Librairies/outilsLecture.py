@@ -16,7 +16,7 @@ Fonctions
 
 """
 
-def readFileOption(options, possibleNames, default, extension = ""):
+def readFileOption(options, possibleNames, default, extension = "", checkPath = False):
     """Lecture d'option au format : -fichier <nom_fichier> 
     
     :param options: Liste des options données par l'utilisateur
@@ -30,6 +30,8 @@ def readFileOption(options, possibleNames, default, extension = ""):
     :return: filename : le nom du fichier donné en paramètre, sinon renvoie default
     :rtype: string
     """
+    
+    from os.path import exists
     
     filename = default
     
@@ -60,6 +62,7 @@ def readFileOption(options, possibleNames, default, extension = ""):
     if extension not in filename.split(".")[-1] and extension != '':  
         raise ValueError("L'extension .{} n'est pas valide. Extension .{} \
                          attendue".format(filename.split(".")[-1], extension))
+                   
     return filename
 
 def readValueOption(options, possibleNames, default, valueType = float):
@@ -214,7 +217,7 @@ def userInputPath(description, checkPath = True, safeExit = None):
             choix = str(rawChoice)
             
             #Test à effectuer selon la valeur de checkPath
-            test = exists(choix) if checkPath else not exists(choix)
+            test = exists(choix) if checkPath else True
             
                 
             if test or choix == safeExit:

@@ -7,8 +7,7 @@ Canal Numérique
 ===============
 
 Bienvenue dans la documentation du canal numérique d'ACRI-IN. Vous y trouverez l'aide
-pour la mise en place des tutoriels, un descriptif complet des scripts et programmes,
-ainsi qu'un guide de résolution de problèmes.
+pour la mise en place des tutoriels, un descriptif complet des scripts et programmes, le guide de programmation de la routine de génération de houle du canal, ainsi qu'un guide de résolution de problèmes.
 
 
 Index
@@ -19,6 +18,7 @@ Index
    
    installation
    tutoriels
+   canal
    modules
    support
 

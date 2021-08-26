@@ -43,7 +43,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Recherche" href="../search.html" />
     <link rel="next" title="jonswap" href="jonswap.html" />
-    <link rel="prev" title="Documentation des scripts" href="../modules.html" /> 
+    <link rel="prev" title="AllpostProcess" href="AllpostProcess.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -90,17 +90,12 @@
             
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutoriels.html">Tutoriels</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../canal.html">Guide de programmation du canal</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../modules.html">Documentation des scripts</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../modules.html#automatisation-des-calculs-openfoam">Automatisation des calculs OpenFOAM</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../modules.html#generation-de-houle">Génération de houle</a><ul class="current">
-<li class="toctree-l3 current"><a class="current reference internal" href="#">genWaveProperties</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#informations">Informations</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#description">Description</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#utilisation">Utilisation</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#dependances">Dépendances</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#fonctions">Fonctions</a></li>
-</ul>
-</li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">genWaveProperties</a></li>
 <li class="toctree-l3"><a class="reference internal" href="jonswap.html">jonswap</a></li>
 </ul>
 </li>
@@ -179,238 +174,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="module-genWaveProperties">
-<span id="genwaveproperties"></span><h1>genWaveProperties<a class="headerlink" href="#module-genWaveProperties" title="Lien permanent vers ce titre">¶</a></h1>
-<div class="section" id="informations">
-<h2>Informations<a class="headerlink" href="#informations" title="Lien permanent vers ce titre">¶</a></h2>
-<ul class="simple">
-<li><p>Auteur: Victor Baconnet</p></li>
-<li><p>Date de dernière modification: 08 Juillet 2021</p></li>
-</ul>
-</div>
-<div class="section" id="description">
-<h2>Description<a class="headerlink" href="#description" title="Lien permanent vers ce titre">¶</a></h2>
-<p>Génère le fichier <code class="docutils literal notranslate"><span class="pre">constant/waveProperties</span></code> contenant les paramètres et coefficients 
-d’amplitude, périodes, déphasages et directions pour le patch inlet, et des 
-paramètres d’absorption pour le patch outlet.</p>
-<p>La génération peut se faire selon la syntaxe interFoam/interIsoFoam ou olaFlow, 
-toujours à partir du fichier <code class="docutils literal notranslate"><span class="pre">constant/jonswapDict</span></code>.</p>
-<p>Pour exécuter ce fichier, vous devez spécifier les paramètres de spectre JONSWAP
-dans le fichier « jonswapDict » formaté comme suit:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Tp</span> <span class="mf">1.78</span>
-<span class="n">Tmin</span> <span class="mf">1.0</span>
-<span class="n">Tmax</span> <span class="mf">3.0</span>
-<span class="n">Hs</span> <span class="mf">1.5</span>
-<span class="n">gamma</span> <span class="mf">3.2</span>
-<span class="n">scale</span> <span class="p">(</span><span class="n">ou</span> <span class="n">échelle</span><span class="p">)</span> <span class="mf">25.0</span> <span class="o">//</span><span class="n">optionnel</span>
-</pre></div>
-</div>
-<p>L’exécution de ce fichier renverra une erreur si <code class="docutils literal notranslate"><span class="pre">jonswapDict</span></code> n’est pas trouvé.
-Vous pouvez, si besoin, préciser le chemin d’accès vers le fichier de votre 
-choix avec l’option <code class="docutils literal notranslate"><span class="pre">--jonswapFile</span></code>.</p>
-<p>Le fichier de sortie <code class="docutils literal notranslate"><span class="pre">waveProperties</span></code> sera créé dans le répertoire <code class="docutils literal notranslate"><span class="pre">constant</span></code>
-si il existe, ou directement dans le répertoire courant. Vous pouvez, si besoin,
-préciser le chemin d’accès vers le répertoire de votre choix avec l’option 
-<code class="docutils literal notranslate"><span class="pre">--wavePropertiesPath</span></code>.</p>
-</div>
-<div class="section" id="utilisation">
-<h2>Utilisation<a class="headerlink" href="#utilisation" title="Lien permanent vers ce titre">¶</a></h2>
-<p>genWaveProperties [OPTIONS]</p>
-<div class="section" id="options">
-<h3>Options<a class="headerlink" href="#options" title="Lien permanent vers ce titre">¶</a></h3>
-<dl class="option-list">
-<dt><kbd><span class="option">-h</span>, <span class="option">--help</span></kbd></dt>
-<dd><p>Afficher l’aide</p>
-</dd>
-<dt><kbd><span class="option">--wavePropertiesPath <var>path</var></span></kbd></dt>
-<dd><p>chemin d’accès vers le répertoire d’écriture
-du fichier waveProperties</p>
-</dd>
-<dt><kbd><span class="option">--jonswapFile <var>file</var></span></kbd></dt>
-<dd><p>chemin d’accès vers le fichier contenant les 
-paramètres de spectre JONSWAP</p>
-</dd>
-<dt><kbd><span class="option">--inlet <var>inletName</var></span></kbd></dt>
-<dd><p>Spécifie le nom du patch inlet (là où la houle
-sera générée).</p>
-</dd>
-<dt><kbd><span class="option">--outlet <var>outletName</var></span></kbd></dt>
-<dd><p>Spécifie le nom du patch outlet</p>
-</dd>
-<dt><kbd><span class="option">--noOutlet</span></kbd></dt>
-<dd><p>ne pas créer de patch outlet</p>
-</dd>
-<dt><kbd><span class="option">--rampTime <var>value</var></span></kbd></dt>
-<dd><p>Spécifier la valeur de rampTime (temps 
-d’amortissement)</p>
-</dd>
-<dt><kbd><span class="option">--nPaddle <var>value</var></span></kbd></dt>
-<dd><p>Spécifier le nombre de batteurs en entrée</p>
-</dd>
-<dt><kbd><span class="option">--Ncomposantes <var>value</var></span></kbd></dt>
-<dd><p>nombre de composantes de chaque paramètre (
-hauteurs, périodes, déphasages…)</p>
-</dd>
-<dt><kbd><span class="option">--writeCsv</span></kbd></dt>
-<dd><p>Ecrit les hauteurs, déphasages, périodes et 
-directions
-dans un fichier au format « .csv ». Cette 
-option est indispensable si vous 
-souhaitez utiliser le script <code class="docutils literal notranslate"><span class="pre">traceInterface.py</span></code>.</p>
-</dd>
-<dt><kbd><span class="option">--csvFileName <var>file</var></span></kbd></dt>
-<dd><p>nom du fichier « .csv » où écrire les composantes
-de hauteur, périodes, déphasages, et direction.
-N’est prise en compte uniquement si <code class="docutils literal notranslate"><span class="pre">--writeCsv</span></code>
-est activée.</p>
-</dd>
-</dl>
-</div>
-</div>
-<div class="section" id="dependances">
-<h2>Dépendances<a class="headerlink" href="#dependances" title="Lien permanent vers ce titre">¶</a></h2>
-<ul class="simple">
-<li><p>Pour l’utilisation des fonctions uniquement: <code class="docutils literal notranslate"><span class="pre">numpy</span></code></p></li>
-<li><p>Pour exécuter le fichier : <code class="docutils literal notranslate"><span class="pre">numpy</span></code>, <code class="docutils literal notranslate"><span class="pre">sys</span></code>, <code class="docutils literal notranslate"><span class="pre">jonswap</span></code>, <code class="docutils literal notranslate"><span class="pre">outilsLecture</span></code>, 
-<code class="docutils literal notranslate"><span class="pre">os</span></code></p></li>
-</ul>
-</div>
-<div class="section" id="fonctions">
-<h2>Fonctions<a class="headerlink" href="#fonctions" title="Lien permanent vers ce titre">¶</a></h2>
-<dl class="py function">
-<dt class="sig sig-object py" id="genWaveProperties.help_message">
-<span class="sig-prename descclassname"><span class="pre">genWaveProperties.</span></span><span class="sig-name descname"><span class="pre">help_message</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#genWaveProperties.help_message" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Affiche le messge d’aide</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="genWaveProperties.readParams">
-<span class="sig-prename descclassname"><span class="pre">genWaveProperties.</span></span><span class="sig-name descname"><span class="pre">readParams</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'jonswapDict'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genWaveProperties.readParams" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Lire les paramètres Tp, Hs etc dans le fichier de paramètres jonswap</p>
-<dl class="field-list simple">
-<dt class="field-odd">Paramètres</dt>
-<dd class="field-odd"><p><strong>filename</strong> (<code class="docutils literal notranslate"><span class="pre">string</span></code>) – nom du fichier de paramètres</p>
-</dd>
-<dt class="field-even">Lève</dt>
-<dd class="field-even"><p><strong>ValueError</strong> – Si il manque un paramètre dans le fichier <code class="docutils literal notranslate"><span class="pre">filename</span></code>, 
-renverra une erreur.</p>
-</dd>
-<dt class="field-odd">Renvoie</dt>
-<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">param_dict</span></code> dictionnaire contenant les paramètres donnés dans 
-le fichier <code class="docutils literal notranslate"><span class="pre">filename</span></code>.</p>
-</dd>
-<dt class="field-even">Type renvoyé</dt>
-<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">dict(float)</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="genWaveProperties.writeHeader">
-<span class="sig-prename descclassname"><span class="pre">genWaveProperties.</span></span><span class="sig-name descname"><span class="pre">writeHeader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genWaveProperties.writeHeader" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Ecrit le header OpenFOAM</p>
-<dl class="field-list simple">
-<dt class="field-odd">Paramètres</dt>
-<dd class="field-odd"><p><strong>f</strong> (<code class="docutils literal notranslate"><span class="pre">string</span></code>) – Nom du fichier d’écriture</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="genWaveProperties.writeInlet">
-<span class="sig-prename descclassname"><span class="pre">genWaveProperties.</span></span><span class="sig-name descname"><span class="pre">writeInlet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inletParamsDict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inletWaveParamsDict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solver</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inletName</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'inlet'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genWaveProperties.writeInlet" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><dl class="simple">
-<dt>Ecrit les paramètres pour le patch « inlet » selon la syntaxe interFoam/</dt><dd><p>interIsoFoam ou olaFlow</p>
-</dd>
-</dl>
-<dl class="field-list simple">
-<dt class="field-odd">Paramètres</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>f</strong> (<code class="docutils literal notranslate"><span class="pre">string</span></code>) – Nom du fichier d’écriture</p></li>
-<li><p><strong>inletParamsDict</strong> (<code class="docutils literal notranslate"><span class="pre">dict</span></code>) – Dictionnaire contenant les paramètres « simples » au
-format <code class="docutils literal notranslate"><span class="pre">{nom</span> <span class="pre">=&gt;</span> <span class="pre">valeur}</span></code></p></li>
-<li><p><strong>inletWaveParamsDict</strong> – Dictionnaire contenant les composantes d’un 
-paramètre (waveHeights, wavePeriods…)</p></li>
-<li><p><strong>solver</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – Type de solveur utilisé dans <code class="docutils literal notranslate"><span class="pre">system/controlDict</span></code></p></li>
-<li><p><strong>inletName</strong> (<code class="docutils literal notranslate"><span class="pre">string</span></code>) – Nom du patch inlet</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="genWaveProperties.writeMatrix">
-<span class="sig-prename descclassname"><span class="pre">genWaveProperties.</span></span><span class="sig-name descname"><span class="pre">writeMatrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">matrix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solver</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genWaveProperties.writeMatrix" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><dl>
-<dt>Ecrit une matrice avec son nom associé, selon le format du solveur </dt><dd><p><code class="docutils literal notranslate"><span class="pre">solver</span></code>.</p>
-<p>Si <code class="docutils literal notranslate"><span class="pre">solver</span> <span class="pre">=</span> <span class="pre">&quot;interFoam&quot;</span></code> ou <code class="docutils literal notranslate"><span class="pre">solver</span> <span class="pre">=</span> <span class="pre">&quot;interIsoFoam&quot;</span></code>, le format est:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>  nom
-  nombre de lignes
-  (
-  (valeur_11 valeur_12 ... valeur_1j)
-  (valeur_21 valeur_22 ... valeur_2j)
-  ...
-  (valeur_i1 valeur_i2 ... valeur_ij)
-  );
-
-Si ``solver = &quot;olaFlow&quot;``, le format est::
-
-  nom
-  nombre de lignes
-  (
-  valeur_1
-  valeur_2
-  ...
-  valeur_N
-  );
-
-**Important** ``N = i * j`` 
-</pre></div>
-</div>
-</dd>
-</dl>
-<dl class="field-list simple">
-<dt class="field-odd">Paramètres</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>f</strong> (<code class="docutils literal notranslate"><span class="pre">string</span></code>) – Nom du fichier d’écriture</p></li>
-<li><p><strong>name</strong> (<code class="docutils literal notranslate"><span class="pre">string</span></code>) – Nom du paramètre (waveHeights, wavePeriods…)</p></li>
-<li><p><strong>matrix</strong> (<code class="docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>) – Matrice de valeurs. Peut être un vecteur COLONNE ou une matrice</p></li>
-<li><p><strong>solver</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – Type de solveur utilisé dans <code class="docutils literal notranslate"><span class="pre">system/controlDict</span></code></p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="genWaveProperties.writeOutlet">
-<span class="sig-prename descclassname"><span class="pre">genWaveProperties.</span></span><span class="sig-name descname"><span class="pre">writeOutlet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outletParamsDict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outletName</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'outlet'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genWaveProperties.writeOutlet" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Ecrit les paramètres correspondant au patch « outlet »</p>
-<dl class="field-list simple">
-<dt class="field-odd">Paramètres</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>f</strong> (<code class="docutils literal notranslate"><span class="pre">string</span></code>) – Nom du fichier d’écriture</p></li>
-<li><p><strong>outletParamsDict</strong> (<code class="docutils literal notranslate"><span class="pre">dict</span></code>) – Dictionnaire contenant les paramètres « simples » au format {nom =&gt; valeur}</p></li>
-<li><p><strong>outletName</strong> (<code class="docutils literal notranslate"><span class="pre">string</span></code>) – Nom du patch outlet</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="genWaveProperties.writeParam">
-<span class="sig-prename descclassname"><span class="pre">genWaveProperties.</span></span><span class="sig-name descname"><span class="pre">writeParam</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">paramDict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genWaveProperties.writeParam" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Ecrit des paramètres simples au format <code class="docutils literal notranslate"><span class="pre">&lt;nom&gt;</span>&#160;&#160; <span class="pre">valeur&gt;;</span></code></p>
-<dl class="field-list simple">
-<dt class="field-odd">Paramètres</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>f</strong> (<code class="docutils literal notranslate"><span class="pre">string</span></code>) – Nom du fichier d’écriture</p></li>
-<li><p><strong>paramDict</strong> (<code class="docutils literal notranslate"><span class="pre">dict</span></code>) – Dictionnaire de paramètres <code class="docutils literal notranslate"><span class="pre">{&quot;nom&quot;</span> <span class="pre">=&gt;</span> <span class="pre">valeur}</span></code></p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-</div>
+  <div class="section" id="genwaveproperties">
+<h1>genWaveProperties<a class="headerlink" href="#genwaveproperties" title="Lien permanent vers ce titre">¶</a></h1>
 </div>
 
 
@@ -420,7 +185,7 @@ Si ``solver = &quot;olaFlow&quot;``, le format est::
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
         <a href="jonswap.html" class="btn btn-neutral float-right" title="jonswap" accesskey="n" rel="next">Suivant <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-        <a href="../modules.html" class="btn btn-neutral float-left" title="Documentation des scripts" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Précédent</a>
+        <a href="AllpostProcess.html" class="btn btn-neutral float-left" title="AllpostProcess" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Précédent</a>
     </div>
 
   <hr/>

@@ -4,8 +4,12 @@
 
 Allmesh
 
+genHouleReguliere
+
 Allrun -s &
 
 sleep 2
 
-AllpostProcess ls
+AllpostProcess lireSondes.py
+
+python traceSondes.py

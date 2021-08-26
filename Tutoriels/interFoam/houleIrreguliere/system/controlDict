@@ -82,8 +82,8 @@ functions
     {
         type            sets;
         libs            ("libsampling.so");
-        enabled         false; // Mettre à false pour désactiver les sondes
- 	
+        enabled         true; // Mettre à false pour désactiver les sondes
+
 	// Contrôle d'écriture : 
 	//  - timeStep   : pas de temps
 	//  - adjustable : temps (si pas de temps adaptatif)

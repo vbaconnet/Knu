@@ -53,7 +53,7 @@ edges
 
 boundary
 (
-    INLET
+    inlet
     {
         type patch;
         faces
@@ -61,7 +61,7 @@ boundary
             (0 4 7 3)
         );
     }
-    RIGHT
+    outlet
     {
         type wall;
         faces

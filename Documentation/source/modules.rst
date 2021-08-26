@@ -15,15 +15,23 @@ Génération de houle
 .. toctree::
    :maxdepth: 1
 
-   fonctions/genWaveProperties
+   fonctions/genHouleIrreguliere
    fonctions/jonswap
 
-Sondes et reconstruction de spectre
------------------------------------
+Post-traitement
+---------------
 .. toctree::
    :maxdepth: 1
 
    fonctions/lireSondes
+   fonctions/lirePoints
+   fonctions/debitsFranchissement
+
+Reconstruction de spectre
+--------------------------
+.. toctree::
+   :maxdepth: 1
+
    fonctions/resample
    fonctions/spectre
 

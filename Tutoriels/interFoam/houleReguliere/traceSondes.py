@@ -27,20 +27,22 @@ def animate(i, line1, line2, line3, t, y1, y2, y3):
 
 if __name__ == "__main__":
 
-    sondeData =  pd.read_csv("RESAMPLED_line_probes.csv")
+    sondeData =  pd.read_csv("line_probes.csv")
     
-    t  = sondeData["time"]
-    y1 = sondeData["S1-1.0"]
-    y2 = sondeData["S2-2.0"]
-    y3 = sondeData["S3-3.0"]
+    t  = sondeData.iloc[:,0]
+    y1 = sondeData.iloc[:,1]
+    y2 = sondeData.iloc[:,2]
+    y3 = sondeData.iloc[:,3]
     
     fig, ax = plt.subplots()
 
     ax.set_xlim((0,10))
     ax.set_ylim((0.7,1))
     
-    line1, line2, line3 = ax.plot(t[0], y1[0], t[0], y2[0], t[0], y3[0])
-    
-    ani = animation.FuncAnimation(fig, animate, frames=100,
-                                  fargs=(line1, line2, line3, t, y1, y2, y3), 
-                                  interval = 100, repeat = False)
+    ax.plot(t, y1, label = sondeData.columns[1])
+    ax.plot(t, y2, label = sondeData.columns[2])
+    ax.plot(t, y3, label = sondeData.columns[3])
+
+    plt.legend()
+    plt.grid()
+    plt.show()

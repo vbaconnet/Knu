@@ -10,8 +10,7 @@ Fonctions
 """
 
 from openpyxl.utils.dataframe import dataframe_to_rows
-from openpyxl.styles import Font
-from openpyxl.chart import ScatterChart, Reference, Series 
+from openpyxl.chart import Reference, Series 
 from openpyxl.chart.text import RichText
 import openpyxl.drawing.text as odt
 
@@ -41,8 +40,8 @@ def make_plot(chart, data_sheet, x_col, y_col, x_min_row = 2, y_min_row = 2,
     :type x_col: int
     :param y_col: Indice de la colonne des y (commence à 1)
     :type y_col: int
-    :param title: Indique si il faut récupérer le titre de la colonne y ou non
-    :type title: bool
+    :param get_title: Indique si il faut récupérer le titre de la colonne y ou non
+    :type get_title: bool
     """
     print(f"Nouveau tracé  (x,y) : colonnes ({x_col}, {y_col})")
     
@@ -73,9 +72,9 @@ def make_plot(chart, data_sheet, x_col, y_col, x_min_row = 2, y_min_row = 2,
 
 
 def plot(chart, cols, data_sheet, plot_sheet, where, title = "",
- xlabel = "", ylabel = "", y_min_row = 1, x_min_row = 2, height = 15,
-  width = 20, legend_position = "t", display_legend = True,
-   xlim = None, ylim = None, get_title = True, additional_info = ""):
+         xlabel = "", ylabel = "", y_min_row = 1, x_min_row = 2, height = 15,
+         width = 20, legend_position = "t", display_legend = True,
+         xlim = None, ylim = None, get_title = True, additional_info = ""):
     """Tracer plusieurs jeux de données sur un même graphique
 
     :param chart: Object chart sur lequel faire le graphique. Se crée avec la

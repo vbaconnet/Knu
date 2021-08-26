@@ -20,13 +20,13 @@ internalField   uniform 0.003;
 
 boundaryField
 {
-    "(actuel2|BOTTOM|RIGHT)"
+    "(actuel2|BOTTOM|outlet)"
     {
         type            omegaWallFunction;
         value           $internalField;
     }
 
-    INLET
+    inlet
     {
         type            inletOutlet;
         inletValue      $internalField;

@@ -43,7 +43,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Recherche" href="search.html" />
     <link rel="next" title="Allmesh" href="fonctions/Allmesh.html" />
-    <link rel="prev" title="Installation" href="installation.html" /> 
+    <link rel="prev" title="Guide de programmation du canal" href="canal.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -90,6 +90,8 @@
             
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutoriels.html">Tutoriels</a></li>
+<li class="toctree-l1"><a class="reference internal" href="canal.html">Guide de programmation du canal</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Documentation des scripts</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#automatisation-des-calculs-openfoam">Automatisation des calculs OpenFOAM</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="fonctions/Allmesh.html">Allmesh</a></li>
@@ -98,12 +100,17 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#generation-de-houle">Génération de houle</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="fonctions/genWaveProperties.html">genWaveProperties</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fonctions/genHouleIrreguliere.html">genHouleIrreguliere</a></li>
 <li class="toctree-l3"><a class="reference internal" href="fonctions/jonswap.html">jonswap</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#sondes-et-reconstruction-de-spectre">Sondes et reconstruction de spectre</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#post-traitement">Post-traitement</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="fonctions/lireSondes.html">Exportation de mesures de sondes : lireSondes.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fonctions/lirePoints.html">Exportation de mesures de points : lirePoints.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fonctions/debitsFranchissement.html">Calcul de débit de franchissement : debitFranchissement.py</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#reconstruction-de-spectre">Reconstruction de spectre</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="fonctions/resample.html">Rééchantillonnage des données de sondes : resample.py</a></li>
 <li class="toctree-l3"><a class="reference internal" href="fonctions/spectre.html">Reconstruction de spectre : spectre.py</a></li>
 </ul>
@@ -207,16 +214,25 @@
 <h2>Génération de houle<a class="headerlink" href="#generation-de-houle" title="Lien permanent vers ce titre">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="fonctions/genWaveProperties.html">genWaveProperties</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fonctions/genHouleIrreguliere.html">genHouleIrreguliere</a></li>
 <li class="toctree-l1"><a class="reference internal" href="fonctions/jonswap.html">jonswap</a></li>
 </ul>
 </div>
 </div>
-<div class="section" id="sondes-et-reconstruction-de-spectre">
-<h2>Sondes et reconstruction de spectre<a class="headerlink" href="#sondes-et-reconstruction-de-spectre" title="Lien permanent vers ce titre">¶</a></h2>
+<div class="section" id="post-traitement">
+<h2>Post-traitement<a class="headerlink" href="#post-traitement" title="Lien permanent vers ce titre">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="fonctions/lireSondes.html">Exportation de mesures de sondes : lireSondes.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fonctions/lirePoints.html">Exportation de mesures de points : lirePoints.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fonctions/debitsFranchissement.html">Calcul de débit de franchissement : debitFranchissement.py</a></li>
+</ul>
+</div>
+</div>
+<div class="section" id="reconstruction-de-spectre">
+<h2>Reconstruction de spectre<a class="headerlink" href="#reconstruction-de-spectre" title="Lien permanent vers ce titre">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="fonctions/resample.html">Rééchantillonnage des données de sondes : resample.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="fonctions/spectre.html">Reconstruction de spectre : spectre.py</a></li>
 </ul>
@@ -252,7 +268,7 @@
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
         <a href="fonctions/Allmesh.html" class="btn btn-neutral float-right" title="Allmesh" accesskey="n" rel="next">Suivant <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-        <a href="installation.html" class="btn btn-neutral float-left" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Précédent</a>
+        <a href="canal.html" class="btn btn-neutral float-left" title="Guide de programmation du canal" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Précédent</a>
     </div>
 
   <hr/>

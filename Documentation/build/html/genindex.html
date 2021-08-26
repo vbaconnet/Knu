@@ -88,6 +88,8 @@
             
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutoriels.html">Tutoriels</a></li>
+<li class="toctree-l1"><a class="reference internal" href="canal.html">Guide de programmation du canal</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules.html">Documentation des scripts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="support.html">Support</a></li>
 </ul>
@@ -220,10 +222,19 @@
 <h2 id="D">D</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="fonctions/jonswap.html#jonswap.deplacementBatteur">deplacementBatteur() (dans le module jonswap)</a>
+      <li><a href="fonctions/debitsFranchissement.html#debitFranchissement.debit_franchissement">debit_franchissement() (dans le module debitFranchissement)</a>
 </li>
+      <li>
+    debitFranchissement
+
+      <ul>
+        <li><a href="fonctions/debitsFranchissement.html#module-debitFranchissement">module</a>
+</li>
+      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="fonctions/jonswap.html#jonswap.deplacementBatteur">deplacementBatteur() (dans le module jonswap)</a>
+</li>
       <li><a href="fonctions/jonswap.html#jonswap.dispersion">dispersion() (dans le module jonswap)</a>
 </li>
   </ul></td>
@@ -248,17 +259,17 @@
 <h2 id="G">G</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="fonctions/jonswap.html#jonswap.genJonswapParams">genJonswapParams() (dans le module jonswap)</a>
-</li>
       <li>
-    genWaveProperties
+    genHouleIrreguliere
 
       <ul>
-        <li><a href="fonctions/genWaveProperties.html#module-genWaveProperties">module</a>
+        <li><a href="fonctions/genHouleIrreguliere.html#module-genHouleIrreguliere">module</a>
 </li>
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="fonctions/jonswap.html#jonswap.genJonswapParams">genJonswapParams() (dans le module jonswap)</a>
+</li>
       <li><a href="fonctions/spectre.html#spectre.getSondeData">getSondeData() (dans le module spectre)</a>
 </li>
   </ul></td>
@@ -267,7 +278,7 @@
 <h2 id="H">H</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="fonctions/genWaveProperties.html#genWaveProperties.help_message">help_message() (dans le module genWaveProperties)</a>
+      <li><a href="fonctions/genHouleIrreguliere.html#genHouleIrreguliere.help_message">help_message() (dans le module genHouleIrreguliere)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -310,6 +321,15 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li>
+    lirePoints
+
+      <ul>
+        <li><a href="fonctions/lirePoints.html#module-lirePoints">module</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li>
     lireSondes
 
       <ul>
@@ -334,11 +354,15 @@
 </li>
         <li><a href="fonctions/Allrun.html#module-Allrun">Allrun</a>
 </li>
-        <li><a href="fonctions/genWaveProperties.html#module-genWaveProperties">genWaveProperties</a>
+        <li><a href="fonctions/debitsFranchissement.html#module-debitFranchissement">debitFranchissement</a>
+</li>
+        <li><a href="fonctions/genHouleIrreguliere.html#module-genHouleIrreguliere">genHouleIrreguliere</a>
 </li>
         <li><a href="fonctions/initAllDirs.html#module-initAllDirs">initAllDirs</a>
 </li>
         <li><a href="fonctions/jonswap.html#module-jonswap">jonswap</a>
+</li>
+        <li><a href="fonctions/lirePoints.html#module-lirePoints">lirePoints</a>
 </li>
         <li><a href="fonctions/lireSondes.html#module-lireSondes">lireSondes</a>
 </li>
@@ -417,6 +441,10 @@
 </li>
       </ul></li>
   </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="fonctions/outilsDivers.html#outilsDivers.plot_multi">plot_multi() (dans le module outilsDivers)</a>
+</li>
+  </ul></td>
 </tr></table>
 
 <h2 id="R">R</h2>
@@ -428,7 +456,7 @@
 </li>
       <li><a href="fonctions/outilsLecture.html#outilsLecture.readOption">readOption() (dans le module outilsLecture)</a>
 </li>
-      <li><a href="fonctions/genWaveProperties.html#genWaveProperties.readParams">readParams() (dans le module genWaveProperties)</a>
+      <li><a href="fonctions/genHouleIrreguliere.html#genHouleIrreguliere.readParams">readParams() (dans le module genHouleIrreguliere)</a>
 </li>
       <li><a href="fonctions/outilsLecture.html#outilsLecture.readValueOption">readValueOption() (dans le module outilsLecture)</a>
 </li>
@@ -495,17 +523,17 @@
 </li>
       <li><a href="fonctions/outilsExcel.html#outilsExcel.write">write() (dans le module outilsExcel)</a>
 </li>
-      <li><a href="fonctions/genWaveProperties.html#genWaveProperties.writeHeader">writeHeader() (dans le module genWaveProperties)</a>
+      <li><a href="fonctions/genHouleIrreguliere.html#genHouleIrreguliere.writeHeader">writeHeader() (dans le module genHouleIrreguliere)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="fonctions/genWaveProperties.html#genWaveProperties.writeInlet">writeInlet() (dans le module genWaveProperties)</a>
+      <li><a href="fonctions/genHouleIrreguliere.html#genHouleIrreguliere.writeInlet">writeInlet() (dans le module genHouleIrreguliere)</a>
 </li>
-      <li><a href="fonctions/genWaveProperties.html#genWaveProperties.writeMatrix">writeMatrix() (dans le module genWaveProperties)</a>
+      <li><a href="fonctions/genHouleIrreguliere.html#genHouleIrreguliere.writeMatrix">writeMatrix() (dans le module genHouleIrreguliere)</a>
 </li>
-      <li><a href="fonctions/genWaveProperties.html#genWaveProperties.writeOutlet">writeOutlet() (dans le module genWaveProperties)</a>
+      <li><a href="fonctions/genHouleIrreguliere.html#genHouleIrreguliere.writeOutlet">writeOutlet() (dans le module genHouleIrreguliere)</a>
 </li>
-      <li><a href="fonctions/genWaveProperties.html#genWaveProperties.writeParam">writeParam() (dans le module genWaveProperties)</a>
+      <li><a href="fonctions/genHouleIrreguliere.html#genHouleIrreguliere.writeParam">writeParam() (dans le module genHouleIrreguliere)</a>
 </li>
   </ul></td>
 </tr></table>
