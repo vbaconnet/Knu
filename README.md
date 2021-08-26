@@ -2,18 +2,25 @@
 
 ## Description
 
-Ensemble de scripts, fonctions, et outils pour l'automatisation des simulations
-d'ACRI-IN. Les simulations peuvent être classées en 3 catégories:
+Bienvenue dans le repository du canal numérique. Vous y trouverez différents scripts et programmes, ainsi que des tutoriels pour différentes applications. Vous pouvez consulter la documentation complète sur <https://knu.readthedocs.io/en/latest/>.
 
-- Houle : solveur diphasique eau/air pour tout ce qui concerne les simulations
-type franchissement, débordement, etc. Le solveur supporte la mise en place 
-d'écoulements en milieu poreux.
+## Scripts Python
 
-- Transport de sédiments : solveur *sedFoam* diphasique eau/milieu granulaire 
-pour du	transport de sédiments. Le solveur modifié *sedPassiveScalarFoam*
-implémente le transport d'un "scalaire passif" type colorant.
+- Génération de houle régulière et irrégulière
+- Lecture de sondes, mesures de pression et débits de franchissement
+- Reconstruction de spectre
 
-- Interaction fluide-structure avec maillage dynamique
+## Routine de génération de houle irrégulière du canal à houle
+
+- Théorie
+- Programmes matlab
+
+## Tutoriels
+
+- interFoam
+- sedFoam
+- olaFlow
+- overInterDyMFoam
 
 ## Installation
 
@@ -26,4 +33,11 @@ Allez dans le dossier ``Knu`` et initialisez les variables d'environnement
 cd Knu
 source sourceMe
 ```
+Si vous comptez utiliser les outils du Knu souvent, il est conseillé d'intégrer ces lignes dans votre ``~/.bashrc`` ou ``~/.profile``.
 
+## Ressources additionnelles
+
+Code source de ``sedFoam``
+```bash
+git clone https://github.com/sedfoam/sedfoam
+```
