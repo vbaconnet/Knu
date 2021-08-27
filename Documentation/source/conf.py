@@ -19,7 +19,7 @@ sys.path.insert(0,os.path.abspath('../Documentation_shell'))
 
 # -- Project information -----------------------------------------------------
 
-project = 'Outils Canal Numérique'
+project = 'Canal Numérique'
 copyright = '2021, Victor Baconnet'
 author = 'Victor Baconnet'
 

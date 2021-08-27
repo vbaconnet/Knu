@@ -12,6 +12,8 @@ interFoam
 ----------
 .. toctree::
    :maxdepth: 1
+   :hidden:
+   :caption: interFoam
 
    tutoriels/interFoam/houleReguliere
    tutoriels/interFoam/houleIrreguliere
@@ -23,6 +25,8 @@ olaFlow
 --------
 .. toctree::
    :maxdepth: 1
+   :hidden:
+   :caption: olaFlow
    
    tutoriels/olaFlow/obstaclePoreux
 
@@ -30,6 +34,8 @@ overInterDyMFoam
 -----------------
 .. toctree::
    :maxdepth: 1
+   :hidden:
+   :caption: overInterDyMFoam
 
    tutoriels/overInterDyMFoam/digueMonaco
    tutoriels/overInterDyMFoam/objetFlottant
@@ -39,6 +45,8 @@ sedFoam
 -------
 .. toctree::
    :maxdepth: 1
-   
+   :hidden:
+   :caption: sedFoam
+
    tutoriels/sedFoam/2DPipelineScour
    tutoriels/sedFoam/3DScour

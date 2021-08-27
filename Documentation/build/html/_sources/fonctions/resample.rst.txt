@@ -35,6 +35,7 @@ Utilisation
 ---------------
 
 .. code-block:: bash
+
   $ resample [OPTIONS]
 
 --file file             Nom du fichier dans lequel lire le signal à traiter.

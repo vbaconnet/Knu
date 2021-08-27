@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Canal Numérique &mdash; Documentation Outils Canal Numérique 0.0.1</title>
+  <title>Canal Numérique &mdash; Documentation Canal Numérique 0.0.1</title>
   
 
   
@@ -42,7 +42,7 @@
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Recherche" href="search.html" />
-    <link rel="next" title="Tutoriels" href="tutoriels.html" /> 
+    <link rel="next" title="solveur interFoam" href="tutoriels/interFoam/interFoam.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -56,7 +56,7 @@
           
 
           
-            <a href="#" class="icon icon-home"> Outils Canal Numérique
+            <a href="#" class="icon icon-home"> Canal Numérique
           
 
           
@@ -89,12 +89,11 @@
             
               <p class="caption" role="heading"><span class="caption-text">Tutoriels</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="tutoriels.html">Tutoriels</a></li>
-</ul>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="tutoriels.html">Tutoriels</a></li>
-<li class="toctree-l1"><a class="reference internal" href="canal.html">Guide de programmation du canal</a></li>
-<li class="toctree-l1"><a class="reference internal" href="modules.html">Documentation des scripts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutoriels/interFoam/interFoam.html">solveur interFoam</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutoriels/olaFlow/olaFlow.html">olaFlow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutoriels/overInterDyMFoam/overInterDyMFoam.html">overInterDyMFoam</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutoriels/sedFoam/sedFoam.html">sedFoam</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutoriels/tutoriels.html">Liste complète des tutoriels</a></li>
 </ul>
 
             
@@ -110,7 +109,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="#">Outils Canal Numérique</a>
+          <a href="#">Canal Numérique</a>
         
       </nav>
 
@@ -166,48 +165,40 @@
 <h1>Canal Numérique<a class="headerlink" href="#canal-numerique" title="Lien permanent vers ce titre">¶</a></h1>
 <p>Bienvenue dans la documentation du canal numérique d’ACRI-IN. Vous y trouverez l’aide
 pour la mise en place des tutoriels, un descriptif complet des scripts et programmes, le guide de programmation de la routine de génération de houle du canal, ainsi qu’un guide de résolution de problèmes.</p>
-</div>
 <div class="section" id="installation">
-<h1>Installation<a class="headerlink" href="#installation" title="Lien permanent vers ce titre">¶</a></h1>
+<h2>Installation<a class="headerlink" href="#installation" title="Lien permanent vers ce titre">¶</a></h2>
 <p>Ces outils font partie du package scripts-python-ACRI, téléchargeable avec la commande:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">victor13165</span><span class="o">/</span><span class="n">Knu</span>
 </pre></div>
 </div>
+</div>
 <div class="section" id="tutoriels">
 <h2>Tutoriels<a class="headerlink" href="#tutoriels" title="Lien permanent vers ce titre">¶</a></h2>
-<p>Des tutoriels détaillés pour tous types d’applications:</p>
+<p>Des <a class="reference internal" href="tutoriels/tutoriels.html"><span class="doc">tutoriels</span></a> détaillés pour tous types d’applications.</p>
 <ul class="simple">
-<li><p>Houle <a class="reference internal" href="tutoriels/interFoam/houleReguliere.html"><span class="doc">régulière</span></a> et <a class="reference internal" href="tutoriels/interFoam/houleIrreguliere.html"><span class="doc">régulière</span></a></p></li>
-<li><p>Mesure de débit de franchissement : <cite>Port-La-Galère</cite></p></li>
-<li><p>Mesure de pression sur un <cite>ouvrage</cite></p></li>
-<li><p>Ecoulements en milieux poreux: <cite>interFoam</cite> et <cite>olaFlow</cite></p></li>
+<li><p><strong>Solveurs</strong>:
+<a class="reference internal" href="tutoriels/interFoam/interFoam.html"><span class="doc">interFoam</span></a> |
+<a class="reference internal" href="tutoriels/olaFlow/olaFlow.html"><span class="doc">olaFlow</span></a> |
+<a class="reference internal" href="tutoriels/overInterDyMFoam/overInterDyMFoam.html"><span class="doc">overInterDyMFoam</span></a> |
+<a class="reference internal" href="tutoriels/sedFoam/sedFoam.html"><span class="doc">sedFoam</span></a></p></li>
+<li><p><strong>Génération de houle</strong>:
+<a class="reference internal" href="tutoriels/interFoam/houleReguliere.html"><span class="doc">Régulière</span></a>   |
+<a class="reference internal" href="tutoriels/interFoam/houleIrreguliere.html"><span class="doc">Irrégulière</span></a> |
+<a class="reference internal" href="tutoriels/interFoam/batteurPiston.html"><span class="doc">Batteur piston</span></a></p></li>
+<li><p><strong>Mesures sur des ouvrages</strong>:
+<a class="reference internal" href="tutoriels/interFoam/debitFranchissement.html"><span class="doc">Débit de franchissement</span></a> |
+<a class="reference internal" href="tutoriels/interFoam/mesurePressionOuvrage.html"><span class="doc">Pression</span></a></p></li>
+<li><p><strong>Ecoulements en milieux poreux</strong> :
+<a class="reference internal" href="tutoriels/interFoam/obstaclePoreux.html"><span class="doc">Darcy-Fochheimer</span></a> |
+<a class="reference internal" href="tutoriels/olaFlow/obstaclePoreux.html"><span class="doc">VARANS</span></a></p></li>
+<li><p><strong>Maillages dynamiques</strong> :
+<a class="reference internal" href="tutoriels/interFoam/batteurPiston.html"><span class="doc">Batteur piston</span></a>  |
+<a class="reference internal" href="tutoriels/overInterDyMFoam/digueMonaco.html"><span class="doc">Digue flottante de Monaco</span></a> |
+<a class="reference internal" href="tutoriels/overInterDyMFoam/objetFlottant.html"><span class="doc">Objet Flottant</span></a> |
+<a class="reference internal" href="tutoriels/overInterDyMFoam/faucetAndSink.html"><span class="doc">Injection d’eau depuis une source mobile</span></a></p></li>
 </ul>
 <div class="toctree-wrapper compound">
 </div>
-</div>
-</div>
-<div class="section" id="index">
-<h1>Index<a class="headerlink" href="#index" title="Lien permanent vers ce titre">¶</a></h1>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="tutoriels.html">Tutoriels</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="tutoriels.html#interfoam">interFoam</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tutoriels.html#olaflow">olaFlow</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tutoriels.html#overinterdymfoam">overInterDyMFoam</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tutoriels.html#sedfoam">sedFoam</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="canal.html">Guide de programmation du canal</a></li>
-<li class="toctree-l1"><a class="reference internal" href="modules.html">Documentation des scripts</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="modules.html#automatisation-des-calculs-openfoam">Automatisation des calculs OpenFOAM</a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules.html#generation-de-houle">Génération de houle</a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules.html#post-traitement">Post-traitement</a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules.html#reconstruction-de-spectre">Reconstruction de spectre</a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules.html#lancement-de-calculs-en-arborescence">Lancement de calculs en arborescence</a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules.html#outils-de-manipulation-lecture-et-calcul">Outils de manipulation, lecture et calcul</a></li>
-</ul>
-</li>
-</ul>
 </div>
 </div>
 
@@ -217,7 +208,7 @@ pour la mise en place des tutoriels, un descriptif complet des scripts et progra
           </div>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="tutoriels.html" class="btn btn-neutral float-right" title="Tutoriels" accesskey="n" rel="next">Suivant <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="tutoriels/interFoam/interFoam.html" class="btn btn-neutral float-right" title="solveur interFoam" accesskey="n" rel="next">Suivant <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
