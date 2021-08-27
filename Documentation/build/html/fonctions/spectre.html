@@ -36,6 +36,7 @@
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/translations.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -95,14 +96,16 @@
 <li class="toctree-l1 current"><a class="reference internal" href="../modules.html">Documentation des scripts</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../modules.html#automatisation-des-calculs-openfoam">Automatisation des calculs OpenFOAM</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../modules.html#generation-de-houle">Génération de houle</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="../modules.html#sondes-et-reconstruction-de-spectre">Sondes et reconstruction de spectre</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="lireSondes.html">Exportation de mesures de sondes : lireSondes.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules.html#post-traitement">Post-traitement</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../modules.html#reconstruction-de-spectre">Reconstruction de spectre</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="resample.html">Rééchantillonnage des données de sondes : resample.py</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Reconstruction de spectre : spectre.py</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#informations">Informations</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#description">Description</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#entrees-sorties">Entrées/sorties</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#ce-programme-peut-s-executer-avec-les-options-suivantes">Ce programme peut s’éxecuter avec les options suivantes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#utilisation">Utilisation</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#dependances">Dépendances</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#code-source">Code source</a></li>
 </ul>
 </li>
 </ul>
@@ -111,7 +114,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../modules.html#outils-de-manipulation-lecture-et-calcul">Outils de manipulation, lecture et calcul</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../support.html">Support</a></li>
 </ul>
 
             
@@ -181,79 +183,81 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="module-spectre">
-<span id="reconstruction-de-spectre-spectre-py"></span><h1>Reconstruction de spectre : spectre.py<a class="headerlink" href="#module-spectre" title="Lien permanent vers ce titre">¶</a></h1>
-<p>Created on Tue Mar 30 14:12:22 2021</p>
-<p>&#64;author: Victor Baconnet</p>
-<p>&#64;contact:<a class="reference external" href="mailto:victor&#46;baconnet&#37;&#52;&#48;acri-in&#46;fr">victor<span>&#46;</span>baconnet<span>&#64;</span>acri-in<span>&#46;</span>fr</a></p>
-<p><a class="reference external" href="https://github.com/victor13165/">https://github.com/victor13165/</a></p>
-<p>All rights reserved</p>
+  <div class="section" id="reconstruction-de-spectre-spectre-py">
+<h1>Reconstruction de spectre : spectre.py<a class="headerlink" href="#reconstruction-de-spectre-spectre-py" title="Lien permanent vers ce titre">¶</a></h1>
+<div class="section" id="informations">
+<h2>Informations<a class="headerlink" href="#informations" title="Lien permanent vers ce titre">¶</a></h2>
+<blockquote>
+<div><ul class="simple">
+<li><p>Auteur: Victor Baconnet</p></li>
+<li><p>Date de dernière modification: 27 août 2021</p></li>
+</ul>
+</div></blockquote>
+</div>
 <div class="section" id="description">
 <h2>Description<a class="headerlink" href="#description" title="Lien permanent vers ce titre">¶</a></h2>
-<p>Reconstruit et affiche les spectres de densité de puissance à partir de mesures de sondes</p>
+<p>Reconstruit et affiche les spectres de densité de puissance à partir de mesures
+de hauteur d’interface par des sondes, lues dans un fichier <code class="docutils literal notranslate"><span class="pre">.csv</span></code>.</p>
+<p>Si le fichier <code class="docutils literal notranslate"><span class="pre">jonswapDict</span></code> est
+présent dans le dossier d’exécution, le programme tracera le spectre théorique
+à partir des paramètres du fichier, et calculera les hauteurs <span class="math notranslate nohighlight">\(H_s\)</span> par intégration
+numérique d’après la formule</p>
+<div class="math notranslate nohighlight">
+\[H_s = 4 \sqrt{\int_{0}^{+\infty} S(\omega)d\omega}\]</div>
+<p>ou, sous forme discrétisée, par intégration selon la méthode des trapèzes</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}H_s = 4 \sqrt{ \\frac{\Delta \omega }{2}  \sum_{i=0}^{N-1}{ S_{i+1} - S_i }}\end{split}\]</div>
+<p>où <span class="math notranslate nohighlight">\(S_i\)</span> est la valeur du spectre de Jonswap reconstruit.</p>
 </div>
 <div class="section" id="entrees-sorties">
 <h2>Entrées/sorties<a class="headerlink" href="#entrees-sorties" title="Lien permanent vers ce titre">¶</a></h2>
 <ul class="simple">
 <li><p>Les mesures des sondes doivent être données dans un fichier au format csv, par défaut
-« line_probes.csv » mais peut être modifié avec l’option –sondeFile</p></li>
+<code class="docutils literal notranslate"><span class="pre">RESAMPLED_line_probes.csv</span></code> mais peut être modifié avec l’option <code class="docutils literal notranslate"><span class="pre">--sondeFile</span></code></p></li>
 <li><p>Si vous souhaitez comparer les spectres calculés avec un spectre théorique de JONSWAP,
-les paramètres Tp, Hs, Tmin, Tmax, gamma doivent être donnés dans un fichier par défaut 
-« jonswapDict », mais peut être modifié avec l’option –jonswapFile</p></li>
+les paramètres Tp, Hs, Tmin, Tmax, gamma doivent être donnés dans un fichier par défaut
+<code class="docutils literal notranslate"><span class="pre">jonswapDict</span></code>, mais peut être modifié avec l’option <code class="docutils literal notranslate"><span class="pre">--jonswapFile</span></code></p></li>
 </ul>
 </div>
-<div class="section" id="ce-programme-peut-s-executer-avec-les-options-suivantes">
-<h2>Ce programme peut s’éxecuter avec les options suivantes<a class="headerlink" href="#ce-programme-peut-s-executer-avec-les-options-suivantes" title="Lien permanent vers ce titre">¶</a></h2>
+<div class="section" id="utilisation">
+<h2>Utilisation<a class="headerlink" href="#utilisation" title="Lien permanent vers ce titre">¶</a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ spectre.py <span class="o">[</span>OPTIONS<span class="o">]</span>
+</pre></div>
+</div>
 <dl class="option-list">
 <dt><kbd><span class="option">--savefigs</span></kbd></dt>
 <dd><p>Sauvegarder les graphiques générés</p>
 </dd>
-</dl>
-<dl class="simple">
-<dt>–sondeFile chemin/fichier.csv    Chemin d’accès vers le répertoire d’écriture</dt><dd><p>du fichier waveProperties</p>
+<dt><kbd><span class="option">--sondeFile <var>fichier</var></span></kbd></dt>
+<dd><p>Chemin d’accès vers le répertoire d’écriture
+du fichier waveProperties</p>
 </dd>
-</dl>
-<dl class="option-list">
 <dt><kbd><span class="option">--jonswapFile <var>file</var></span></kbd></dt>
-<dd><p>chemin d’accès vers le fichier contenant les 
+<dd><p>chemin d’accès vers le fichier contenant les
 paramètres de spectre JONSWAP</p>
 </dd>
 <dt><kbd><span class="option">--Npoints <var>n</var></span></kbd></dt>
-<dd><p>Nombre de points (longueur) de chaque segment 
+<dd><p>Nombre de points (longueur) de chaque segment
 de calcul par la méthode de Welch (<a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.welch.html#r34b375daf612-1">https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.welch.html#r34b375daf612-1</a>)</p>
+</dd>
+<dt><kbd><span class="option">--scaling <var>scale</var></span></kbd></dt>
+<dd><p>Echelle avec laquelle multiplier les valeurs
+de hauteur d’interface lues par les sondes.
+Par exemple si les mesures sont en cm, utiliser
+<code class="docutils literal notranslate"><span class="pre">--scaling</span> <span class="pre">0.01</span></code>.</p>
 </dd>
 </dl>
 </div>
 <div class="section" id="dependances">
 <h2>Dépendances<a class="headerlink" href="#dependances" title="Lien permanent vers ce titre">¶</a></h2>
 <ul class="simple">
-<li><p>numpy</p></li>
-<li><p>scipy</p></li>
-<li><p>matplotlib</p></li>
-<li><p>pandas</p></li>
-<li><p>jonswap, genWaveProperties, outilsParaview, outilsLecture, outilsDivers</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">numpy</span></code>, <code class="docutils literal notranslate"><span class="pre">scipy</span></code>, <code class="docutils literal notranslate"><span class="pre">matplotlib</span></code>, <code class="docutils literal notranslate"><span class="pre">pandas</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">jonswap</span></code>, <code class="docutils literal notranslate"><span class="pre">outilsLecture</span></code>, <code class="docutils literal notranslate"><span class="pre">outilsDivers</span></code></p></li>
 </ul>
-<dl class="py function">
-<dt class="sig sig-object py" id="spectre.getSondeData">
-<span class="sig-prename descclassname"><span class="pre">spectre.</span></span><span class="sig-name descname"><span class="pre">getSondeData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sondeFile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tmin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tmax</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spectre.getSondeData" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Lecture des mesures de sondes dans le fichier sondeFile (le plus souvent sondes.csv)</p>
-<dl class="field-list simple">
-<dt class="field-odd">Paramètres</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>sondeFile</strong> (<em>str</em>) – Nom du fichier .csv où il y a le résultat des sondes</p></li>
-<li><p><strong>tmin</strong> (<em>float</em>) – Temps minimal</p></li>
-<li><p><strong>tmax</strong> (<em>float</em>) – Temps maximal</p></li>
-</ul>
-</dd>
-<dt class="field-even">Renvoie</dt>
-<dd class="field-even"><p>DataFrame avec les valeurs et les noms des sondes</p>
-</dd>
-<dt class="field-odd">Type renvoyé</dt>
-<dd class="field-odd"><p>pandas.DataFrame</p>
-</dd>
-</dl>
-</dd></dl>
-
+</div>
+<div class="section" id="code-source">
+<h2>Code source<a class="headerlink" href="#code-source" title="Lien permanent vers ce titre">¶</a></h2>
+<p>Lien vers le <a class="reference external" href="https://github.com/victor13165/Knu/blob/main/Scripts/Post-traitement/spectre.py">code source</a></p>
 </div>
 </div>
 

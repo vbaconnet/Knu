@@ -95,11 +95,14 @@
 <li class="toctree-l1 current"><a class="reference internal" href="../modules.html">Documentation des scripts</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../modules.html#automatisation-des-calculs-openfoam">Automatisation des calculs OpenFOAM</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../modules.html#generation-de-houle">Génération de houle</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules.html#sondes-et-reconstruction-de-spectre">Sondes et reconstruction de spectre</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules.html#post-traitement">Post-traitement</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules.html#reconstruction-de-spectre">Reconstruction de spectre</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../modules.html#lancement-de-calculs-en-arborescence">Lancement de calculs en arborescence</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../modules.html#outils-de-manipulation-lecture-et-calcul">Outils de manipulation, lecture et calcul</a><ul class="current">
 <li class="toctree-l3 current"><a class="current reference internal" href="#">outilsDivers module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#informations">Informations</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#description">Description</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#utilisation">Utilisation</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#fonctions">Fonctions</a></li>
 </ul>
 </li>
@@ -110,7 +113,6 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../support.html">Support</a></li>
 </ul>
 
             
@@ -182,9 +184,32 @@
             
   <div class="section" id="module-outilsDivers">
 <span id="outilsdivers-module"></span><h1>outilsDivers module<a class="headerlink" href="#module-outilsDivers" title="Lien permanent vers ce titre">¶</a></h1>
+<div class="section" id="informations">
+<h2>Informations<a class="headerlink" href="#informations" title="Lien permanent vers ce titre">¶</a></h2>
+<blockquote>
+<div><ul class="simple">
+<li><p>Auteur: Victor Baconnet</p></li>
+<li><p>Date de dernière modification: 27 août 2021</p></li>
+</ul>
+</div></blockquote>
+</div>
 <div class="section" id="description">
 <h2>Description<a class="headerlink" href="#description" title="Lien permanent vers ce titre">¶</a></h2>
-<p>Fonctions non-triées pour effectuer des opérations diverses.</p>
+<p>Fonctions non-triées pour effectuer des opérations diverses, notamment:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Recherche de valeur dans un itérable : <code class="docutils literal notranslate"><span class="pre">find()</span></code></p></li>
+<li><p>Calcul de RMSE (Root Mean Squared Error) : <code class="docutils literal notranslate"><span class="pre">RMSE()</span></code></p></li>
+<li><p>Afficher un message d’erreur : <code class="docutils literal notranslate"><span class="pre">error()</span></code></p></li>
+<li><p>Afficher un warning : <code class="docutils literal notranslate"><span class="pre">warning()</span></code></p></li>
+<li><p>Afficher des graphiques bien organisés : <code class="docutils literal notranslate"><span class="pre">plot()</span></code></p></li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="utilisation">
+<h2>Utilisation<a class="headerlink" href="#utilisation" title="Lien permanent vers ce titre">¶</a></h2>
+<p>Les fonctions sont à importer directement dans vos programmes.</p>
+<p>L’exécution de ce fichier ne produira aucun résultat.</p>
 </div>
 <div class="section" id="fonctions">
 <h2>Fonctions<a class="headerlink" href="#fonctions" title="Lien permanent vers ce titre">¶</a></h2>
@@ -212,12 +237,18 @@ Squared Error (RMSE), entre deux tableaux (itérables) y1 et y2</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="outilsDivers.error">
 <span class="sig-prename descclassname"><span class="pre">outilsDivers.</span></span><span class="sig-name descname"><span class="pre">error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">errorType</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Exception</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#outilsDivers.error" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Afficher un message d’erreur et quitter le programme
-:param message: message à afficher
-:type message: <code class="docutils literal notranslate"><span class="pre">str</span></code>
-:param errorType:
-:type errorType: <code class="docutils literal notranslate"><span class="pre">Exception</span></code>
-:raises <code class="docutils literal notranslate"><span class="pre">errorType</span></code>: Lever exception</p>
+<dd><p>Afficher un message d’erreur et quitter le programme</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>message</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – message à afficher</p></li>
+<li><p><strong>errorType</strong> (<code class="docutils literal notranslate"><span class="pre">Exception</span></code>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Lève</dt>
+<dd class="field-even"><p><strong>errorType</strong> – Lever exception</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
@@ -244,12 +275,40 @@ Squared Error (RMSE), entre deux tableaux (itérables) y1 et y2</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="outilsDivers.plot">
 <span class="sig-prename descclassname"><span class="pre">outilsDivers.</span></span><span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fig</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xlabel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ylabel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tick_fontsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">14</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_fontsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">16</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xmin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ymin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ymax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">legend</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tight_layout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#outilsDivers.plot" title="Lien permanent vers cette définition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="outilsDivers.plot_multi">
-<span class="sig-prename descclassname"><span class="pre">outilsDivers.</span></span><span class="sig-name descname"><span class="pre">plot_multi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ys</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fig</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xlabels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ylabels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">titles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tick_fontsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">14</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_fontsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">16</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xmins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xmaxs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ymins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ymaxs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">legend</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tight_layout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#outilsDivers.plot_multi" title="Lien permanent vers cette définition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Tracer (x,y) sur un graphique.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<code class="docutils literal notranslate"><span class="pre">iterable</span></code>) – Abcisses</p></li>
+<li><p><strong>y</strong> (<code class="docutils literal notranslate"><span class="pre">iterable</span></code>) – Ordonnées</p></li>
+<li><p><strong>fig</strong> (<em>matplotlib.figure.Figure</em>) – Objet figure</p></li>
+<li><p><strong>ax</strong> (<em>matplotlib.axes._subplots.AxesSubplot</em>) – Objet axe</p></li>
+<li><p><strong>label</strong> (<em>str</em>) – Légende de la courbe</p></li>
+<li><p><strong>xlabel</strong> (<em>str</em>) – Nom de l’axe x</p></li>
+<li><p><strong>ylabel</strong> (<em>str</em>) – Nom de l’axe y</p></li>
+<li><p><strong>title</strong> (<em>str</em>) – titre du graphique</p></li>
+<li><p><strong>grid</strong> (<em>bool</em>) – Mettre à true pour afficher la grille</p></li>
+<li><p><strong>tick_fontsize</strong> (<em>int</em>) – Taille de police des graduations</p></li>
+<li><p><strong>label_fontsize</strong> (<em>int</em>) – Taille de police des titres et légendes</p></li>
+<li><p><strong>xmin</strong> (<em>float</em>) – Borne min de l’axe x</p></li>
+<li><p><strong>xmax</strong> (<em>float</em>) – Borne max de l’axe x</p></li>
+<li><p><strong>ymin</strong> (<em>float</em>) – Borne min de l’axe y</p></li>
+<li><p><strong>ymax</strong> (<em>float</em>) – Borne max de l’axe y</p></li>
+<li><p><strong>legend</strong> (<em>bool</em>) – Afficher la légende ou non. Si <code class="docutils literal notranslate"><span class="pre">label</span></code> est définie, se met
+automatiquement à True.</p></li>
+<li><p><strong>tight_layout</strong> (<em>bool</em>) – Reformatage de la fenêtre de la figure pour faire rentrer
+les titres etc. Par défaut à True.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Renvoie</dt>
+<dd class="field-even"><p>Objet ligne issu de la commande ax.plot(), récupérable pour la
+gestion d’animations</p>
+</dd>
+<dt class="field-odd">Type renvoyé</dt>
+<dd class="field-odd"><p>matplotlib.lines.Line2D</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="outilsDivers.warning">

@@ -42,7 +42,7 @@
     
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Recherche" href="../search.html" />
-    <link rel="next" title="outilsParaview module" href="outilsParaview.html" />
+    <link rel="next" title="outilsExcel module" href="outilsExcel.html" />
     <link rel="prev" title="outilsDivers module" href="outilsDivers.html" /> 
 </head>
 
@@ -95,22 +95,23 @@
 <li class="toctree-l1 current"><a class="reference internal" href="../modules.html">Documentation des scripts</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../modules.html#automatisation-des-calculs-openfoam">Automatisation des calculs OpenFOAM</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../modules.html#generation-de-houle">Génération de houle</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules.html#sondes-et-reconstruction-de-spectre">Sondes et reconstruction de spectre</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules.html#post-traitement">Post-traitement</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules.html#reconstruction-de-spectre">Reconstruction de spectre</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../modules.html#lancement-de-calculs-en-arborescence">Lancement de calculs en arborescence</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../modules.html#outils-de-manipulation-lecture-et-calcul">Outils de manipulation, lecture et calcul</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="outilsDivers.html">outilsDivers module</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">outilsLecture module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#informations">Informations</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#description">Description</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#exemple-d-utilisation">Exemple d’utilisation</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#fonctions">Fonctions</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="outilsParaview.html">outilsParaview module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="outilsExcel.html">outilsExcel module</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../support.html">Support</a></li>
 </ul>
 
             
@@ -182,13 +183,58 @@
             
   <div class="section" id="module-outilsLecture">
 <span id="outilslecture-module"></span><h1>outilsLecture module<a class="headerlink" href="#module-outilsLecture" title="Lien permanent vers ce titre">¶</a></h1>
+<div class="section" id="informations">
+<h2>Informations<a class="headerlink" href="#informations" title="Lien permanent vers ce titre">¶</a></h2>
+<blockquote>
+<div><ul class="simple">
+<li><p>Auteur: Victor Baconnet</p></li>
+<li><p>Date de dernière modification: 27 août 2021</p></li>
+</ul>
+</div></blockquote>
+</div>
 <div class="section" id="description">
 <h2>Description<a class="headerlink" href="#description" title="Lien permanent vers ce titre">¶</a></h2>
 <p>Liste de fonctions permettant de lire des options données par l’utilisateur.</p>
 <p>Ces fonctions permettent de lire les options, avec plusieurs syntaxes possibles. 
 Si l’option n’est pas trouvée, une valeur par défaut peut être donnée.</p>
-<p>Les fonctions ne vérifient pas l’existence, ou la validité des 
-valeurs données par l’utilisateur.</p>
+</div>
+<div class="section" id="exemple-d-utilisation">
+<h2>Exemple d’utilisation<a class="headerlink" href="#exemple-d-utilisation" title="Lien permanent vers ce titre">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">outilsLecture</span> <span class="kn">as</span> <span class="nn">olec</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="n">tmax</span> <span class="o">=</span> <span class="n">olec</span><span class="o">.</span><span class="n">readValueOption</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;-tmax&quot;</span><span class="p">,</span><span class="s2">&quot;--tmax&quot;</span><span class="p">],</span>
+                            <span class="n">default</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">)</span>
+
+<span class="n">N</span> <span class="o">=</span> <span class="n">olec</span><span class="o">.</span><span class="n">readValueOption</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;-N&quot;</span><span class="p">,</span><span class="s2">&quot;--N&quot;</span><span class="p">],</span>
+                         <span class="n">default</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span> <span class="n">valueType</span> <span class="o">=</span> <span class="nb">int</span><span class="p">)</span>
+
+<span class="nb">file</span> <span class="o">=</span> <span class="n">olec</span><span class="o">.</span><span class="n">readFileOption</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;--file&quot;</span><span class="p">,</span> <span class="s2">&quot;-file&quot;</span><span class="p">],</span>
+                                 <span class="n">default</span> <span class="o">=</span> <span class="s2">&quot;out.csv&quot;</span><span class="p">,</span> <span class="n">extension</span> <span class="o">=</span> <span class="s2">&quot;csv&quot;</span><span class="p">)</span>
+
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;Tmax : &quot;</span><span class="p">,</span> <span class="n">tmax</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;N    : &quot;</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;file : &quot;</span><span class="p">,</span> <span class="nb">file</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Executions possibles:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python3 myscript.py
+Tmax : <span class="m">0</span>.0
+N    : <span class="m">100</span>
+file : out.csv
+
+$ python3 myscript.py --tmax <span class="m">20</span>.0 --N <span class="m">41</span> -file wrongfile.csv
+Tmax : <span class="m">20</span>.0
+N    : <span class="m">41</span>
+file : wrongfile.csv
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Avertissement</p>
+<p>Dans le dernier exemple, si l’utilisateur avait précisé <code class="docutils literal notranslate"><span class="pre">wrongfile.txt</span></code>,
+le programme aurait renvoyé une erreur.</p>
+</div>
 </div>
 <div class="section" id="fonctions">
 <h2>Fonctions<a class="headerlink" href="#fonctions" title="Lien permanent vers ce titre">¶</a></h2>
@@ -221,18 +267,18 @@ valeurs données par l’utilisateur.</p>
 <dt class="field-odd">Paramètres</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>options</strong> (<em>list</em>) – Liste des options données par l’utilisateur</p></li>
-<li><p><strong>possibleNames</strong> (<em>list</em>) – Liste des options acceptées pour sélectionner ce paramètre (exemple: [« -file », « –file », « -File »])</p></li>
-<li><p><strong>default</strong> (<em>string</em>) – Valeur prise par défaut</p></li>
-<li><p><strong>extension</strong> (<em>string</em>) – extension du fichier (exemple: « csv »)</p></li>
+<li><p><strong>possibleNames</strong> – Liste des options acceptées pour sélectionner ce</p></li>
 </ul>
 </dd>
-<dt class="field-even">Renvoie</dt>
-<dd class="field-even"><p>filename : le nom du fichier donné en paramètre, sinon renvoie default</p>
-</dd>
-<dt class="field-odd">Type renvoyé</dt>
-<dd class="field-odd"><p>string</p>
-</dd>
 </dl>
+<p>paramètre (exemple: [« -file », « –file », « -File »])
+:type possibleNames: list
+:param default: Valeur prise par défaut
+:type default: string
+:param extension: extension du fichier (exemple: « csv »)
+:type extension: string
+:return: filename : le nom du fichier donné en paramètre, sinon renvoie default
+:rtype: string</p>
 </dd></dl>
 
 <dl class="py function">
@@ -277,78 +323,6 @@ valeurs données par l’utilisateur.</p>
 </dl>
 </dd></dl>
 
-<dl class="py function">
-<dt class="sig sig-object py" id="outilsLecture.userInputChoice">
-<span class="sig-prename descclassname"><span class="pre">outilsLecture.</span></span><span class="sig-name descname"><span class="pre">userInputChoice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">listOfOptions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">retour</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#outilsLecture.userInputChoice" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Lecture de choix utilisateur parmi une liste d’options</p>
-<dl class="field-list simple">
-<dt class="field-odd">Paramètres</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>listOfOptions</strong> (<code class="docutils literal notranslate"><span class="pre">list</span></code>) – Liste des choix possibles</p></li>
-<li><p><strong>expectedType</strong> – Type de choix à lire</p></li>
-<li><p><strong>expectedType</strong> – <code class="docutils literal notranslate"><span class="pre">type</span></code></p></li>
-</ul>
-</dd>
-<dt class="field-even">Renvoie</dt>
-<dd class="field-even"><p><ul class="simple">
-<li><p>Si le choix est dans la liste des options possibles, retourne
-le choix et <code class="docutils literal notranslate"><span class="pre">True</span></code></p></li>
-<li><p>Si le choix n’est  pas dans la liste des options possibles, retourne
-le choix et <code class="docutils literal notranslate"><span class="pre">False</span></code></p></li>
-</ul>
-</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="outilsLecture.userInputPath">
-<span class="sig-prename descclassname"><span class="pre">outilsLecture.</span></span><span class="sig-name descname"><span class="pre">userInputPath</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">description</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">checkPath</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">safeExit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#outilsLecture.userInputPath" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Lecture d’un chemin d’accès donné par l’utilisateur</p>
-<dl class="field-list simple">
-<dt class="field-odd">Paramètres</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>expectedType</strong> – Type de choix à lire</p></li>
-<li><p><strong>expectedType</strong> – <code class="docutils literal notranslate"><span class="pre">type</span></code></p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="outilsLecture.userInputValue">
-<span class="sig-prename descclassname"><span class="pre">outilsLecture.</span></span><span class="sig-name descname"><span class="pre">userInputValue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">description</span></em>, <em class="sig-param"><span class="pre">expectedType=&lt;class</span> <span class="pre">'float'&gt;</span></em>, <em class="sig-param"><span class="pre">safeExit=None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#outilsLecture.userInputValue" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Lecture d’une valeur donnée par l’utilisateur</p>
-<dl class="field-list simple">
-<dt class="field-odd">Paramètres</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>description</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – Description de la valeur à lire</p></li>
-<li><p><strong>expectedType</strong> – Type de choix à lire (float ou int)</p></li>
-<li><p><strong>expectedType</strong> – <code class="docutils literal notranslate"><span class="pre">type</span></code></p></li>
-<li><p><strong>safeExit</strong> – Valeur à donner pour interrompre la lecture</p></li>
-<li><p><strong>expectedType</strong> – <code class="docutils literal notranslate"><span class="pre">expectedType</span></code></p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="outilsLecture.userInputValueOrDefault">
-<span class="sig-prename descclassname"><span class="pre">outilsLecture.</span></span><span class="sig-name descname"><span class="pre">userInputValueOrDefault</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">description</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expectedType</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#outilsLecture.userInputValueOrDefault" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Lecture d’une valeur donnée par l’utilisateur</p>
-<dl class="field-list simple">
-<dt class="field-odd">Paramètres</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>description</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – Description de la valeur à lire</p></li>
-<li><p><strong>expectedType</strong> – Type de choix à lire (float ou int)</p></li>
-<li><p><strong>expectedType</strong> – <code class="docutils literal notranslate"><span class="pre">type</span></code></p></li>
-<li><p><strong>safeExit</strong> – Valeur à donner pour interrompre la lecture</p></li>
-<li><p><strong>expectedType</strong> – <code class="docutils literal notranslate"><span class="pre">expectedType</span></code></p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
 </div>
 </div>
 
@@ -358,7 +332,7 @@ le choix et <code class="docutils literal notranslate"><span class="pre">False</
           </div>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="outilsParaview.html" class="btn btn-neutral float-right" title="outilsParaview module" accesskey="n" rel="next">Suivant <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="outilsExcel.html" class="btn btn-neutral float-right" title="outilsExcel module" accesskey="n" rel="next">Suivant <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
         <a href="outilsDivers.html" class="btn btn-neutral float-left" title="outilsDivers module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Précédent</a>
     </div>
 

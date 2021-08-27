@@ -1,7 +1,4 @@
 initAllDirs
 ============
 
-.. automodule:: initAllDirs
-   :members:
-   :undoc-members:
-   :show-inheritance:
+Rien à voir ici pour l'instant

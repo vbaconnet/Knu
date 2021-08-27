@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Génération de houle irrégulière &mdash; Documentation Outils Canal Numérique 0.0.1</title>
+  <title>Génération de houle régulière &mdash; Documentation Outils Canal Numérique 0.0.1</title>
   
 
   
@@ -42,8 +42,8 @@
     
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Recherche" href="../search.html" />
-    <link rel="next" title="jonswap" href="jonswap.html" />
-    <link rel="prev" title="Génération de houle régulière" href="genHouleReguliere.html" /> 
+    <link rel="next" title="Génération de houle irrégulière" href="genHouleIrreguliere.html" />
+    <link rel="prev" title="AllpostProcess" href="AllpostProcess.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -95,8 +95,7 @@
 <li class="toctree-l1 current"><a class="reference internal" href="../modules.html">Documentation des scripts</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../modules.html#automatisation-des-calculs-openfoam">Automatisation des calculs OpenFOAM</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../modules.html#generation-de-houle">Génération de houle</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="genHouleReguliere.html">Génération de houle régulière</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">Génération de houle irrégulière</a><ul>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Génération de houle régulière</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#informations">Informations</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#description">Description</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#utilisation">Utilisation</a></li>
@@ -104,6 +103,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#code-source">Code source</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="genHouleIrreguliere.html">Génération de houle irrégulière</a></li>
 <li class="toctree-l3"><a class="reference internal" href="jonswap.html">jonswap</a></li>
 </ul>
 </li>
@@ -163,13 +163,13 @@
         
           <li><a href="../modules.html">Documentation des scripts</a> &raquo;</li>
         
-      <li>Génération de houle irrégulière</li>
+      <li>Génération de houle régulière</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="../_sources/fonctions/genHouleIrreguliere.rst.txt" rel="nofollow"> Afficher la source de la page</a>
+            <a href="../_sources/fonctions/genHouleReguliere.rst.txt" rel="nofollow"> Afficher la source de la page</a>
           
         
       </li>
@@ -182,8 +182,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="generation-de-houle-irreguliere">
-<h1>Génération de houle irrégulière<a class="headerlink" href="#generation-de-houle-irreguliere" title="Lien permanent vers ce titre">¶</a></h1>
+  <div class="section" id="generation-de-houle-reguliere">
+<h1>Génération de houle régulière<a class="headerlink" href="#generation-de-houle-reguliere" title="Lien permanent vers ce titre">¶</a></h1>
 <div class="section" id="informations">
 <h2>Informations<a class="headerlink" href="#informations" title="Lien permanent vers ce titre">¶</a></h2>
 <ul class="simple">
@@ -197,20 +197,27 @@
 d’amplitude, périodes, déphasages et directions pour le patch inlet, et des
 paramètres d’absorption pour le patch outlet.</p>
 <p>La génération peut se faire selon la syntaxe interFoam/interIsoFoam ou olaFlow,
-toujours à partir du fichier <code class="docutils literal notranslate"><span class="pre">constant/jonswapDict</span></code>.</p>
-<p>Pour exécuter ce fichier, vous devez spécifier les paramètres de spectre JONSWAP
-dans le fichier « jonswapDict » formaté comme suit:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Tp</span> <span class="mf">1.78</span>
-<span class="n">Tmin</span> <span class="mf">1.0</span>
-<span class="n">Tmax</span> <span class="mf">3.0</span>
-<span class="n">Hs</span> <span class="mf">1.5</span>
-<span class="n">gamma</span> <span class="mf">3.2</span>
-<span class="n">scale</span> <span class="p">(</span><span class="n">ou</span> <span class="n">échelle</span><span class="p">)</span> <span class="mf">25.0</span> <span class="o">//</span><span class="n">optionnel</span>
+toujours à partir du fichier <code class="docutils literal notranslate"><span class="pre">constant/regularWaveDict</span></code>.</p>
+<p>Pour exécuter ce fichier, vous devez spécifier les paramètres de houle régulière
+comme suit:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wavePeriod</span> <span class="mf">1.78</span>
+<span class="n">waveHeight</span> <span class="mf">1.0</span>
 </pre></div>
 </div>
-<p>L’exécution de ce fichier renverra une erreur si <code class="docutils literal notranslate"><span class="pre">jonswapDict</span></code> n’est pas trouvé.
+<p>Vous pouvez aussi rajouter d’autres paramètres, comme:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">waveAngle</span> <span class="mf">0.0</span>
+<span class="n">rampTime</span> <span class="mf">2.0</span>
+<span class="n">nPaddle</span> <span class="mi">1</span>
+<span class="n">activeAbsorption</span> <span class="n">no</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Veillez à bien respecter la casse des paramètres dans le fichier <code class="docutils literal notranslate"><span class="pre">regularWaveDict</span></code></p>
+</div>
+<p>L’exécution de ce fichier renverra une erreur si <code class="docutils literal notranslate"><span class="pre">regularWaveDict</span></code> n’est pas trouvé.
 Vous pouvez, si besoin, préciser le chemin d’accès vers le fichier de votre
-choix avec l’option <code class="docutils literal notranslate"><span class="pre">--jonswapFile</span></code>.</p>
+choix avec l’option <code class="docutils literal notranslate"><span class="pre">--waveDict</span></code>.</p>
 <p>Le fichier de sortie <code class="docutils literal notranslate"><span class="pre">waveProperties</span></code> sera créé dans le répertoire <code class="docutils literal notranslate"><span class="pre">constant</span></code>
 si il existe, ou directement dans le répertoire courant. Vous pouvez, si besoin,
 préciser le chemin d’accès vers le répertoire de votre choix avec l’option
@@ -218,7 +225,6 @@ préciser le chemin d’accès vers le répertoire de votre choix avec l’optio
 </div>
 <div class="section" id="utilisation">
 <h2>Utilisation<a class="headerlink" href="#utilisation" title="Lien permanent vers ce titre">¶</a></h2>
-<p>genHouleIrreguliere [OPTIONS]</p>
 <dl class="option-list">
 <dt><kbd><span class="option">-h</span>, <span class="option">--help</span></kbd></dt>
 <dd><p>Afficher l’aide</p>
@@ -227,30 +233,20 @@ préciser le chemin d’accès vers le répertoire de votre choix avec l’optio
 <dd><p>chemin d’accès vers le répertoire d’écriture
 du fichier waveProperties</p>
 </dd>
-<dt><kbd><span class="option">--jonswapFile <var>file</var></span></kbd></dt>
+<dt><kbd><span class="option">--waveDict <var>file</var></span></kbd></dt>
 <dd><p>chemin d’accès vers le fichier contenant les
-paramètres de spectre JONSWAP</p>
+paramètres de houle régulière</p>
 </dd>
 <dt><kbd><span class="option">--inlet <var>inletName</var></span></kbd></dt>
 <dd><p>Spécifie le nom du patch inlet (là où la houle
 sera générée).</p>
 </dd>
 <dt><kbd><span class="option">--outlet <var>outletName</var></span></kbd></dt>
-<dd><p>Spécifie le nom du patch outlet</p>
+<dd><p>Spécifie le nom du patch outlet (là où la
+houle sera absorbée)</p>
 </dd>
 <dt><kbd><span class="option">--noOutlet</span></kbd></dt>
 <dd><p>ne pas créer de patch outlet</p>
-</dd>
-<dt><kbd><span class="option">--rampTime <var>value</var></span></kbd></dt>
-<dd><p>Spécifier la valeur de rampTime (temps
-d’amortissement)</p>
-</dd>
-<dt><kbd><span class="option">--nPaddle <var>value</var></span></kbd></dt>
-<dd><p>Spécifier le nombre de batteurs en entrée</p>
-</dd>
-<dt><kbd><span class="option">--Ncomposantes <var>value</var></span></kbd></dt>
-<dd><p>nombre de composantes de chaque paramètre (
-hauteurs, périodes, déphasages…)</p>
 </dd>
 <dt><kbd><span class="option">--writeCsv</span></kbd></dt>
 <dd><p>Ecrit les hauteurs, déphasages, périodes et
@@ -276,12 +272,12 @@ fichier waveProperties</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">numpy</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">sys</span></code>, <code class="docutils literal notranslate"><span class="pre">os</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">jonswap</span></code>, <code class="docutils literal notranslate"><span class="pre">outilsLecture</span></code>,</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">outilsLecture</span></code></p></li>
 </ul>
 </div>
 <div class="section" id="code-source">
 <h2>Code source<a class="headerlink" href="#code-source" title="Lien permanent vers ce titre">¶</a></h2>
-<p>Lien vers le <a class="reference external" href="https://github.com/victor13165/Knu/blob/main/Scripts/Automatisation-OpenFOAM/genHouleIrreguliere.py">code source</a></p>
+<p>Lien vers le <a class="reference external" href="https://github.com/victor13165/Knu/blob/main/Scripts/Automatisation-OpenFOAM/genHouleReguliere.py">code source</a></p>
 </div>
 </div>
 
@@ -291,8 +287,8 @@ fichier waveProperties</p>
           </div>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="jonswap.html" class="btn btn-neutral float-right" title="jonswap" accesskey="n" rel="next">Suivant <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-        <a href="genHouleReguliere.html" class="btn btn-neutral float-left" title="Génération de houle régulière" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Précédent</a>
+        <a href="genHouleIrreguliere.html" class="btn btn-neutral float-right" title="Génération de houle irrégulière" accesskey="n" rel="next">Suivant <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="AllpostProcess.html" class="btn btn-neutral float-left" title="AllpostProcess" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Précédent</a>
     </div>
 
   <hr/>

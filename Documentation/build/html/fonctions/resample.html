@@ -43,7 +43,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Recherche" href="../search.html" />
     <link rel="next" title="Reconstruction de spectre : spectre.py" href="spectre.html" />
-    <link rel="prev" title="Exportation de mesures de sondes : lireSondes.py" href="lireSondes.html" /> 
+    <link rel="prev" title="Calcul de débit de franchissement : debitFranchissement.py" href="debitsFranchissement.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -95,9 +95,16 @@
 <li class="toctree-l1 current"><a class="reference internal" href="../modules.html">Documentation des scripts</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../modules.html#automatisation-des-calculs-openfoam">Automatisation des calculs OpenFOAM</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../modules.html#generation-de-houle">Génération de houle</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="../modules.html#sondes-et-reconstruction-de-spectre">Sondes et reconstruction de spectre</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="lireSondes.html">Exportation de mesures de sondes : lireSondes.py</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">Rééchantillonnage des données de sondes : resample.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules.html#post-traitement">Post-traitement</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../modules.html#reconstruction-de-spectre">Reconstruction de spectre</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Rééchantillonnage des données de sondes : resample.py</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#informations">Informations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#description">Description</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#entrees-sorties">Entrées/sorties</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#utilisation">Utilisation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#code-source">Code source</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="spectre.html">Reconstruction de spectre : spectre.py</a></li>
 </ul>
 </li>
@@ -105,7 +112,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../modules.html#outils-de-manipulation-lecture-et-calcul">Outils de manipulation, lecture et calcul</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../support.html">Support</a></li>
 </ul>
 
             
@@ -175,10 +181,57 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="module-resample">
-<span id="reechantillonnage-des-donnees-de-sondes-resample-py"></span><h1>Rééchantillonnage des données de sondes : resample.py<a class="headerlink" href="#module-resample" title="Lien permanent vers ce titre">¶</a></h1>
-<p>Created on Wed May 26 15:41:42 2021</p>
-<p>&#64;author: vbaconnet</p>
+  <div class="section" id="reechantillonnage-des-donnees-de-sondes-resample-py">
+<h1>Rééchantillonnage des données de sondes : resample.py<a class="headerlink" href="#reechantillonnage-des-donnees-de-sondes-resample-py" title="Lien permanent vers ce titre">¶</a></h1>
+<div class="section" id="informations">
+<h2>Informations<a class="headerlink" href="#informations" title="Lien permanent vers ce titre">¶</a></h2>
+<blockquote>
+<div><ul class="simple">
+<li><p>Auteur: Victor Baconnet</p></li>
+<li><p>Date de dernière modification: 27 août 2021</p></li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="description">
+<h2>Description<a class="headerlink" href="#description" title="Lien permanent vers ce titre">¶</a></h2>
+<p>Rééchantillonne un signal avec une fréquence par défaut de 50 Hz, mais peut être
+changée avec l’option <code class="docutils literal notranslate"><span class="pre">--samplingfreq</span> <span class="pre">&lt;freq&gt;</span></code></p>
+</div>
+<div class="section" id="entrees-sorties">
+<h2>Entrées/sorties<a class="headerlink" href="#entrees-sorties" title="Lien permanent vers ce titre">¶</a></h2>
+<ul>
+<li><p>Lecture des valeurs à traiter dans un fichier par défaut <code class="docutils literal notranslate"><span class="pre">line_probes.csv</span></code>,
+mais peut être modifié avec la commande <code class="docutils literal notranslate"><span class="pre">--file</span> <span class="pre">file.csv</span></code>. Le fichier
+doit être formaté comme suit:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">temps</span><span class="p">,</span><span class="n">val1</span><span class="p">,</span><span class="n">val2</span>
+<span class="n">t1</span><span class="p">,</span><span class="n">v11</span><span class="p">,</span><span class="n">v12</span>
+<span class="n">t2</span><span class="p">,</span><span class="n">v21</span><span class="p">,</span><span class="n">v22</span>
+<span class="o">...</span>
+<span class="n">tn</span><span class="p">,</span><span class="n">vn1</span><span class="p">,</span><span class="n">vn2</span>
+</pre></div>
+</div>
+<p>où les <code class="docutils literal notranslate"><span class="pre">tn,vn1,vn2</span></code> sont des valeurs numériques.</p>
+</li>
+<li><p>Données rééchantillonnées écrites dans le fichier dont le préfixe est
+<code class="docutils literal notranslate"><span class="pre">RESAMPLED_</span></code>, suivi du nom du fichier original.</p></li>
+</ul>
+</div>
+<div class="section" id="utilisation">
+<h2>Utilisation<a class="headerlink" href="#utilisation" title="Lien permanent vers ce titre">¶</a></h2>
+<dl class="option-list">
+<dt><kbd><span class="option">--file <var>file</var></span></kbd></dt>
+<dd><p>Nom du fichier dans lequel lire le signal à traiter.
+Doit être au format <code class="docutils literal notranslate"><span class="pre">.csv</span></code>.</p>
+</dd>
+<dt><kbd><span class="option">--samplingfreq <var>freq</var></span></kbd></dt>
+<dd><p>Fréquence de rééchantillonnage. Par défaut à 50 Hz</p>
+</dd>
+</dl>
+</div>
+<div class="section" id="code-source">
+<h2>Code source<a class="headerlink" href="#code-source" title="Lien permanent vers ce titre">¶</a></h2>
+<p>Lien vers le <a class="reference external" href="https://github.com/victor13165/Knu/blob/main/Scripts/Post-traitement/resample.py">code source</a></p>
+</div>
 </div>
 
 
@@ -188,7 +241,7 @@
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
         <a href="spectre.html" class="btn btn-neutral float-right" title="Reconstruction de spectre : spectre.py" accesskey="n" rel="next">Suivant <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-        <a href="lireSondes.html" class="btn btn-neutral float-left" title="Exportation de mesures de sondes : lireSondes.py" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Précédent</a>
+        <a href="debitsFranchissement.html" class="btn btn-neutral float-left" title="Calcul de débit de franchissement : debitFranchissement.py" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Précédent</a>
     </div>
 
   <hr/>

@@ -15,6 +15,7 @@ Génération de houle
 .. toctree::
    :maxdepth: 1
 
+   fonctions/genHouleReguliere
    fonctions/genHouleIrreguliere
    fonctions/jonswap
 
@@ -43,9 +44,6 @@ Lancement de calculs en arborescence
    fonctions/initAllDirs
    fonctions/runAllDirs
    fonctions/monitorAllDirs
-   fonctions/exportResults
-   fonctions/exportQfToExcel
-   fonctions/exportInfoToExcel
 
 Outils de manipulation, lecture et calcul
 ------------------------------------------
@@ -54,5 +52,4 @@ Outils de manipulation, lecture et calcul
 
    fonctions/outilsDivers
    fonctions/outilsLecture
-   fonctions/outilsParaview
    fonctions/outilsExcel

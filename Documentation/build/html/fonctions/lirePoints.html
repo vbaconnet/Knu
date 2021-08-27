@@ -97,7 +97,15 @@
 <li class="toctree-l2"><a class="reference internal" href="../modules.html#generation-de-houle">Génération de houle</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../modules.html#post-traitement">Post-traitement</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="lireSondes.html">Exportation de mesures de sondes : lireSondes.py</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">Exportation de mesures de points : lirePoints.py</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Exportation de mesures de points : lirePoints.py</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#informations">Informations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#description">Description</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#entrees-sorties">Entrées/sorties</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#utilisation">Utilisation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dependances">Dépendances</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#code-source">Code source</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="debitsFranchissement.html">Calcul de débit de franchissement : debitFranchissement.py</a></li>
 </ul>
 </li>
@@ -106,7 +114,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../modules.html#outils-de-manipulation-lecture-et-calcul">Outils de manipulation, lecture et calcul</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../support.html">Support</a></li>
 </ul>
 
             
@@ -176,9 +183,77 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="module-lirePoints">
-<span id="exportation-de-mesures-de-points-lirepoints-py"></span><h1>Exportation de mesures de points : lirePoints.py<a class="headerlink" href="#module-lirePoints" title="Lien permanent vers ce titre">¶</a></h1>
-<p>Lecture des fichiers sondes dans les fichiers postProcessing/line</p>
+  <div class="section" id="exportation-de-mesures-de-points-lirepoints-py">
+<h1>Exportation de mesures de points : lirePoints.py<a class="headerlink" href="#exportation-de-mesures-de-points-lirepoints-py" title="Lien permanent vers ce titre">¶</a></h1>
+<div class="section" id="informations">
+<h2>Informations<a class="headerlink" href="#informations" title="Lien permanent vers ce titre">¶</a></h2>
+<blockquote>
+<div><ul class="simple">
+<li><p>Auteur: Victor Baconnet</p></li>
+<li><p>Date de dernière modification: 27 août 2021</p></li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="description">
+<h2>Description<a class="headerlink" href="#description" title="Lien permanent vers ce titre">¶</a></h2>
+<p>Lit les valeurs de mesures de pression dans les fichiers du dossier <code class="docutils literal notranslate"><span class="pre">postProcessing</span></code>.
+Par défaut, la recherche se fait dans le dossier <code class="docutils literal notranslate"><span class="pre">postProcessing/points</span></code>. Vous
+pouvez modifier la destination <code class="docutils literal notranslate"><span class="pre">points</span></code> avec la commande <code class="docutils literal notranslate"><span class="pre">--name</span> <span class="pre">name</span></code>. Ce
+dossier porte le même nom que celui que vous avez donné à votre set de points
+dans <code class="docutils literal notranslate"><span class="pre">system/controlDict</span></code>.</p>
+<p>Une fois dans le dossier <code class="docutils literal notranslate"><span class="pre">postProcessing/points</span></code>, le programme prendre par
+défaut le premier fichier et en extraira le nom du cloud correspondant. Si il n’y
+a pas de fichiers cloud disponibles, renverra une erreur. Si il y a plusieurs
+fichiers clouds disponibles, le programme renverra une erreur en vous affichant
+tous les clouds disponibles.</p>
+<p>Un cloud est considéré comme valide si son nom de fichier est du type
+<code class="docutils literal notranslate"><span class="pre">&lt;nom&gt;_&lt;champ&gt;.xy</span></code>. <code class="docutils literal notranslate"><span class="pre">champ</span></code> est par défaut <code class="docutils literal notranslate"><span class="pre">p</span></code> pour lire des mesures de
+pression, mais peut être changé avec l’option <code class="docutils literal notranslate"><span class="pre">--champ</span> <span class="pre">&lt;champ&gt;</span></code>.</p>
+</div>
+<div class="section" id="entrees-sorties">
+<h2>Entrées/sorties<a class="headerlink" href="#entrees-sorties" title="Lien permanent vers ce titre">¶</a></h2>
+<ul class="simple">
+<li><p>Lit les valeurs mesurées par les sondes dans les fichiers du dossier
+<code class="docutils literal notranslate"><span class="pre">postProcessing</span></code> par défaut <code class="docutils literal notranslate"><span class="pre">postProcessing/line</span></code>. Au lieu de <code class="docutils literal notranslate"><span class="pre">line</span></code>,
+vous pouvez indiquer un autre nom avec l’option <code class="docutils literal notranslate"><span class="pre">--linepath</span> <span class="pre">&lt;name&gt;</span></code>. Ce
+nom correspond au nom que vous avez donné à votre set de sondes dans
+<code class="docutils literal notranslate"><span class="pre">system/controlDict</span></code>.</p></li>
+<li><p>Ecrit les valeurs dans un fichier au format <code class="docutils literal notranslate"><span class="pre">line_probes.csv</span></code> par défaut
+mais peut être modifié avec l’option <code class="docutils literal notranslate"><span class="pre">--outputfile</span> <span class="pre">&lt;file&gt;</span></code>.</p></li>
+</ul>
+</div>
+<div class="section" id="utilisation">
+<h2>Utilisation<a class="headerlink" href="#utilisation" title="Lien permanent vers ce titre">¶</a></h2>
+<dl class="option-list">
+<dt><kbd><span class="option">--outputfile <var>file</var></span></kbd></dt>
+<dd><p>Fichier de sortie des mesures de sondes</p>
+</dd>
+<dt><kbd><span class="option">--name <var>name</var></span></kbd></dt>
+<dd><p>Nom du dossier où se trouvent les mesures. Ce nom correspond
+au chemin <code class="docutils literal notranslate"><span class="pre">postProcessing/&lt;name&gt;</span></code>.</p>
+</dd>
+<dt><kbd><span class="option">--champ <var>champ</var></span></kbd></dt>
+<dd><p>Champ de données à lire. Exemple de champs:
+<code class="docutils literal notranslate"><span class="pre">alpha.water</span></code>, <code class="docutils literal notranslate"><span class="pre">p</span></code>, <code class="docutils literal notranslate"><span class="pre">U</span></code>…</p>
+</dd>
+<dt><kbd><span class="option">--cloudname <var>cloud</var></span></kbd></dt>
+<dd><p>Nom du cloud de points. Ce nom du cloud correspond au
+nom de fichier de type <code class="docutils literal notranslate"><span class="pre">&lt;cloud&gt;_&lt;champ&gt;.xy</span></code></p>
+</dd>
+</dl>
+</div>
+<div class="section" id="dependances">
+<h2>Dépendances<a class="headerlink" href="#dependances" title="Lien permanent vers ce titre">¶</a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">pandas</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">outilsLecture</span></code>, <code class="docutils literal notranslate"><span class="pre">outilsDivers</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sys</span></code>, <code class="docutils literal notranslate"><span class="pre">os</span></code></p></li>
+</ul>
+</div>
+<div class="section" id="code-source">
+<h2>Code source<a class="headerlink" href="#code-source" title="Lien permanent vers ce titre">¶</a></h2>
+<p>Lien vers le <a class="reference external" href="https://github.com/victor13165/Knu/blob/main/Scripts/Post-traitement/lirePoints.py">code source</a></p>
+</div>
 </div>
 
 

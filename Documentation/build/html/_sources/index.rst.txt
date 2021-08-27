@@ -20,5 +20,4 @@ Index
    tutoriels
    canal
    modules
-   support
 
