@@ -1,7 +1,4 @@
 runAllDirs
 ===========
 
-.. automodule:: runAllDirs
-   :members:
-   :undoc-members:
-   :show-inheritance:
+Rien à voir ici pour l'instant

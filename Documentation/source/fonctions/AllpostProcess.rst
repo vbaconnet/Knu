@@ -1,7 +1,4 @@
 AllpostProcess
 ===============
 
-.. automodule:: AllpostProcess
-   :members:
-   :undoc-members:
-   :show-inheritance:
+Rien à voir ici encore

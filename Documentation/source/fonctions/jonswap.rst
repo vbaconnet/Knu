@@ -1,5 +1,5 @@
-jonswap
-=======
+Spectre de JONSWAP
+====================
 
 .. automodule:: jonswap
    :members:

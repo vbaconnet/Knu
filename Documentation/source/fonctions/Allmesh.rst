@@ -1,7 +1,4 @@
 Allmesh
 ========
 
-.. automodule:: Allmesh
-   :members:
-   :undoc-members:
-   :show-inheritance:
+Rien à voir ici encore

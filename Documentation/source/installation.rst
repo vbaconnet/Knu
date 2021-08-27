@@ -8,4 +8,4 @@ Installation
 
 Ces outils font partie du package scripts-python-ACRI, téléchargeable avec la commande::
 
-        git clone https://github.com/victor13165/scripts-python-ACRI
+        git clone https://github.com/victor13165/Knu

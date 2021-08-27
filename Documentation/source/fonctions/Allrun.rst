@@ -1,7 +1,4 @@
 Allrun
 =======
 
-.. automodule:: Allrun
-   :members:
-   :undoc-members:
-   :show-inheritance:
+Rien à voir ici encore
