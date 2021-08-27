@@ -20,9 +20,20 @@ toujours à partir du fichier ``constant/regularWaveDict``.
 Pour exécuter ce fichier, vous devez spécifier les paramètres de houle régulière
 comme suit::
     
-  T 1.78
-  H 1.0
+  wavePeriod 1.78
+  waveHeight 1.0
+
+Vous pouvez aussi rajouter d'autres paramètres, comme::
     
+    waveAngle 0.0
+    rampTime 2.0
+    nPaddle 1
+    activeAbsorption no
+    
+.. NOTE ::
+    
+    Veillez à bien respecter la casse des paramètres dans le fichier ``regularWaveDict``
+
 L'exécution de ce fichier renverra une erreur si ``regularWaveDict`` n'est pas trouvé.
 Vous pouvez, si besoin, préciser le chemin d'accès vers le fichier de votre 
 choix avec l'option ``--waveDict``.
@@ -47,13 +58,9 @@ Options
                                   paramètres de houle régulière                                
 --inlet inletName                 Spécifie le nom du patch inlet (là où la houle
                                   sera générée).
---outlet outletName               Spécifie le nom du patch outlet
+--outlet outletName               Spécifie le nom du patch outlet (là où la 
+                                   houle sera absorbée)
 --noOutlet                        ne pas créer de patch outlet
---rampTime value                  Spécifier la valeur de rampTime (temps 
-                                  d'amortissement) 
---nPaddle value                   Spécifier le nombre de batteurs en entrée 
---Ncomposantes value              nombre de composantes de chaque paramètre (
-                                  hauteurs, périodes, déphasages...)    
 --writeCsv                        Ecrit les hauteurs, déphasages, périodes et 
                                   directions
                                   dans un fichier au format ".csv". Cette 
@@ -66,14 +73,12 @@ Options
 --solver solver                   Nom du solveur utilisé pour le formatage du 
                                   fichier waveProperties
 
-    
 Dépendances
 ===========
 
-* Pour l'utilisation des fonctions uniquement: ``numpy``
-    
-* Pour exécuter le fichier : ``numpy``, ``sys``, ``outilsLecture``, 
-  ``os``
+* ``numpy``
+* ``sys``, ``os``
+* ``outilsLecture`` 
 
 Fonctions
 =========

@@ -1,8 +1,9 @@
-#/bin/bash
+#!/bin/bash
 
 raw="${1}"
-hrs=$(awk "BEGIN {print int(${raw} / 3600)}")
-min=$(awk "BEGIN {print int((${raw} - ${hrs}*3600) / 60)}")
-sec=$(awk "BEGIN {print ${raw} -  ${hrs}*3600.0 - ${min}*60.0}")
 
-echo "${hrs}h${min}m${sec}s"
+hrs=$(python -c "print( int($raw/3600.0))")
+mins=$(python -c "print( int( ($raw - $hrs*3600)/60.0 ))")
+secs=$(python -c "print( $raw - $hrs*3600 - $mins*60)")
+
+echo "${hrs}h${mins}m${secs}s"

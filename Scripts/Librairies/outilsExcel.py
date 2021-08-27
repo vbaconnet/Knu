@@ -1,8 +1,68 @@
 """
+Informations
+============
+
+    * Auteur: Victor Baconnet
+    * Date de dernière modification: 27 août 2021
+
 Description
 ===========
 
 Outils d'écriture et d'édition de données et graphiques sur excel
+
+Utilisation
+============
+
+Ces fonctions sont à importer directement dans vos programmes.
+
+L'exécution de ce fichier ne produira aucun résultat.
+
+Exemple d'utilisation
+======================
+
+Ecriture de données et affichage::
+    
+    import outilsExcel as oxc
+    from openpyxl import Workbook
+    from openpyxl.chart import ScatterChart
+    from numpy import sin, pi, linspace
+    from pandas import DataFrame
+    
+    # Génération de données
+    t = linspace(0,10,1001)
+    y1 = sin(2*pi*t)
+    y2 = sin(2*pi*t/4)
+    y3 = y1*y2
+    
+    # Tout mettre dans un dataframe
+    df = DataFrame(data = [t,y1,y2,y3]).transpose() 
+    df.columns = ["t","Periode 1s","Periode 4s","Produit"]
+    
+    # Initialisation du fichier excel et des feuilles de donées
+    wkbk = Workbook()  # Objet worbook = fichier excel
+    donnees = wkbk.active
+    donnees.title = "Données"
+    graphes = wkbk.create_sheet("Graphiques")
+    
+    # Creation des objets graphiques
+    chart1 = ScatterChart(auto_axis = False)
+    chart2 = ScatterChart(auto_axis = False)
+    
+    # Ecriture des données
+    oxc.write(df, donnees, with_index = False)
+    
+    # Affichage des graphiques
+    oxc.plot(chart1, [(1,2),(1,3)], donnees, graphes, "A1",
+             xlabel = "Temps (s)", y_min_row = 2, x_min_row = 2,
+             get_title = True, xlim=(0,10))
+    
+    oxc.plot(chart2, [(1,4)], donnees, graphes, "M1",
+             xlabel = "Temps (s)", y_min_row = 2, x_min_row = 2,
+             get_title = True, xlim=(0,10))
+    
+    #Sauvegarde
+    wkbk.save("exemple.xlsx")
+    
 
 Fonctions
 =========
@@ -10,11 +70,11 @@ Fonctions
 """
 
 from openpyxl.utils.dataframe import dataframe_to_rows
-from openpyxl.chart import Reference, Series 
+from openpyxl.chart import Reference, Series
 from openpyxl.chart.text import RichText
 import openpyxl.drawing.text as odt
 
-def write(data, sheet):
+def write(data, sheet, with_index = False):
     """Ajoute (append) des données d'un DataFrame dans une feuille excel
     
     :param data: Tableau de données de type dataframe
@@ -22,7 +82,8 @@ def write(data, sheet):
     :param sheet: Feuille dans laquelle écrire
     :type sheet: openpyxl.worksheet.worksheet.Worksheet
     """
-    for row in dataframe_to_rows(data):
+    
+    for row in dataframe_to_rows(data, index = with_index):
         sheet.append(row)
 
 def make_plot(chart, data_sheet, x_col, y_col, x_min_row = 2, y_min_row = 2,
@@ -43,6 +104,7 @@ def make_plot(chart, data_sheet, x_col, y_col, x_min_row = 2, y_min_row = 2,
     :param get_title: Indique si il faut récupérer le titre de la colonne y ou non
     :type get_title: bool
     """
+    
     print(f"Nouveau tracé  (x,y) : colonnes ({x_col}, {y_col})")
     
     x = Reference(worksheet = data_sheet,
@@ -114,6 +176,7 @@ def plot(chart, cols, data_sheet, plot_sheet, where, title = "",
       * Left : ``l``
       * Right : ``r``
     """
+    
     # Tracer chaque graphique
     for to_plot in cols:
         make_plot(chart, data_sheet, to_plot[0], to_plot[1], get_title = get_title)

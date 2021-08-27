@@ -1,8 +1,29 @@
 """
+Informations
+============
+
+    * Auteur: Victor Baconnet
+    * Date de dernière modification: 27 août 2021
+
+
 Description
 ===========
 
-Fonctions non-triées pour effectuer des opérations diverses.
+Fonctions non-triées pour effectuer des opérations diverses, notamment:
+
+  * Recherche de valeur dans un itérable : ``find()``
+  * Calcul de RMSE (Root Mean Squared Error) : ``RMSE()``
+  * Afficher un message d'erreur : ``error()``
+  * Afficher un warning : ``warning()``
+  * Afficher des graphiques bien organisés : ``plot()``
+  
+
+Utilisation
+===========
+
+Les fonctions sont à importer directement dans vos programmes.
+
+L'exécution de ce fichier ne produira aucun résultat.
 
 Fonctions
 =========
@@ -51,6 +72,7 @@ def RMSE(y1, y2):
 
 def error(message: str, errorType: Exception):
     """Afficher un message d'erreur et quitter le programme
+    
     :param message: message à afficher
     :type message: ``str``
     :param errorType:
@@ -68,7 +90,49 @@ def warning(message: str):
 def plot(x, y, fig, ax, label = "", xlabel = "", ylabel = "", title = "", grid = True,
         tick_fontsize = 14, label_fontsize = 16, xmin = None, xmax = None, ymin = None,
         ymax = None, legend = None, tight_layout = True):
-
+    """Tracer (x,y) sur un graphique.
+    
+    :param x: Abcisses
+    :type x: ``iterable``
+    :param y: Ordonnées
+    :type y: ``iterable``
+    :param fig: Objet figure
+    :type fig: matplotlib.figure.Figure
+    :param ax: Objet axe
+    :type ax: matplotlib.axes._subplots.AxesSubplot
+    :param label: Légende de la courbe
+    :type label: str
+    :param xlabel: Nom de l'axe x
+    :type xlabel: str
+    :param ylabel: Nom de l'axe y
+    :type ylabel: str
+    :param title: titre du graphique
+    :type title: str
+    :param grid: Mettre à true pour afficher la grille
+    :type grid: bool
+    :param tick_fontsize: Taille de police des graduations
+    :type tick_fontsize: int
+    :param label_fontsize: Taille de police des titres et légendes
+    :type label_fontsize: int
+    :param xmin: Borne min de l'axe x
+    :type xmin: float
+    :param xmax: Borne max de l'axe x
+    :type xmax: float
+    :param ymin: Borne min de l'axe y
+    :type ymin: float
+    :param ymax: Borne max de l'axe y
+    :type ymax: float
+    :param legend: Afficher la légende ou non. Si ``label`` est définie, se met
+       automatiquement à True.
+    :type legend: bool
+    :param tight_layout: Reformatage de la fenêtre de la figure pour faire rentrer
+       les titres etc. Par défaut à True.
+    :type tight_layout: bool
+    :returns: Objet ligne issu de la commande ax.plot(), récupérable pour la
+       gestion d'animations
+    :rtype: matplotlib.lines.Line2D
+    """
+    
     if legend is None:
         legend = True if label != "" else False
 
@@ -86,76 +150,9 @@ def plot(x, y, fig, ax, label = "", xlabel = "", ylabel = "", title = "", grid =
 
     ax.tick_params(labelsize = tick_fontsize)
     
-    if grid:
-        ax.grid()
+    ax.grid(b = grid)
 
     if tight_layout:
         fig.tight_layout()
 
     return line
-
-
-def plot_multi(xs, ys, fig, axs, labels=[], xlabels = None, ylabels = None,
-               titles = None, grids = True, tick_fontsize = 14, 
-               label_fontsize = 16, xmins = None, xmaxs = None, ymins = None, 
-               ymaxs = None, legend = None, tight_layout = True):
-
-    assert len(xs) == len(ys)
-    
-    from numpy import size
-    
-    lines = []
-
-    if legend is None:
-        legend = True if len(labels) != 0 else False
-
-    if size(axs) == 1:
-        for idx in range(len(xs)):
-            line, = axs.plot(xs[idx], ys[idx], label = labels[idx])
-            lines.append(line)
-    elif size(axs) == len(xs):
-        for idx in range(len(xs)):
-            line, = axs[idx].plot(xs[idx], ys[idx], label = labels[idx])
-    else:
-        raise ValueError(f"axs invalide. Doit être de taille 1 ou {size(axs)}")
-
-    if legend:
-        try:
-            axs.legend()
-        except AttributeError:
-            for ax in axs:
-                ax.legend()
-
-    try:
-
-        axs.set_xlim((xmins, xmaxs))
-        axs.set_ylim((ymins, ymaxs))
-    
-        axs.set_xlabel(xlabels, fontsize = label_fontsize)
-        axs.set_ylabel(ylabels, fontsize = label_fontsize)
-        axs.set_title(titles, fontsize = label_fontsize)
-        axs.tick_params(labelsize = tick_fontsize)
-    
-        if grids:
-            axs.grid()
-    
-    except AttributeError:
-        
-        for idx, ax in enumerate(axs):
-            
-            ax.set_xlim((xmins, xmaxs))
-            ax.set_ylim((ymins, ymaxs))
-        
-            ax.set_xlabel(xlabels, fontsize = label_fontsize)
-            ax.set_ylabel(ylabels, fontsize = label_fontsize)
-            ax.set_title(titles, fontsize = label_fontsize)
-
-            ax.tick_params(labelsize = tick_fontsize)
-            
-            if grid[idx]:
-                ax.grid()
-
-    if tight_layout:
-        fig.tight_layout()
-
-    return lines

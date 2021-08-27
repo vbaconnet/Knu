@@ -74,10 +74,15 @@ Options
 Dépendances
 ===========
 
-* Pour l'utilisation des fonctions uniquement: ``numpy``
     
-* Pour exécuter le fichier : ``numpy``, ``sys``, ``jonswap``, ``outilsLecture``, 
-  ``os``
+* ``numpy``
+* ``sys``, ``os``
+* ``jonswap``, ``outilsLecture``, 
+  
+Code source
+============
+
+Lien vers le `code source <https://github.com/victor13165/Knu/blob/main/Scripts/Automatisation-OpenFOAM/genHouleIrreguliere.py>`_
 
 Fonctions
 =========
@@ -361,7 +366,7 @@ if __name__  == "__main__":
     
     #------- ces modules sont indispensables ----------------------------------
     import outilsLecture as olec
-    from outilsDivers import warning, error
+    from outilsDivers import warning
     import jonswap as jswp
     import sys
     import os
@@ -473,8 +478,9 @@ Tmin = {Tmin}\nTmax = {Tmax}\nTp = {Tp}")
     w        = np.linspace(wmin,wmax,Ncomposantes)   #Génération du vecteur de fréquences
     periodes = 2.0*np.pi/w                      #Périodes T = 2pi/w
 
-    #Génération des amplitudes et déphasages
-    amplitudes, dephasages, spectre = jswp.genJonswapParams(Hs, Tp, gamma, w)
+    #Génération du spectre, amplitudes et déphasages
+    spectre = jswp.jonswap(Hs, Tp, gamma, w)
+    amplitudes, dephasages = jswp.genJonswapParams(spectre, w)
     
     #Directions [0 0 0 0 ... 0] en 2D
     directions = direction*np.ones(len(amplitudes))
