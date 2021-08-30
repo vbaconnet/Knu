@@ -108,7 +108,7 @@ if __name__ == "__main__":
     import sys
     import numpy as np
     import jonswap as jswp 
-    import genWaveProperties as gwp
+    import genHouleIrreguliere as gwp
     import os
     import outilsLecture as olec
     from scipy import signal
@@ -212,7 +212,7 @@ if __name__ == "__main__":
 
     plt.figure(figsize=(8,7))
     
-    for i in range(Nsondes):
+    for i in range(Nsondes-1):
         plt.plot(w, spectresSondes[:,i], label = "{}".format(sondeData.columns[i]))
     
     plt.xlabel(r"$\omega$ (rad $s^{-1}$)", fontsize = 17)
@@ -233,8 +233,8 @@ if __name__ == "__main__":
         #Lecture des paramètres donnés dans jonswapDict
         param_dict = gwp.readParams(jonswapFile)
         
-        Tmin,Tmax,Tp = param_dict["tmin"], param_dict["tmax"], param_dict["tp"]
-        Hs,gamma = param_dict["hs"],param_dict["gamma"]   
+        Tmin,Tmax,Tp = param_dict["Tmin"], param_dict["Tmax"], param_dict["Tp"]
+        Hs,gamma = param_dict["Hs"],param_dict["gamma"]   
           
         wmin = 2.0*np.pi/Tmax   #Fréquence min
         wmax = 2.0*np.pi/Tmin   #Fréquence max

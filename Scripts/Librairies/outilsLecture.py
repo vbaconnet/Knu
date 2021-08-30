@@ -2,8 +2,9 @@
 Informations
 ============
 
-    * Auteur: Victor Baconnet
-    * Date de dernière modification: 27 août 2021
+* Fichier: ``outilsLecture.py``
+* Auteur: Victor Baconnet
+* Date de dernière modification: 27 août 2021
 
 Description
 ===========
@@ -54,6 +55,11 @@ Executions possibles:
     Dans le dernier exemple, si l'utilisateur avait précisé ``wrongfile.txt``,
     le programme aurait renvoyé une erreur.
 
+Code source
+============
+
+Lien vers le `code source <https://github.com/victor13165/Knu/blob/main/Scripts/Librairies/outilsLecture.py>`_
+
 Fonctions
 =========
 
@@ -65,7 +71,7 @@ def readFileOption(options, possibleNames, default, extension = "", checkPath = 
     :param options: Liste des options données par l'utilisateur
     :type options: list
     :param possibleNames: Liste des options acceptées pour sélectionner ce 
-    paramètre (exemple: ["-file", "--file", "-File"])
+      paramètre (exemple: ["-file", "--file", "-File"])
     :type possibleNames: list
     :param default: Valeur prise par défaut
     :type default: string

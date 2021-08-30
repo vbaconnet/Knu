@@ -37,6 +37,11 @@ Utilisation
                         Doit être au format ``.csv``.
 --samplingfreq freq     Fréquence de rééchantillonnage. Par défaut à 50 Hz  
 
+Code source
+============
+
+Lien vers le `code source <https://github.com/victor13165/Knu/blob/main/Scripts/Post-traitement/resample.py>`_
+
 """
 
 import numpy as np
