@@ -1,5 +1,5 @@
-outilsExcel module
-====================
+Exportation de résultats vers Excel
+====================================
 
 .. automodule:: outilsExcel
    :members:

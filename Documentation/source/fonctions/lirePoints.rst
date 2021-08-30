@@ -1,9 +1,10 @@
-Exportation de mesures de points : lirePoints.py
-=================================================
+Exportation de mesures de points 
+=================================
 
 Informations
 -------------
 
+    * Fichier : ``lireSondes.py``
     * Auteur: Victor Baconnet
     * Date de dernière modification: 27 août 2021
 

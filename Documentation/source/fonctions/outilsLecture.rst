@@ -1,5 +1,5 @@
-outilsLecture module
-====================
+Outils de lecture de paramètres
+================================
 
 .. automodule:: outilsLecture
    :members:

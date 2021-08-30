@@ -1,9 +1,10 @@
-Calcul de débit de franchissement : debitFranchissement.py
-==========================================================
+Calcul de débit de franchissement 
+==================================
 
 Informations
 -------------
 
+    * Fichier: ``debitFranchissement.py``
     * Auteur: Victor Baconnet
     * Date de dernière modification: 27 août 2021
 

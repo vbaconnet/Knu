@@ -36,14 +36,15 @@
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
         <script src="_static/translations.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Recherche" href="search.html" />
-    <link rel="next" title="Documentation des scripts" href="modules.html" />
-    <link rel="prev" title="Affouillement en 3D" href="tutoriels/sedFoam/3DScour.html" /> 
+    <link rel="next" title="Librairies d’outils" href="outils.html" />
+    <link rel="prev" title="Reconstruction de spectre" href="fonctions/spectre.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -90,12 +91,23 @@
             
               <p class="caption" role="heading"><span class="caption-text">Tutoriels</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="tutoriels.html">Tutoriels</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutoriels/interFoam/interFoam.html">interFoam</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutoriels/olaFlow/olaFlow.html">olaFlow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutoriels/overInterDyMFoam/overInterDyMFoam.html">overInterDyMFoam</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutoriels/sedFoam/sedFoam.html">sedFoam</a></li>
 </ul>
+<p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="tutoriels.html">Tutoriels</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Guide de programmation du canal</a></li>
-<li class="toctree-l1"><a class="reference internal" href="modules.html">Documentation des scripts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generationHoule.html">Génération de houle</a></li>
+<li class="toctree-l1"><a class="reference internal" href="postTraitement.html">Post-traitement</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Guide de programmation du canal</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#generation-de-houle-irreguliere">Génération de houle irrégulière</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#theorie-batteur-piston">Théorie batteur-piston</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#controle-du-programme">Contrôle du programme</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#vagues-scelerates">Vagues scélérates</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="outils.html">Librairies d’outils</a></li>
 </ul>
 
             
@@ -165,7 +177,179 @@
             
   <div class="section" id="guide-de-programmation-du-canal">
 <h1>Guide de programmation du canal<a class="headerlink" href="#guide-de-programmation-du-canal" title="Lien permanent vers ce titre">¶</a></h1>
-<p>Cette documentation présente la théorie et programmation du canal à houle et la génération de houle irrégulière et de vaguees scélérates.</p>
+<p>Cette documentation présente la théorie et programmation du canal à houle
+et la génération de houle irrégulière et de vagues scélérates. Les
+programmes de génération sont situés dans le dossier <code class="docutils literal notranslate"><span class="pre">Knu/Scripts/Canal/</span></code>.</p>
+<div class="section" id="generation-de-houle-irreguliere">
+<h2>Génération de houle irrégulière<a class="headerlink" href="#generation-de-houle-irreguliere" title="Lien permanent vers ce titre">¶</a></h2>
+<p>La génération de houle irrégulière se fait à partir d’un spectre JONSWAP,
+avec la fonction <code class="docutils literal notranslate"><span class="pre">jonswap</span></code> dans le fichier <code class="docutils literal notranslate"><span class="pre">jonswap.m</span></code>.</p>
+<p>Le spectre de JONSWAP est calculé avec la formule suivante:</p>
+<div class="math notranslate nohighlight">
+\[S(\omega,a) = aH_s^2 \omega_p^4 \omega^{-5} e^{-\frac{3}{4}\left(
+    \frac{\omega_p}{\omega}\right)^4} \gamma^b\]</div>
+<p>avec</p>
+<div class="math notranslate nohighlight">
+\[b=\exp{-\frac{(\omega - \omega_p)^2}{2\sigma^2\omega_p^2}}\]</div>
+<p>et <span class="math notranslate nohighlight">\(\sigma=0.07\)</span> si <span class="math notranslate nohighlight">\(\omega &lt; \omega_p\)</span>, <span class="math notranslate nohighlight">\(\sigma=0.09\)</span> sinon. La constante
+réelle <span class="math notranslate nohighlight">\(a\)</span> peut être déterminée en utilisant la définition de <span class="math notranslate nohighlight">\(H_s\)</span></p>
+<div class="math notranslate nohighlight">
+\[H_s = 4\sqrt{\int_{0}^{+\infty}{S(\omega,a)d\omega}}\]</div>
+<p>De telle sorte que :</p>
+<div class="math notranslate nohighlight">
+\[a = \frac{H_s^2}{16}\left(\int_{0}^{+\infty}{S(\omega, a=1)d\omega}\right)^{-1}\]</div>
+<p>A partir du spectre, on peut obtenir les amplitudes de houle avec la formule</p>
+<div class="math notranslate nohighlight">
+\[H_i = 2\sqrt{S_i\Delta\omega}\]</div>
+<p>Où les <span class="math notranslate nohighlight">\(S_i\)</span> sont les composantes du spectre discrétisé
+telles que <span class="math notranslate nohighlight">\(S_i=S(\omega_i)\)</span>. Le nombre de fréquences <span class="math notranslate nohighlight">\(\omega_i\)</span>
+correspond au nombre de composantes de houle désiré, en général
+de 1000. Le paramètre <span class="math notranslate nohighlight">\(\Delta\omega\)</span> est le pas de discrétisation
+du vecteur de fréquences, qui est constant.</p>
+<p>Les déphasages peuvent être générés aléatoirement entre <span class="math notranslate nohighlight">\(0\)</span>
+et <span class="math notranslate nohighlight">\(2\pi\)</span>.</p>
+<p>Avec ces données, on peut obtenir un signal de houle de type:</p>
+<div class="math notranslate nohighlight">
+\[\eta(x=0,t) = \sum_{i=0}^{N}{\frac{H_i}{2}\cos{(-\omega_i t + \phi_i)}}\]</div>
+</div>
+<div class="section" id="theorie-batteur-piston">
+<h2>Théorie batteur-piston<a class="headerlink" href="#theorie-batteur-piston" title="Lien permanent vers ce titre">¶</a></h2>
+<p>Pour convertir ce signal de houle en signal de batteur, nous allons
+utiliser la théorie de batteur piston. Le signal du batteur est
+donné par:</p>
+<div class="math notranslate nohighlight">
+\[x(t) = \sum_{i=0}^{N}{x_i(t)} = \sum_{i=0}^{N}{\frac{H_i}{\tau_i}\cos{(\omega_i t + \phi_i)}}\]</div>
+<p>où <span class="math notranslate nohighlight">\(\tau_i\)</span> est donné par:</p>
+<div class="math notranslate nohighlight">
+\[\tau_i = 2 \frac{\cosh{(2k_ih)} - 1}{\sinh(2k_ih) +  2k_ih}\]</div>
+<p>Où les <span class="math notranslate nohighlight">\(k_i\)</span> sont les nombres d’onde et <span class="math notranslate nohighlight">\(h\)</span> la
+hauteur d’eau initiale devant le batteur. Cette formule est
+issue de la référence :</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>[Advanced series on ocean engineering 2] Robert G. Dean,
+Robert A. Dalrymple - Water wave mechanics for engineers and scientists
+(1991, World Scientific)
+</pre></div>
+</div>
+<p>Consultable dans : <code class="docutils literal notranslate"><span class="pre">T:\Services\Production\Sophia\Modelisation_Physique\_DOCUMENTATION</span></code></p>
+<p>Les nombres d’onde <span class="math notranslate nohighlight">\(k_i\)</span> se calculent à partir de la
+relation de dispersion :</p>
+<div class="math notranslate nohighlight">
+\[\omega_i^2 = gk_i \tanh(k_i h)\]</div>
+<p>Que l’on peut réécrire</p>
+<div class="math notranslate nohighlight">
+\[\frac{1}{k_i} = \frac{g}{\omega_i^2}\tanh(k_i h)\]</div>
+<p>Dans le programme de génération, cette équaion est résolue par
+la méthode du point fixe dans la fonction <code class="docutils literal notranslate"><span class="pre">dispersion</span></code>
+du fichier <code class="docutils literal notranslate"><span class="pre">deplacement_batteur.m</span></code>.</p>
+<p>La fonction <code class="docutils literal notranslate"><span class="pre">deplacement_batteur</span></code> renvoie le signal
+<span class="math notranslate nohighlight">\(x_i(t)\)</span>. Le programme principal additionne chaque <span class="math notranslate nohighlight">\(x_i(t)\)</span>
+pour obtenir le signal de batteur <span class="math notranslate nohighlight">\(x(t)\)</span> (variable <code class="docutils literal notranslate"><span class="pre">x_batteur</span></code>
+dans le programme <code class="docutils literal notranslate"><span class="pre">generer_irreguliere.m</span></code>).</p>
+<p>Pour ne pas que le batteur fasse d’à-coups, une rampe linéaire
+est appliquée au début et à la fin du signal, de telle sorte que
+<span class="math notranslate nohighlight">\(x(0) = 0\)</span> et <span class="math notranslate nohighlight">\(x(t_{max}) = 0\)</span>. De même, le
+programme vérifie que le batteur ne se déplace pas plus de
+<span class="math notranslate nohighlight">\(30\,cm\)</span>, ne subit pas de vitesses au dessus de <span class="math notranslate nohighlight">\(2.5\,m/s\)</span>
+et pas d’accélérations au dessus de <span class="math notranslate nohighlight">\(0.7\,m/s^2\)</span>. Si
+c’est le cas, le programme renverra un avertissement.</p>
+<div class="admonition warning">
+<p class="admonition-title">Avertissement</p>
+<p>C’est à vous de générer un signal adapté aux contraintes
+mécaniques du batteur. Le programme ne corrige pas le signal
+s’il n’est pas adapté.</p>
+</div>
+</div>
+<div class="section" id="controle-du-programme">
+<h2>Contrôle du programme<a class="headerlink" href="#controle-du-programme" title="Lien permanent vers ce titre">¶</a></h2>
+<p>Le contrôle des paramètres se fait dans le fichier <code class="docutils literal notranslate"><span class="pre">params.txt</span></code>:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Tmin 0.87
+Tmax 2.19
+Tp 1.57
+Hs 0.125
+gamma 3.3
+Ncomposantes 1000        % Nombre de composantes de houle
+h 1.38                           % Hauteur d&#39;eau devant le batteur
+duree_simu 100                   % Durée de la simulation
+rampe 10                 % Durée de la rampe en secondes
+fichier_sortie test1           % Nom du fichier de sortie (sans extension)
+fichier_dephasages dephasages.dat % Nom du fichier de déphasages
+afficher_graphiques 0            % Mettre à 1 pour afficher les graphiques
+sauvegarder_fichiers 1           % Mettre à 0 pour ne pas sauvegarder les fichiers
+generer_dephasages 1     % Mettre à 1 ou 0 pour générer ou non les déphasages
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Les 5 premiers paramètres <code class="docutils literal notranslate"><span class="pre">Tmin</span></code>, <code class="docutils literal notranslate"><span class="pre">Tmax</span></code>, <code class="docutils literal notranslate"><span class="pre">Tp</span></code>, <code class="docutils literal notranslate"><span class="pre">Hs</span></code> et
+<code class="docutils literal notranslate"><span class="pre">gamma</span></code> servent à la génération du spectre JONSWAP. Les temps
+doivent être donnés en secondes et <code class="docutils literal notranslate"><span class="pre">Hs</span></code> en mètres.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Ncomposantes</span></code> permet de gérer le nombre de composantes de
+houle mononchromatique (i.e. le nombre de fréquences)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">h</span></code> est la hauteur d’eau devant le batteur, en mètres</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">duree_simu</span></code> est la durée du signal temporel à générer,
+en secondes.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rampe</span></code> permet de gérer la durée de la rampe (au début
+et à la fin du signal). La rampe appliquée est une rampe
+linéaire.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">fichier_sortie</span></code> est le nom des fichiers de sortie au format
+<code class="docutils literal notranslate"><span class="pre">.dat</span></code> et <code class="docutils literal notranslate"><span class="pre">.volts</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">fichier_dephasages</span></code> est le nom du fichier de déphasages,
+si l’utilisateur ne souhaite pas en générer des nouveaux.
+La gestion de la génération aléatoire de déphasages se fait
+avec le paramètre <code class="docutils literal notranslate"><span class="pre">generer_dephasages</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">afficher_graphiques</span></code> permet d’afficher ou non le spectre
+généré ainsi que le signal de batteur. 0 : ne pas afficher,
+1: afficher.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sauvegarder_fichiers</span></code> permet de gérer l’écriture des fichiers
+<code class="docutils literal notranslate"><span class="pre">.dat</span></code> et <code class="docutils literal notranslate"><span class="pre">.volts</span></code>. 0 : ne pas écrire les fichiers, 1 :
+écrire les fichiers.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">generer_dephasages</span></code> permet d’indiquer si l’on souhaite
+générer des nouveaux déphasages ou non. 0 : ne pas générer
+de déphasages. Dans ce cas, le programme va aller lire dans
+le fichier <code class="docutils literal notranslate"><span class="pre">fichier_dephasages</span></code>. Si ce fichier n’existe pas,
+le programme renverra un avertissement. 1 : générer des
+nouveaux déphasages entre <span class="math notranslate nohighlight">\(0\)</span> et <span class="math notranslate nohighlight">\(2\pi\)</span>.</p></li>
+</ul>
+</div>
+<div class="section" id="vagues-scelerates">
+<h2>Vagues scélérates<a class="headerlink" href="#vagues-scelerates" title="Lien permanent vers ce titre">¶</a></h2>
+<p>Une vague scélérate est une focalisation de toutes les composantes
+monochromatiques sur un même point <span class="math notranslate nohighlight">\(x_s\)</span>, en un temps
+donné <span class="math notranslate nohighlight">\(t_s\)</span>. Cette condition implique donc que chaque composantes
+monochromatique soit maximale au point <span class="math notranslate nohighlight">\((x_s,t_s)\)</span>, c’est-à-dire:</p>
+<div class="math notranslate nohighlight">
+\[\eta(x_s,t_s) = \sum_{i=0}^{N}{\frac{H_i}{2}}\]</div>
+<p>Pour rappel, le signal de houle <span class="math notranslate nohighlight">\(\eta(x,t)\)</span> est donné par</p>
+<div class="math notranslate nohighlight">
+\[\eta(x,t) = \sum_{i=0}^{N}{\frac{H_i}{2}\cos{( k_i x - \omega_i t + \phi_i)}}\]</div>
+<p>La condition de focalisation impose donc que :</p>
+<div class="math notranslate nohighlight">
+\[\phi_i = \omega_i t_s - k_i x_s\]</div>
+<p>Ainsi, le signal de houle scélérate devient:</p>
+<div class="math notranslate nohighlight">
+\[\eta(x,t) = \sum_{i=0}^{N}{\frac{H_i}{2}\cos{( k_i (x-x_s) - \omega_i (t-t_s))}}\]</div>
+<p>Le programme <code class="docutils literal notranslate"><span class="pre">generer_scelerate.m</span></code> agit uniquement sur le
+déphasage <span class="math notranslate nohighlight">\(\phi_i = \omega_i t_s - k_i x_s\)</span>.  Les paramètres
+<span class="math notranslate nohighlight">\(x_s\)</span> et <span class="math notranslate nohighlight">\(t_s\)</span> doivent être donnés dans le fichier
+<code class="docutils literal notranslate"><span class="pre">params.txt</span></code></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Tmin 0.87
+Tmax 2.19
+Tp 1.57
+Hs 0.125
+gamma 3.3
+xS 5.0                           % Coordonnée x du point de focus (m)
+tS 50.0                          % Temps du point de focus (s)
+Ncomposantes 1000        % Nombre de composantes de houle
+h 1.38                           % Hauteur d&#39;eau devant le batteur
+duree_simu 100                   % Durée de la simulation
+rampe 10                 % Durée de la rampe en secondes
+fichier_sortie test1           % Nom du fichier de sortie (sans extension)
+fichier_dephasages dephasages.dat % Nom du fichier de déphasages
+afficher_graphiques 0            % Mettre à 1 pour afficher les graphiques
+sauvegarder_fichiers 1           % Mettre à 0 pour ne pas sauvegarder les fichiers
+generer_dephasages 1     % Mettre à 1 ou 0 pour générer ou non les déphasages
+</pre></div>
+</div>
+</div>
 </div>
 
 
@@ -174,8 +358,8 @@
           </div>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="modules.html" class="btn btn-neutral float-right" title="Documentation des scripts" accesskey="n" rel="next">Suivant <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-        <a href="tutoriels/sedFoam/3DScour.html" class="btn btn-neutral float-left" title="Affouillement en 3D" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Précédent</a>
+        <a href="outils.html" class="btn btn-neutral float-right" title="Librairies d’outils" accesskey="n" rel="next">Suivant <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="fonctions/spectre.html" class="btn btn-neutral float-left" title="Reconstruction de spectre" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Précédent</a>
     </div>
 
   <hr/>

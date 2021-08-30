@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Support &mdash; Documentation Outils Canal Numérique 0.0.1</title>
+  <title>Génération de houle &mdash; Documentation Canal Numérique 0.0.1</title>
   
 
   
@@ -41,7 +41,9 @@
 
     
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Recherche" href="search.html" /> 
+    <link rel="search" title="Recherche" href="search.html" />
+    <link rel="next" title="Génération de houle régulière" href="fonctions/genHouleReguliere.html" />
+    <link rel="prev" title="Affouillement en 3D" href="tutoriels/sedFoam/3DScour.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -55,7 +57,7 @@
           
 
           
-            <a href="index.html" class="icon icon-home"> Outils Canal Numérique
+            <a href="index.html" class="icon icon-home"> Canal Numérique
           
 
           
@@ -86,11 +88,24 @@
               
             
             
-              <ul>
-<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutoriels.html">Tutoriels</a></li>
+              <p class="caption" role="heading"><span class="caption-text">Tutoriels</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="tutoriels/interFoam/interFoam.html">interFoam</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutoriels/olaFlow/olaFlow.html">olaFlow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutoriels/overInterDyMFoam/overInterDyMFoam.html">overInterDyMFoam</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutoriels/sedFoam/sedFoam.html">sedFoam</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Génération de houle</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="fonctions/genHouleReguliere.html">Génération de houle régulière</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fonctions/genHouleIrreguliere.html">Génération de houle irrégulière</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fonctions/jonswap.html">Spectre de JONSWAP</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="postTraitement.html">Post-traitement</a></li>
 <li class="toctree-l1"><a class="reference internal" href="canal.html">Guide de programmation du canal</a></li>
-<li class="toctree-l1"><a class="reference internal" href="modules.html">Documentation des scripts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="outils.html">Librairies d’outils</a></li>
 </ul>
 
             
@@ -106,7 +121,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">Outils Canal Numérique</a>
+          <a href="index.html">Canal Numérique</a>
         
       </nav>
 
@@ -139,13 +154,13 @@
     
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
         
-      <li>Support</li>
+      <li>Génération de houle</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="_sources/support.rst.txt" rel="nofollow"> Afficher la source de la page</a>
+            <a href="_sources/generationHoule.rst.txt" rel="nofollow"> Afficher la source de la page</a>
           
         
       </li>
@@ -158,10 +173,17 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="support">
-<h1>Support<a class="headerlink" href="#support" title="Lien permanent vers ce titre">¶</a></h1>
-<p>Pour toutes questions, vous pouvez contacter l’auteur à l’adresse <a class="reference external" href="mailto:victor&#46;baconnet&#37;&#52;&#48;hotmail&#46;com">victor<span>&#46;</span>baconnet<span>&#64;</span>hotmail<span>&#46;</span>com</a></p>
-<p>Vous pouvez aussi consulter le code source sur <a class="reference external" href="https://github.com/victor13165/Knu">https://github.com/victor13165/Knu</a></p>
+  <div class="section" id="generation-de-houle">
+<h1>Génération de houle<a class="headerlink" href="#generation-de-houle" title="Lien permanent vers ce titre">¶</a></h1>
+<p>Description des programmes de génération de houle régulière et irrégulière.</p>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Génération de houle</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="fonctions/genHouleReguliere.html">Génération de houle régulière</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fonctions/genHouleIrreguliere.html">Génération de houle irrégulière</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fonctions/jonswap.html">Spectre de JONSWAP</a></li>
+</ul>
+</div>
 </div>
 
 
@@ -169,6 +191,10 @@
            
           </div>
           <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="fonctions/genHouleReguliere.html" class="btn btn-neutral float-right" title="Génération de houle régulière" accesskey="n" rel="next">Suivant <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="tutoriels/sedFoam/3DScour.html" class="btn btn-neutral float-left" title="Affouillement en 3D" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Précédent</a>
+    </div>
 
   <hr/>
 

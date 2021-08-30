@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>outilsLecture module &mdash; Documentation Canal Numérique 0.0.1</title>
+  <title>Outils de lecture de paramètres &mdash; Documentation Canal Numérique 0.0.1</title>
   
 
   
@@ -42,8 +42,8 @@
     
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Recherche" href="../search.html" />
-    <link rel="next" title="outilsExcel module" href="outilsExcel.html" />
-    <link rel="prev" title="outilsDivers module" href="outilsDivers.html" /> 
+    <link rel="next" title="Exportation de résultats vers Excel" href="outilsExcel.html" />
+    <link rel="prev" title="Librairies d’outils" href="../outils.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -90,29 +90,27 @@
             
               <p class="caption" role="heading"><span class="caption-text">Tutoriels</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../tutoriels.html">Tutoriels</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutoriels/interFoam/interFoam.html">interFoam</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutoriels/olaFlow/olaFlow.html">olaFlow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutoriels/overInterDyMFoam/overInterDyMFoam.html">overInterDyMFoam</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutoriels/sedFoam/sedFoam.html">sedFoam</a></li>
 </ul>
+<p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../tutoriels.html">Tutoriels</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../generationHoule.html">Génération de houle</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../postTraitement.html">Post-traitement</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../canal.html">Guide de programmation du canal</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="../modules.html">Documentation des scripts</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../modules.html#automatisation-des-calculs-openfoam">Automatisation des calculs OpenFOAM</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules.html#generation-de-houle">Génération de houle</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules.html#post-traitement">Post-traitement</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules.html#reconstruction-de-spectre">Reconstruction de spectre</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules.html#lancement-de-calculs-en-arborescence">Lancement de calculs en arborescence</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="../modules.html#outils-de-manipulation-lecture-et-calcul">Outils de manipulation, lecture et calcul</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="outilsDivers.html">outilsDivers module</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">outilsLecture module</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#informations">Informations</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#description">Description</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#exemple-d-utilisation">Exemple d’utilisation</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#fonctions">Fonctions</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../outils.html">Librairies d’outils</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Outils de lecture de paramètres</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#informations">Informations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#description">Description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#exemple-d-utilisation">Exemple d’utilisation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#code-source">Code source</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fonctions">Fonctions</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="outilsExcel.html">outilsExcel module</a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="outilsExcel.html">Exportation de résultats vers Excel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="outilsDivers.html">Autres outils</a></li>
 </ul>
 </li>
 </ul>
@@ -163,9 +161,9 @@
     
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
-          <li><a href="../modules.html">Documentation des scripts</a> &raquo;</li>
+          <li><a href="../outils.html">Librairies d’outils</a> &raquo;</li>
         
-      <li>outilsLecture module</li>
+      <li>Outils de lecture de paramètres</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -185,15 +183,14 @@
            <div itemprop="articleBody">
             
   <div class="section" id="module-outilsLecture">
-<span id="outilslecture-module"></span><h1>outilsLecture module<a class="headerlink" href="#module-outilsLecture" title="Lien permanent vers ce titre">¶</a></h1>
+<span id="outils-de-lecture-de-parametres"></span><h1>Outils de lecture de paramètres<a class="headerlink" href="#module-outilsLecture" title="Lien permanent vers ce titre">¶</a></h1>
 <div class="section" id="informations">
 <h2>Informations<a class="headerlink" href="#informations" title="Lien permanent vers ce titre">¶</a></h2>
-<blockquote>
-<div><ul class="simple">
+<ul class="simple">
+<li><p>Fichier: <code class="docutils literal notranslate"><span class="pre">outilsLecture.py</span></code></p></li>
 <li><p>Auteur: Victor Baconnet</p></li>
 <li><p>Date de dernière modification: 27 août 2021</p></li>
 </ul>
-</div></blockquote>
 </div>
 <div class="section" id="description">
 <h2>Description<a class="headerlink" href="#description" title="Lien permanent vers ce titre">¶</a></h2>
@@ -239,6 +236,10 @@ file : wrongfile.csv
 le programme aurait renvoyé une erreur.</p>
 </div>
 </div>
+<div class="section" id="code-source">
+<h2>Code source<a class="headerlink" href="#code-source" title="Lien permanent vers ce titre">¶</a></h2>
+<p>Lien vers le <a class="reference external" href="https://github.com/victor13165/Knu/blob/main/Scripts/Librairies/outilsLecture.py">code source</a></p>
+</div>
 <div class="section" id="fonctions">
 <h2>Fonctions<a class="headerlink" href="#fonctions" title="Lien permanent vers ce titre">¶</a></h2>
 <dl class="py function">
@@ -270,18 +271,19 @@ le programme aurait renvoyé une erreur.</p>
 <dt class="field-odd">Paramètres</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>options</strong> (<em>list</em>) – Liste des options données par l’utilisateur</p></li>
-<li><p><strong>possibleNames</strong> – Liste des options acceptées pour sélectionner ce</p></li>
+<li><p><strong>possibleNames</strong> (<em>list</em>) – Liste des options acceptées pour sélectionner ce 
+paramètre (exemple: [« -file », « –file », « -File »])</p></li>
+<li><p><strong>default</strong> (<em>string</em>) – Valeur prise par défaut</p></li>
+<li><p><strong>extension</strong> (<em>string</em>) – extension du fichier (exemple: « csv »)</p></li>
 </ul>
 </dd>
+<dt class="field-even">Renvoie</dt>
+<dd class="field-even"><p>filename : le nom du fichier donné en paramètre, sinon renvoie default</p>
+</dd>
+<dt class="field-odd">Type renvoyé</dt>
+<dd class="field-odd"><p>string</p>
+</dd>
 </dl>
-<p>paramètre (exemple: [« -file », « –file », « -File »])
-:type possibleNames: list
-:param default: Valeur prise par défaut
-:type default: string
-:param extension: extension du fichier (exemple: « csv »)
-:type extension: string
-:return: filename : le nom du fichier donné en paramètre, sinon renvoie default
-:rtype: string</p>
 </dd></dl>
 
 <dl class="py function">
@@ -335,8 +337,8 @@ le programme aurait renvoyé une erreur.</p>
           </div>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="outilsExcel.html" class="btn btn-neutral float-right" title="outilsExcel module" accesskey="n" rel="next">Suivant <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-        <a href="outilsDivers.html" class="btn btn-neutral float-left" title="outilsDivers module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Précédent</a>
+        <a href="outilsExcel.html" class="btn btn-neutral float-right" title="Exportation de résultats vers Excel" accesskey="n" rel="next">Suivant <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="../outils.html" class="btn btn-neutral float-left" title="Librairies d’outils" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Précédent</a>
     </div>
 
   <hr/>

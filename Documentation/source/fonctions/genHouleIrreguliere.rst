@@ -4,6 +4,8 @@ Génération de houle irrégulière
 Informations
 ------------
 
+* Fichier : ``genHouleIrreguliere.py`` 
+
 * Auteur: Victor Baconnet
     
 * Date de dernière modification: 08 Juillet 2021
@@ -16,7 +18,7 @@ d'amplitude, périodes, déphasages et directions pour le patch inlet, et des
 paramètres d'absorption pour le patch outlet.
 
 La génération peut se faire selon la syntaxe interFoam/interIsoFoam ou olaFlow, 
-toujours à partir du fichier ``constant/jonswapDict``.
+toujours à partir du fichier ``jonswapDict``.
 
 Pour exécuter ce fichier, vous devez spécifier les paramètres de spectre JONSWAP
 dans le fichier "jonswapDict" formaté comme suit::
@@ -26,7 +28,7 @@ dans le fichier "jonswapDict" formaté comme suit::
   Tmax 3.0
   Hs 1.5
   gamma 3.2
-  scale (ou échelle) 25.0 //optionnel
+  scale 25.0 //optionnel
     
 L'exécution de ce fichier renverra une erreur si ``jonswapDict`` n'est pas trouvé.
 Vous pouvez, si besoin, préciser le chemin d'accès vers le fichier de votre 
@@ -40,8 +42,12 @@ préciser le chemin d'accès vers le répertoire de votre choix avec l'option
 Utilisation
 ------------
 
-genHouleIrreguliere [OPTIONS]
+.. code-block:: bash
 
+   $ genHouleIrreguliere.py [OPTIONS]
+   $ python3 genHouleIrreguliere.py [OPTIONS]
+
+**Options**
 
 -h, --help                        Afficher l'aide
 --wavePropertiesPath path         chemin d'accès vers le répertoire d'écriture

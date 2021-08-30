@@ -1,9 +1,10 @@
-Rééchantillonnage des données de sondes : resample.py
-=====================================================
+Rééchantillonnage des données de sondes 
+========================================
 
 Informations
 ---------------
 
+    * Fichier : ``resample.py``
     * Auteur: Victor Baconnet
     * Date de dernière modification: 27 août 2021
 

@@ -4,6 +4,8 @@ Génération de houle régulière
 Informations
 ------------
 
+* Nom du fichier : ``genHouleIrreguliere.py``
+
 * Auteur: Victor Baconnet
     
 * Date de dernière modification: 08 Juillet 2021
@@ -16,7 +18,7 @@ d'amplitude, périodes, déphasages et directions pour le patch inlet, et des
 paramètres d'absorption pour le patch outlet.
 
 La génération peut se faire selon la syntaxe interFoam/interIsoFoam ou olaFlow, 
-toujours à partir du fichier ``constant/regularWaveDict``.
+toujours à partir du fichier ``regularWaveDict``.
 
 Pour exécuter ce fichier, vous devez spécifier les paramètres de houle régulière
 comme suit::
@@ -46,6 +48,14 @@ préciser le chemin d'accès vers le répertoire de votre choix avec l'option
 
 Utilisation
 ------------
+
+.. code-block:: bash
+ 
+   $ genHouleReguliere.py [OPTIONS]
+   $ python3 genHouleIrreguliere.py [OPTIONS]
+
+
+**Options**
 
 -h, --help                        Afficher l'aide
 --wavePropertiesPath path         chemin d'accès vers le répertoire d'écriture

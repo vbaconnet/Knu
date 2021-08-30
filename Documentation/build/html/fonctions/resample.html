@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Rééchantillonnage des données de sondes : resample.py &mdash; Documentation Canal Numérique 0.0.1</title>
+  <title>Rééchantillonnage des données de sondes &mdash; Documentation Canal Numérique 0.0.1</title>
   
 
   
@@ -42,8 +42,8 @@
     
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Recherche" href="../search.html" />
-    <link rel="next" title="Reconstruction de spectre : spectre.py" href="spectre.html" />
-    <link rel="prev" title="Calcul de débit de franchissement : debitFranchissement.py" href="debitsFranchissement.html" /> 
+    <link rel="next" title="Reconstruction de spectre" href="spectre.html" />
+    <link rel="prev" title="Calcul de débit de franchissement" href="debitFranchissement.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -90,31 +90,31 @@
             
               <p class="caption" role="heading"><span class="caption-text">Tutoriels</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../tutoriels.html">Tutoriels</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutoriels/interFoam/interFoam.html">interFoam</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutoriels/olaFlow/olaFlow.html">olaFlow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutoriels/overInterDyMFoam/overInterDyMFoam.html">overInterDyMFoam</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutoriels/sedFoam/sedFoam.html">sedFoam</a></li>
 </ul>
+<p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../tutoriels.html">Tutoriels</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../generationHoule.html">Génération de houle</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../postTraitement.html">Post-traitement</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="lireSondes.html">Exportation de mesures de sondes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lirePoints.html">Exportation de mesures de points</a></li>
+<li class="toctree-l2"><a class="reference internal" href="debitFranchissement.html">Calcul de débit de franchissement</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Rééchantillonnage des données de sondes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#informations">Informations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#description">Description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#entrees-sorties">Entrées/sorties</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#utilisation">Utilisation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#code-source">Code source</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="spectre.html">Reconstruction de spectre</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../canal.html">Guide de programmation du canal</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="../modules.html">Documentation des scripts</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../modules.html#automatisation-des-calculs-openfoam">Automatisation des calculs OpenFOAM</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules.html#generation-de-houle">Génération de houle</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules.html#post-traitement">Post-traitement</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="../modules.html#reconstruction-de-spectre">Reconstruction de spectre</a><ul class="current">
-<li class="toctree-l3 current"><a class="current reference internal" href="#">Rééchantillonnage des données de sondes : resample.py</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#informations">Informations</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#description">Description</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#entrees-sorties">Entrées/sorties</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#utilisation">Utilisation</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#code-source">Code source</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="spectre.html">Reconstruction de spectre : spectre.py</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../modules.html#lancement-de-calculs-en-arborescence">Lancement de calculs en arborescence</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules.html#outils-de-manipulation-lecture-et-calcul">Outils de manipulation, lecture et calcul</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="../outils.html">Librairies d’outils</a></li>
 </ul>
 
             
@@ -163,9 +163,9 @@
     
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
-          <li><a href="../modules.html">Documentation des scripts</a> &raquo;</li>
+          <li><a href="../postTraitement.html">Post-traitement</a> &raquo;</li>
         
-      <li>Rééchantillonnage des données de sondes : resample.py</li>
+      <li>Rééchantillonnage des données de sondes</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -184,12 +184,13 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="reechantillonnage-des-donnees-de-sondes-resample-py">
-<h1>Rééchantillonnage des données de sondes : resample.py<a class="headerlink" href="#reechantillonnage-des-donnees-de-sondes-resample-py" title="Lien permanent vers ce titre">¶</a></h1>
+  <div class="section" id="reechantillonnage-des-donnees-de-sondes">
+<h1>Rééchantillonnage des données de sondes<a class="headerlink" href="#reechantillonnage-des-donnees-de-sondes" title="Lien permanent vers ce titre">¶</a></h1>
 <div class="section" id="informations">
 <h2>Informations<a class="headerlink" href="#informations" title="Lien permanent vers ce titre">¶</a></h2>
 <blockquote>
 <div><ul class="simple">
+<li><p>Fichier : <code class="docutils literal notranslate"><span class="pre">resample.py</span></code></p></li>
 <li><p>Auteur: Victor Baconnet</p></li>
 <li><p>Date de dernière modification: 27 août 2021</p></li>
 </ul>
@@ -246,8 +247,8 @@ Doit être au format <code class="docutils literal notranslate"><span class="pre
           </div>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="spectre.html" class="btn btn-neutral float-right" title="Reconstruction de spectre : spectre.py" accesskey="n" rel="next">Suivant <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-        <a href="debitsFranchissement.html" class="btn btn-neutral float-left" title="Calcul de débit de franchissement : debitFranchissement.py" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Précédent</a>
+        <a href="spectre.html" class="btn btn-neutral float-right" title="Reconstruction de spectre" accesskey="n" rel="next">Suivant <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="debitFranchissement.html" class="btn btn-neutral float-left" title="Calcul de débit de franchissement" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Précédent</a>
     </div>
 
   <hr/>

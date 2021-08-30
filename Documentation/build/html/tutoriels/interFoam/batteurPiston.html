@@ -36,6 +36,7 @@
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
         <script src="../../_static/translations.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
@@ -90,7 +91,7 @@
             
               <p class="caption" role="heading"><span class="caption-text">Tutoriels</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="interFoam.html">solveur interFoam</a><ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="interFoam.html">interFoam</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="debitFranchissement.html">Mesures de débit de franchissement</a></li>
 <li class="toctree-l2"><a class="reference internal" href="houleIrreguliere.html">Houle irrégulière</a></li>
 <li class="toctree-l2"><a class="reference internal" href="houleReguliere.html">Houle régulière</a></li>
@@ -102,7 +103,13 @@
 <li class="toctree-l1"><a class="reference internal" href="../olaFlow/olaFlow.html">olaFlow</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../overInterDyMFoam/overInterDyMFoam.html">overInterDyMFoam</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../sedFoam/sedFoam.html">sedFoam</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tutoriels.html">Liste complète des tutoriels</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../generationHoule.html">Génération de houle</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../postTraitement.html">Post-traitement</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../canal.html">Guide de programmation du canal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../outils.html">Librairies d’outils</a></li>
 </ul>
 
             
@@ -151,7 +158,7 @@
     
       <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
         
-          <li><a href="interFoam.html">solveur interFoam</a> &raquo;</li>
+          <li><a href="interFoam.html">interFoam</a> &raquo;</li>
         
       <li>Mouvement du batteur</li>
     
@@ -175,17 +182,422 @@
   <div class="section" id="mouvement-du-batteur">
 <h1>Mouvement du batteur<a class="headerlink" href="#mouvement-du-batteur" title="Lien permanent vers ce titre">¶</a></h1>
 <p><strong>Description de la situation</strong></p>
-<p>une description</p>
+<p>On se propose ici de simuler le mouvement d’un batteur piston, de façon
+similaire à la génération de houle par le batteur du canal à houle.</p>
+<p>Pour reproduire le mouvement d’un batteur, nous utiliserons les fonctionnalités
+de maillage dynamique d’OpenFOAM.</p>
+<p>L’ensemble des opérations à effectuer se trouve dans le fichier <code class="docutils literal notranslate"><span class="pre">Allrun.case</span></code>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
+
+. <span class="si">${</span><span class="nv">WM_PROJECT_DIR</span><span class="p">:?</span><span class="si">}</span>/bin/tools/RunFunctions  <span class="c1">#Charger les scripts OpenFOAM</span>
+
+<span class="c1"># Lancer le maillage</span>
+Allmesh
+
+<span class="c1"># Lancer le calcul. L&#39;option -s lance setFields</span>
+Allrun -s <span class="p">&amp;</span>
+
+<span class="c1"># Attendre 2 secondes avant de lancer le monitoring</span>
+sleep <span class="m">2</span>
+
+<span class="c1"># Suivre la progression du calcul et lancer la commande</span>
+<span class="c1"># ls lorsque le calcul est terminé</span>
+AllpostProcess lireSondes.py resample.py spectre.py
+</pre></div>
+</div>
 <p><strong>Maillage</strong></p>
-<p>Comment faire le maillage</p>
+<p>Pour la géométrie de la simulation, nous utiliserons un canal rectangulaire,
+qui se génère aisément à partir de l’outil <code class="docutils literal notranslate"><span class="pre">blockMesh</span></code>. Le fichier de configuration
+se trouve dans <code class="docutils literal notranslate"><span class="pre">system/blockMeshDict</span></code>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>/*--------------------------------*- C++ -*----------------------------------*\
+|                           |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2006                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version         2.0;
+    format          ascii;
+    class           dictionary;
+    object          blockMeshDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+scale   1;
+
+//Dimensions du canal
+xmin  0.0;
+xmax  26.0;
+xsep  4.0; //zone de séparation pour le premier bloc
+ymin  0.0;
+ymax  1.0;
+zmin  0.0;
+zmax  2.5;
+
+xLen #calc &quot;$xmax - $xmin&quot;;
+zLen #calc &quot;$zmax - $zmin&quot;;
+
+//Nombre de points dans la direction z (verticale)
+nz 50.0; //Doit être un double!
+
+//Taux de croissance du pas dx
+xgrad 0.5;
+
+//Nombre de points dans le direction x du maillage constant
+nx #calc &quot;($xmax - $xsep)/($zmax - $zmin) * $nz&quot;;
+
+//Pas de discrétisation dans la direction x
+dx #calc &quot;($xmax - $xsep) / $nx&quot;;
+
+//Nombre de points dans la partie non constante
+nxGauche #calc &quot;log( $xgrad ) / log( ($xsep - $dx / $xgrad) / ($xsep - $dx) ) + 1.0&quot;;
+
+//Ne pas oublier de reconvertir en int
+Ng #calc &quot;std::floor($nxGauche)&quot;;
+Nz #calc &quot;std::floor($nz)&quot;;
+Nx #calc &quot;std::floor($nx)&quot;;
+
+vertices
+(
+($xmin  $ymin  $zmin) //0
+($xsep  $ymin  $zmin) //1
+($xsep  $ymin  $zmax) //2
+($xmin  $ymin  $zmax) //3
+
+($xmin  $ymax  $zmin) //4
+($xsep  $ymax  $zmin) //5
+($xsep  $ymax  $zmax) //6
+($xmin  $ymax  $zmax) //7
+
+($xmax  $ymin  $zmin) //8
+($xmax  $ymin  $zmax) //9
+($xmax  $ymax  $zmax) //10
+($xmax  $ymax  $zmin) //11
+);
+
+blocks
+(
+    hex (0 1 5  4 3 2 6  7)   ( $Ng 1 $Nz) simpleGrading ($xgrad 1 1)
+    hex (1 8 11 5 2 9 10 6)   ( $Nx 1 $Nz) simpleGrading (  1    1 1)
+);
+
+edges
+(
+);
+
+boundary
+(
+    bottom1
+    {
+        type wall;
+        faces
+        (
+            (0 1 5 4)
+        );
+    }
+    bottom2
+    {
+        type wall;
+        faces
+        (
+            (1 8 11 5)
+        );
+    }
+    front
+    {
+        type empty;
+        faces
+        (
+            (0 1 2 3)
+            (1 8 9 2)
+        );
+    }
+    back
+    {
+        type empty;
+        faces
+        (
+            (4 5 6 7)
+            (5 11 10 6)
+        );
+    }
+    leftwall
+    {
+        type patch;
+        faces
+        (
+            (0 4 7 3)
+        );
+    }
+    rightwall
+    {
+        type patch;
+        faces
+        (
+            (8 11 10 9)
+        );
+    }
+    top
+    {
+        type wall;
+        faces
+        (
+            (3 2 6 7)
+            (2 9 10 6)
+        );
+    }
+);
+</pre></div>
+</div>
+<p>Le maillage sera découpé en deux parties: une première partie où le maillage ne sera pas
+uniforme, pour absorber les déformations du maillage dynamique, et une autre partie
+où le maillage sera uniforme.</p>
+<p>La gestion du maillage s’effectue avec les lignes suivantes, issues de <code class="docutils literal notranslate"><span class="pre">system/blockMeshDict</span></code></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>blocks
+(
+    hex (0 1 5  4 3 2 6  7)   ( $Ng 1 $Nz) simpleGrading ($xgrad 1 1)
+    hex (1 8 11 5 2 9 10 6)   ( $Nx 1 $Nz) simpleGrading (  1    1 1)
+);
+</pre></div>
+</div>
+<p>Le premier block s’étend de <span class="math notranslate nohighlight">\(x=0\)</span> m à <span class="math notranslate nohighlight">\(x=4\)</span> m où  le de croissance de
+la dimension <span class="math notranslate nohighlight">\(x\)</span> est de <span class="math notranslate nohighlight">\(0.5\)</span>, qui s’indique avec la variable <code class="docutils literal notranslate"><span class="pre">($xgrad</span> <span class="pre">1</span> <span class="pre">1)</span></code>.
+Le deuxième block s’étend de <span class="math notranslate nohighlight">\(x=4\)</span> m à <span class="math notranslate nohighlight">\(x=30\)</span> m et est uniforme, car nos taux
+de croissance sont tous à <code class="docutils literal notranslate"><span class="pre">(1</span> <span class="pre">1</span> <span class="pre">1)</span></code>.</p>
+<p>Après avoir lancé la commande <code class="docutils literal notranslate"><span class="pre">blockMesh</span></code>, vous pouvez visualiser le maillage avec <code class="docutils literal notranslate"><span class="pre">ParaView</span></code>.
+Une capture d’écran est donnée ci-dessous.</p>
+<img alt="Maillage" src="../../_images/batteurPiston_maillage.PNG" />
 <p><strong>Génération de houle</strong></p>
-<p>houle</p>
+<p>Le mouvement du batteur va être généré à partir du fichier de commande
+<code class="docutils literal notranslate"><span class="pre">mouvementBatteur.dat</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">(</span>
+<span class="p">(</span><span class="mf">0.0</span> <span class="p">(</span><span class="mf">0.0</span> <span class="mi">0</span> <span class="mi">0</span><span class="p">))</span>
+<span class="p">(</span><span class="mf">0.0050000310568651205</span> <span class="p">(</span><span class="mf">2.1000000000000002e-05</span> <span class="mi">0</span> <span class="mi">0</span><span class="p">))</span>
+<span class="p">(</span><span class="mf">0.010000062113730241</span> <span class="p">(</span><span class="mf">4.29e-05</span> <span class="mi">0</span> <span class="mi">0</span><span class="p">))</span>
+<span class="o">...</span>
+<span class="p">(</span><span class="mf">804.9749999689432</span> <span class="p">(</span><span class="o">-</span><span class="mf">1.91e-05</span> <span class="mi">0</span> <span class="mi">0</span><span class="p">))</span>
+<span class="p">(</span><span class="mf">804.98</span> <span class="p">(</span><span class="o">-</span><span class="mf">2.51e-12</span> <span class="mi">0</span> <span class="mi">0</span><span class="p">))</span>
+<span class="p">);</span>
+</pre></div>
+</div>
+<p>Chaque ligne du fichier est du type <code class="docutils literal notranslate"><span class="pre">(t</span> <span class="pre">(x</span> <span class="pre">y</span> <span class="pre">z))</span></code>, où <code class="docutils literal notranslate"><span class="pre">t</span></code> correspond au
+temps, et <code class="docutils literal notranslate"><span class="pre">(x</span> <span class="pre">y</span> <span class="pre">z)</span></code> sont les coordonnées du déplacement du batteur.
+Le mouvement du batteur est horizontal, donc toutes les coordonnéees
+<code class="docutils literal notranslate"><span class="pre">y</span></code> et <code class="docutils literal notranslate"><span class="pre">z</span></code> sont nulles.</p>
+<p>Pour indiquer à OpenFOAM que l’on souhaite utiliser le maillage dynamique,
+nous allons spéficier quelques paramètres dans le fichier <code class="docutils literal notranslate"><span class="pre">constant/dynamicMeshDict</span></code></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">dynamicFvMesh</span>       <span class="n">dynamicMotionSolverFvMesh</span><span class="p">;</span>
+<span class="n">motionSolverLibs</span>    <span class="p">(</span><span class="n">fvMotionSolvers</span><span class="p">);</span>
+
+<span class="n">solver</span>              <span class="n">displacementLaplacian</span><span class="p">;</span>
+
+<span class="n">displacementLaplacianCoeffs</span>
+<span class="p">{</span>
+    <span class="n">diffusivity</span>     <span class="n">inverseDistance</span> <span class="p">(</span><span class="n">leftwall</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>La première ligne indique le type de maillage dynamique souhaité. Ici,
+nous choisissons <code class="docutils literal notranslate"><span class="pre">dynamicMotionSolverFvMesh</span></code> qui est à utiliser
+pour des mouvements de maillage. Il en existe plusieurs,
+comme <code class="docutils literal notranslate"><span class="pre">dynamicRefineFvMesh</span></code>, qui permet de raffiner le maillage automatiquement
+selon plusieurs critères. Pour plus d’informations sur les types de maillages
+dynamiques, consultez la <a class="reference external" href="https://www.openfoam.com/documentation/guides/latest/api/classFoam_1_1dynamicFvMesh.html">documentation</a>.</p>
+<p>La deuxième ligne permet d’inclure la librairie de maillage dynamique. La
+troisième ligne indique le type de solveur à utiliser pour la propagation
+du déplacement du maillage. Le maillage sera comprimé/dilaté, et ce déplacement
+va être propagé dans le reste du maillage. Cette propagation est résolue
+avec différents solveurs. La <a class="reference external" href="https://www.openfoam.com/documentation/guides/latest/doc/openfoam-guide-mesh-motion.html">documentation</a>
+d’OpenFOAM sur les maillages dynamiques étant très incomplète, vous pourrez
+voir le détail des solveurs disponibles en allant dans les
+<a class="reference external" href="https://www.openfoam.com/documentation/guides/latest/api/fvMotionSolver_8H.html">fichiers source</a>
+directement.
+`</p>
+<p>La dernière partie donne des précisions sur la zone du maillage à déplacer,
+en l’occurence le patch <code class="docutils literal notranslate"><span class="pre">leftwall</span></code> qui correspond à notre batteur.
+Les autres paramètres indiquent la méthode de calcul de diffusivité,
+c’est-à-dire la propagation du déplacement de la zone mobile dans le
+reste du maillage. La méthode que nous utilisons ici est <code class="docutils literal notranslate"><span class="pre">inverseDistance</span></code>,
+mais vous pouvez aussi utiliser les modèles suivants:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="n">directional</span> <span class="n">exponential</span> <span class="n">file</span> <span class="n">inverseDistance</span> <span class="n">inverseFaceDistance</span>
+<span class="n">inversePointDistance</span> <span class="n">inverseVolume</span> <span class="n">motionDirectional</span> <span class="n">quadratic</span>
+<span class="n">uniform</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Pour indiquer au batteur le mouvement qu’il doit effectuer, nous allons
+configurer le fichier <code class="docutils literal notranslate"><span class="pre">0.orig/pointDisplacement</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">dimensions</span>      <span class="p">[</span><span class="mi">0</span> <span class="mi">1</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span><span class="p">];</span>
+
+<span class="n">internalField</span>   <span class="n">uniform</span> <span class="p">(</span><span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span><span class="p">);</span>
+
+<span class="n">boundaryField</span>
+<span class="p">{</span>
+
+    <span class="n">leftwall</span>
+    <span class="p">{</span>
+        <span class="nb">type</span>            <span class="n">uniformFixedValue</span><span class="p">;</span>
+        <span class="n">uniformValue</span>    <span class="n">tableFile</span><span class="p">;</span>
+        <span class="n">file</span>            <span class="s2">&quot;mouvementBatteur.dat&quot;</span><span class="p">;</span>
+        <span class="n">outOfBounds</span>     <span class="n">clamp</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="s2">&quot;(back|front)&quot;</span>
+    <span class="p">{</span>
+        <span class="nb">type</span>            <span class="n">empty</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="n">rightwall</span>
+    <span class="p">{</span>
+        <span class="nb">type</span>            <span class="n">fixedValue</span><span class="p">;</span>
+        <span class="n">value</span>           <span class="n">uniform</span> <span class="p">(</span><span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="s2">&quot;(bottom1|bottom2|top)&quot;</span>
+    <span class="p">{</span>
+        <span class="nb">type</span>            <span class="n">zeroGradient</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Ce fichier permet d’indiquer le comportement de chaque limite du maillage.
+En premier, nous indiquons à la limite <code class="docutils literal notranslate"><span class="pre">leftwall</span></code> de suivre les
+mouvements donnés dans <code class="docutils literal notranslate"><span class="pre">mouvementBatteur.dat</span></code> en spécifiant une condition
+limite du type <code class="docutils literal notranslate"><span class="pre">uniformFixedValue</span></code> et <code class="docutils literal notranslate"><span class="pre">tableFile</span></code>.</p>
+<p>La face verticale droite doît être fixe, ce que l’on précise bien avec la
+condition <code class="docutils literal notranslate"><span class="pre">fixedValue</span></code>. Enfin, on ajoute une condition <code class="docutils literal notranslate"><span class="pre">zeroGradient</span></code>
+sur les limites hautes et basses, qui indique qu’on autorise le déplacement</p>
+<p>Enfin, il faut ajouter une condition de <code class="docutils literal notranslate"><span class="pre">movingWallVelocity</span></code> dans le fichier
+<code class="docutils literal notranslate"><span class="pre">0.orig/U</span></code> pour indiquer à OpenFOAM que l’on est en présence d’un corps
+en déplacement, et qu’il faut prendre en compte le mouvement relatif de
+cet objet.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">leftwall</span>
+<span class="p">{</span>
+    <span class="nb">type</span>            <span class="n">movingWallVelocity</span><span class="p">;</span>
+    <span class="n">value</span>           <span class="n">uniform</span> <span class="p">(</span><span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Les autres conditions limites sont celles utilisées classiquement, avec
+absorption de la houle sur la face de sortie.</p>
+<p><strong>Sondes et mesure de hauteur de houle</strong></p>
+<p>Des sondes sont configurées dans le fichier <code class="docutils literal notranslate"><span class="pre">system/controlDict</span></code>.
+Si vous souhaitez changer leur position/nom, éditez directement les
+variables définies à cet effet (<code class="docutils literal notranslate"><span class="pre">sonde1/x1</span></code>, etc).</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>// Indiquer ici les sondes et leurs coordonnées (position x en m)
+sonde1      S1-5.0;
+x1          5.0;
+sonde2      S2-10.0;
+x2          10.0;
+sonde3      S3-17.0;
+x3          17.0;
+sonde4      S4-24.0;
+x4          24.0;
+sonde5      inlet;
+x5          0.0;
+
+// Coordonnées des points de mesure
+ystart      0.0;
+yend        0.0;
+zstart      0.0;
+zend        2.0;
+N           201; // Nombre de points
+
+functions
+{
+
+    line
+    {
+        type            sets;
+        libs            (&quot;libsampling.so&quot;);
+        enabled         true; // Mettre à false pour désactiver les sondes
+
+        // Contrôle d&#39;écriture :
+        //  - timeStep   : pas de temps
+        //  - adjustable : temps (si pas de temps adaptatif)
+        //  - runTime    : temps (si pas de temps constant)
+        writeControl     timeStep;
+        writeInterval    2;
+
+        fixedLocations false;
+        interpolationScheme cellPoint;
+        setFormat       raw;
+        sets
+        (
+            $sonde1
+            {
+                type uniform;
+                axis distance;
+                start   ( $x1 $ystart $zstart );
+                end     ( $x1 $yend   $zend   );
+                nPoints $N;
+            }
+            $sonde2
+            {
+                type uniform;
+                axis distance;
+                start   ( $x2 $ystart $zstart );
+                end     ( $x2 $yend   $zend   );
+                nPoints $N;
+            }
+            $sonde3
+            {
+                type uniform;
+                axis distance;
+                start   ( $x3 $ystart $zstart );
+                end     ( $x3 $yend   $zend   );
+                nPoints $N;
+            }
+            $sonde4
+            {
+                type uniform;
+                axis distance;
+                start   ( $x4 $ystart $zstart );
+                end     ( $x4 $yend   $zend   );
+                nPoints $N;
+            }
+            $sonde5
+            {
+                type uniform;
+                axis distance;
+                start   ( $x5 $ystart $zstart );
+                end     ( $x5 $yend   $zend   );
+                nPoints $N;
+            }
+        );
+        fields (
+            alpha.water
+        );
+    }
+}
+</pre></div>
+</div>
 <p><strong>solveur</strong></p>
-<p>solver</p>
-<p><strong>Surveillance du statut de la simulation</strong></p>
-<p>Allpostprocess</p>
+<p>Pour lancer le calcul, copiez le dossier <code class="docutils literal notranslate"><span class="pre">0.orig</span></code>, lancez <code class="docutils literal notranslate"><span class="pre">setFields</span></code> pour
+initialiser la hauteur d’eau à 1.38 m et lancez le calcul avec la commande
+<code class="docutils literal notranslate"><span class="pre">interFoam</span></code>. Vous pouvez aussi directement effectuer ces trois opérations avec
+la commande <code class="docutils literal notranslate"><span class="pre">Allrun</span> <span class="pre">-s</span> <span class="pre">&amp;</span></code>.</p>
+<p>Le calcul est lancé avec un <code class="docutils literal notranslate"><span class="pre">maxCo</span></code> de 0.5, sur 20 secondes,
+en sauvegardant les données toutes les 0.1 secondes. Libre à
+vous de modifier la durée de la simulation ainsi que la durée de sauvegarde.</p>
 <p><strong>Post-traitement</strong></p>
-<p>les graphes</p>
+<p>Pour effectuer le traitement des mesures de sondes, vous pouvez lancer
+la commande:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ AllpostProcess lireSondes.py resample.py spectre.py
+</pre></div>
+</div>
+<p>La commande <code class="docutils literal notranslate"><span class="pre">AllpostProcess</span></code> vous permet de lancer une série de scripts
+lorsque la simulation sera terminée. Ici, nous lancerons d’abord le programme
+de lecture de mesures de sondes pour extraire le signal de houle avec <code class="docutils literal notranslate"><span class="pre">lireSondes.py</span></code>,
+puis le programme de rééchantillonnage de ce signal avec <code class="docutils literal notranslate"><span class="pre">resample.py</span></code>
+car nos mesures ne sont pas effectuées à un pas de temps régulier. Enfin,
+<code class="docutils literal notranslate"><span class="pre">spectre.py</span></code> va reconstruire le spectre du signal de chaque sonde,
+en les comparant au spectre de JONSWAP théorique utilisé pour générer
+le signal du batteur. Les paramètres du spectre théorique sont donnés dans
+le fichier <code class="docutils literal notranslate"><span class="pre">jonswapDict</span></code>.</p>
+<p>Les signaux de houle sont disponibles dans les fichiers <code class="docutils literal notranslate"><span class="pre">line_probes.csv</span></code>
+et <code class="docutils literal notranslate"><span class="pre">RESAMPLED_line_probes.csv</span></code> (ce dernier étant le signal rééchantillonné).</p>
 </div>
 
 

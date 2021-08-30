@@ -1,4 +1,4 @@
-outilsDivers module
+Autres outils
 ===================
 
 .. automodule:: outilsDivers

@@ -20,7 +20,7 @@ Ces outils font partie du package scripts-python-ACRI, téléchargeable avec la 
 Tutoriels
 ---------
 
-Des :doc:`tutoriels</tutoriels/tutoriels>` détaillés pour tous types d'applications.
+Des tutoriels détaillés pour tous types d'applications.
 
 * **Solveurs**:
   :doc:`interFoam </tutoriels/interFoam/interFoam>` |
@@ -56,5 +56,25 @@ Des :doc:`tutoriels</tutoriels/tutoriels>` détaillés pour tous types d'applica
    tutoriels/olaFlow/olaFlow
    tutoriels/overInterDyMFoam/overInterDyMFoam
    tutoriels/sedFoam/sedFoam
-   tutoriels/tutoriels
 
+
+Documentation des programmes
+-----------------------------
+
+Une documentation exhaustive des programmes et librairies développées
+pour la :doc:`génération de houle<generationHoule>`, le 
+:doc:`post-traitement<postTraitement>` de données, et quelques :doc:`librairies<outils>`
+construites pour l'aide à la :doc:`lecture de paramètres<fonctions/outilsLecture>` et 
+:doc:`l'exportation<fonctions/outilsExcel>` de données vers des fichiers Excel. En complément,
+une courte présentation des théories utilisées pour la :doc:`génération de houle
+ irrégulière<canal>` du canal à houle d'ACRI-IN est fournie.
+
+.. toctree::
+   :maxdepth: 1
+   :hidden:
+   :caption: Documentation
+
+   generationHoule
+   postTraitement
+   canal
+   outils

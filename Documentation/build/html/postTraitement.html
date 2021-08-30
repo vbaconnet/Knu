@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Tutoriels &mdash; Documentation Canal Numérique 0.0.1</title>
+  <title>Post-traitement &mdash; Documentation Canal Numérique 0.0.1</title>
   
 
   
@@ -41,7 +41,9 @@
 
     
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Recherche" href="search.html" /> 
+    <link rel="search" title="Recherche" href="search.html" />
+    <link rel="next" title="Exportation de mesures de sondes" href="fonctions/lireSondes.html" />
+    <link rel="prev" title="Spectre de JONSWAP" href="fonctions/jonswap.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -93,6 +95,20 @@
 <li class="toctree-l1"><a class="reference internal" href="tutoriels/overInterDyMFoam/overInterDyMFoam.html">overInterDyMFoam</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutoriels/sedFoam/sedFoam.html">sedFoam</a></li>
 </ul>
+<p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="generationHoule.html">Génération de houle</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Post-traitement</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="fonctions/lireSondes.html">Exportation de mesures de sondes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fonctions/lirePoints.html">Exportation de mesures de points</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fonctions/debitFranchissement.html">Calcul de débit de franchissement</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fonctions/resample.html">Rééchantillonnage des données de sondes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fonctions/spectre.html">Reconstruction de spectre</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="canal.html">Guide de programmation du canal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="outils.html">Librairies d’outils</a></li>
+</ul>
 
             
           
@@ -140,13 +156,13 @@
     
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
         
-      <li>Tutoriels</li>
+      <li>Post-traitement</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="_sources/tutoriels.rst.txt" rel="nofollow"> Afficher la source de la page</a>
+            <a href="_sources/postTraitement.rst.txt" rel="nofollow"> Afficher la source de la page</a>
           
         
       </li>
@@ -159,28 +175,18 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="tutoriels">
-<h1>Tutoriels<a class="headerlink" href="#tutoriels" title="Lien permanent vers ce titre">¶</a></h1>
-<p>Voici la liste des tutoriels, consultables dans le dossier <code class="docutils literal notranslate"><span class="pre">Knu/Tutoriels</span></code></p>
-<div class="section" id="interfoam">
-<h2>interFoam<a class="headerlink" href="#interfoam" title="Lien permanent vers ce titre">¶</a></h2>
+  <div class="section" id="post-traitement">
+<h1>Post-traitement<a class="headerlink" href="#post-traitement" title="Lien permanent vers ce titre">¶</a></h1>
+<p>Description des programmes de post-traitement</p>
 <div class="toctree-wrapper compound">
-</div>
-</div>
-<div class="section" id="olaflow">
-<h2>olaFlow<a class="headerlink" href="#olaflow" title="Lien permanent vers ce titre">¶</a></h2>
-<div class="toctree-wrapper compound">
-</div>
-</div>
-<div class="section" id="overinterdymfoam">
-<h2>overInterDyMFoam<a class="headerlink" href="#overinterdymfoam" title="Lien permanent vers ce titre">¶</a></h2>
-<div class="toctree-wrapper compound">
-</div>
-</div>
-<div class="section" id="sedfoam">
-<h2>sedFoam<a class="headerlink" href="#sedfoam" title="Lien permanent vers ce titre">¶</a></h2>
-<div class="toctree-wrapper compound">
-</div>
+<p class="caption" role="heading"><span class="caption-text">Post-traitement</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="fonctions/lireSondes.html">Exportation de mesures de sondes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fonctions/lirePoints.html">Exportation de mesures de points</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fonctions/debitFranchissement.html">Calcul de débit de franchissement</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fonctions/resample.html">Rééchantillonnage des données de sondes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fonctions/spectre.html">Reconstruction de spectre</a></li>
+</ul>
 </div>
 </div>
 
@@ -189,6 +195,10 @@
            
           </div>
           <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="fonctions/lireSondes.html" class="btn btn-neutral float-right" title="Exportation de mesures de sondes" accesskey="n" rel="next">Suivant <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="fonctions/jonswap.html" class="btn btn-neutral float-left" title="Spectre de JONSWAP" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Précédent</a>
+    </div>
 
   <hr/>
 

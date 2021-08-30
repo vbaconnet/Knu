@@ -90,32 +90,29 @@
             
               <p class="caption" role="heading"><span class="caption-text">Tutoriels</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../tutoriels.html">Tutoriels</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutoriels/interFoam/interFoam.html">interFoam</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutoriels/olaFlow/olaFlow.html">olaFlow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutoriels/overInterDyMFoam/overInterDyMFoam.html">overInterDyMFoam</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutoriels/sedFoam/sedFoam.html">sedFoam</a></li>
 </ul>
+<p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../tutoriels.html">Tutoriels</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../generationHoule.html">Génération de houle</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="genHouleReguliere.html">Génération de houle régulière</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Génération de houle irrégulière</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#informations">Informations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#description">Description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#utilisation">Utilisation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dependances">Dépendances</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#code-source">Code source</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="jonswap.html">Spectre de JONSWAP</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../postTraitement.html">Post-traitement</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../canal.html">Guide de programmation du canal</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="../modules.html">Documentation des scripts</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../modules.html#automatisation-des-calculs-openfoam">Automatisation des calculs OpenFOAM</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="../modules.html#generation-de-houle">Génération de houle</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="genHouleReguliere.html">Génération de houle régulière</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">Génération de houle irrégulière</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#informations">Informations</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#description">Description</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#utilisation">Utilisation</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#dependances">Dépendances</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#code-source">Code source</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="jonswap.html">Spectre de JONSWAP</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../modules.html#post-traitement">Post-traitement</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules.html#reconstruction-de-spectre">Reconstruction de spectre</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules.html#lancement-de-calculs-en-arborescence">Lancement de calculs en arborescence</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules.html#outils-de-manipulation-lecture-et-calcul">Outils de manipulation, lecture et calcul</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="../outils.html">Librairies d’outils</a></li>
 </ul>
 
             
@@ -164,7 +161,7 @@
     
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
-          <li><a href="../modules.html">Documentation des scripts</a> &raquo;</li>
+          <li><a href="../generationHoule.html">Génération de houle</a> &raquo;</li>
         
       <li>Génération de houle irrégulière</li>
     
@@ -190,6 +187,7 @@
 <div class="section" id="informations">
 <h2>Informations<a class="headerlink" href="#informations" title="Lien permanent vers ce titre">¶</a></h2>
 <ul class="simple">
+<li><p>Fichier : <code class="docutils literal notranslate"><span class="pre">genHouleIrreguliere.py</span></code></p></li>
 <li><p>Auteur: Victor Baconnet</p></li>
 <li><p>Date de dernière modification: 08 Juillet 2021</p></li>
 </ul>
@@ -200,7 +198,7 @@
 d’amplitude, périodes, déphasages et directions pour le patch inlet, et des
 paramètres d’absorption pour le patch outlet.</p>
 <p>La génération peut se faire selon la syntaxe interFoam/interIsoFoam ou olaFlow,
-toujours à partir du fichier <code class="docutils literal notranslate"><span class="pre">constant/jonswapDict</span></code>.</p>
+toujours à partir du fichier <code class="docutils literal notranslate"><span class="pre">jonswapDict</span></code>.</p>
 <p>Pour exécuter ce fichier, vous devez spécifier les paramètres de spectre JONSWAP
 dans le fichier « jonswapDict » formaté comme suit:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Tp</span> <span class="mf">1.78</span>
@@ -208,7 +206,7 @@ dans le fichier « jonswapDict » formaté comme suit:</p>
 <span class="n">Tmax</span> <span class="mf">3.0</span>
 <span class="n">Hs</span> <span class="mf">1.5</span>
 <span class="n">gamma</span> <span class="mf">3.2</span>
-<span class="n">scale</span> <span class="p">(</span><span class="n">ou</span> <span class="n">échelle</span><span class="p">)</span> <span class="mf">25.0</span> <span class="o">//</span><span class="n">optionnel</span>
+<span class="n">scale</span> <span class="mf">25.0</span> <span class="o">//</span><span class="n">optionnel</span>
 </pre></div>
 </div>
 <p>L’exécution de ce fichier renverra une erreur si <code class="docutils literal notranslate"><span class="pre">jonswapDict</span></code> n’est pas trouvé.
@@ -221,7 +219,11 @@ préciser le chemin d’accès vers le répertoire de votre choix avec l’optio
 </div>
 <div class="section" id="utilisation">
 <h2>Utilisation<a class="headerlink" href="#utilisation" title="Lien permanent vers ce titre">¶</a></h2>
-<p>genHouleIrreguliere [OPTIONS]</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ genHouleIrreguliere.py <span class="o">[</span>OPTIONS<span class="o">]</span>
+$ python3 genHouleIrreguliere.py <span class="o">[</span>OPTIONS<span class="o">]</span>
+</pre></div>
+</div>
+<p><strong>Options</strong></p>
 <dl class="option-list">
 <dt><kbd><span class="option">-h</span>, <span class="option">--help</span></kbd></dt>
 <dd><p>Afficher l’aide</p>

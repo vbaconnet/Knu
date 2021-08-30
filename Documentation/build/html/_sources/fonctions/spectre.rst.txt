@@ -1,9 +1,10 @@
-Reconstruction de spectre : spectre.py
-=======================================
+Reconstruction de spectre
+==========================
 
 Informations
 ---------------
 
+    * Fichier: ``spectre.py``
     * Auteur: Victor Baconnet
     * Date de dernière modification: 27 août 2021
 
@@ -24,7 +25,7 @@ numérique d'après la formule
 ou, sous forme discrétisée, par intégration selon la méthode des trapèzes
 
 .. math:: 
-    H_s = 4 \sqrt{ \\frac{\Delta \omega }{2}  \sum_{i=0}^{N-1}{ S_{i+1} - S_i }} 
+    H_s = 4 \sqrt{ \frac{\Delta \omega }{2}  \sum_{i=0}^{N-1}{ S_{i+1} - S_i }} 
 
 où :math:`S_i` est la valeur du spectre de Jonswap reconstruit.
 

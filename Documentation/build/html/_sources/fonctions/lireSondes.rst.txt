@@ -1,9 +1,11 @@
-Exportation de mesures de sondes : lireSondes.py
-=================================================
+Exportation de mesures de sondes 
+==================================
 
 Informations
 -------------
 
+
+    * Fichier: ``lireSondes.py``
     * Auteur: Victor Baconnet
     * Date de dernière modification: 27 août 2021
 
