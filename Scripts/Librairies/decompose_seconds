@@ -2,8 +2,8 @@
 
 raw="${1}"
 
-hrs=$(python -c "print( int($raw/3600.0))")
-mins=$(python -c "print( int( ($raw - $hrs*3600)/60.0 ))")
-secs=$(python -c "print( $raw - $hrs*3600 - $mins*60)")
+hrs=$(echo "$raw/3600.0" | bc)
+mins=$(echo "($raw - $hrs*3600)/60.0" | bc)
+secs=$(echo "s = $raw - $hrs*3600 - $mins*60; if (s<1) print 0; s" | bc)
 
 echo "${hrs}h${mins}m${secs}s"
