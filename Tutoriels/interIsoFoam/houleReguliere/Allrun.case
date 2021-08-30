@@ -12,4 +12,4 @@ sleep 2
 
 AllpostProcess lireSondes.py
 
-python3 traceSondes.py
+python traceSondes.py

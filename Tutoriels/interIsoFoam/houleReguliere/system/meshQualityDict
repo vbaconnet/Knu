@@ -10,19 +10,12 @@ FoamFile
     version     2.0;
     format      ascii;
     class       dictionary;
-    object      dynamicMeshDict;
+    object      meshQualityDict;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-dynamicFvMesh       dynamicMotionSolverFvMesh;
-motionSolverLibs    (fvMotionSolvers);
-
-solver              displacementLaplacian;
-
-displacementLaplacianCoeffs
-{
-    diffusivity     erseDistance (leftwall);
-}
+// Include defaults parameters from master dictionary
+#includeEtc "caseDicts/meshQualityDict"
 
 
 // ************************************************************************* //

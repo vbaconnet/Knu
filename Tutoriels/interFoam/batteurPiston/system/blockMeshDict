@@ -20,7 +20,6 @@ scale   1;
 xmin  0.0;
 xmax  26.0;
 xsep  4.0; //zone de séparation pour le premier bloc
-xsepI 4.01; //zone de séparation pour le deuxième bloc
 ymin  0.0;
 ymax  1.0;
 zmin  0.0;
@@ -48,31 +47,6 @@ nxGauche #calc "log( $xgrad ) / log( ($xsep - $dx / $xgrad) / ($xsep - $dx) ) + 
 Ng #calc "std::floor($nxGauche)";
 Nz #calc "std::floor($nz)";
 Nx #calc "std::floor($nx)";
-
-//Affichage des dimensions
-#codeStream
-{
-
-    code
-    #{
-	Info << "\n" << "Nz : " << $Nz << "\nNx-sep : " << $Ng << "\nNx : " << $Nx << "\nxgrad : " << $xgrad << endl;
-	Info << "\n" << endl;
-	Info << "------------- Dimensions du canal numérique ------------" << endl;
-	Info << endl;
-	Info << "                 Longueur totale " << $xLen << " m"  << endl;
-	Info << "        " << $xsep << " m" << endl;
-	Info << "    <------->" << endl;
-	Info << "     ____________________________________________________  ___"  << endl;
-	Info << " B  |       |                                            |  |" << endl;
-	Info << " A  |       |                                            |  |" << endl;
-	Info << " T  |       |                                            |  |" << endl;
-	Info << " T  |       |                                            |  | " << $zLen << " m" << endl;
-	Info << " E  |       |                                            |  |" << endl;
-	Info << " U  |       |                                            |  |" << endl;	
-	Info << " R  |_______|____________________________________________| _|_" << endl;
-	Info << "\n------------------------------------------------------------\n" << endl;
-    #};
-}
 
 vertices
 (

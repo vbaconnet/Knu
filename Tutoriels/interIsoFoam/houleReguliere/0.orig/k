@@ -9,19 +9,47 @@ FoamFile
 {
     version     2.0;
     format      ascii;
-    class       dictionary;
-    object      dynamicMeshDict;
+    class       volScalarField;
+    object      k;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-dynamicFvMesh       dynamicMotionSolverFvMesh;
-motionSolverLibs    (fvMotionSolvers);
+dimensions      [0 2 -2 0 0 0 0];
 
-solver              displacementLaplacian;
+internalField   uniform 0.00000001;
 
-displacementLaplacianCoeffs
+boundaryField
 {
-    diffusivity     erseDistance (leftwall);
+    "(actuel2|BOTTOM|outlet)"
+    {
+        type            kqRWallFunction;
+        value           $internalField;
+    }
+
+    inlet
+    {
+        type            inletOutlet;
+        inletValue      $internalField;
+	value		$internalField;
+    }
+
+    frontPlane
+    {
+        type            empty;
+    }
+
+    backPlane
+    {
+        type            empty;
+    }
+
+    TOP
+    {
+        type		inletOutlet;
+	inletValue	$internalField;
+	value		$internalField;
+    }
+
 }
 
 

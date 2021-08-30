@@ -10,19 +10,20 @@ FoamFile
     version     2.0;
     format      ascii;
     class       dictionary;
-    object      dynamicMeshDict;
+    location    "constant";
+    object      turbulenceProperties;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-dynamicFvMesh       dynamicMotionSolverFvMesh;
-motionSolverLibs    (fvMotionSolvers);
+simulationType  laminar;
 
-solver              displacementLaplacian;
-
-displacementLaplacianCoeffs
+RAS
 {
-    diffusivity     erseDistance (leftwall);
-}
+    RASModel		kEpsilon;
 
+    turbulence  	on;
+  
+    printCoeffs		on;
+}
 
 // ************************************************************************* //

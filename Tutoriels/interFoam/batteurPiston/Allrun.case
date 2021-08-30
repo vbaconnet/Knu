@@ -13,4 +13,4 @@ sleep 2
 
 # Suivre la progression du calcul et lancer la commande
 # ls lorsque le calcul est terminé
-AllpostProcess ls
+AllpostProcess lireSondes.py resample.py spectre.py

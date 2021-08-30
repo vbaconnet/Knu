@@ -10,19 +10,29 @@ FoamFile
     version     2.0;
     format      ascii;
     class       dictionary;
-    object      dynamicMeshDict;
+    location    "system";
+    object      setFieldsDict;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-dynamicFvMesh       dynamicMotionSolverFvMesh;
-motionSolverLibs    (fvMotionSolvers);
+hauteur 0.864; // Hauteur d'eau
 
-solver              displacementLaplacian;
+defaultFieldValues
+(
+    volScalarFieldValue alpha.water 0
+);
 
-displacementLaplacianCoeffs
-{
-    diffusivity     erseDistance (leftwall);
-}
+regions
+(
+    boxToCell
+    {
+        box (-99 -99 -99) (99 99 $hauteur);
+        fieldValues
+        (
+            volScalarFieldValue alpha.water 1
+        );
+    }
+);
 
 
 // ************************************************************************* //

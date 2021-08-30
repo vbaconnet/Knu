@@ -10,19 +10,43 @@ FoamFile
     version     2.0;
     format      ascii;
     class       dictionary;
-    object      dynamicMeshDict;
+    location    "system";
+    object      fvSchemes;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-dynamicFvMesh       dynamicMotionSolverFvMesh;
-motionSolverLibs    (fvMotionSolvers);
-
-solver              displacementLaplacian;
-
-displacementLaplacianCoeffs
+ddtSchemes
 {
-    diffusivity     erseDistance (leftwall);
+    default         Euler;
 }
 
+gradSchemes
+{
+    default         Gauss linear;
+}
+
+divSchemes
+{
+    div(rhoPhi,U)  				Gauss limitedLinear 1;
+    div(U)  					Gauss linear; 
+    div(phi,alpha)  				Gauss vanLeer;
+    div(phirb,alpha) 				Gauss interfaceCompression;
+    div(((rho*nuEff)*dev2(T(grad(U))))) 	Gauss linear;
+}
+
+laplacianSchemes
+{
+    default         Gauss linear corrected;
+}
+
+interpolationSchemes
+{
+    default         linear;
+}
+
+snGradSchemes
+{
+    default         orthogonal;
+}
 
 // ************************************************************************* //

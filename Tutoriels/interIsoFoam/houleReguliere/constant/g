@@ -9,20 +9,14 @@ FoamFile
 {
     version     2.0;
     format      ascii;
-    class       dictionary;
-    object      dynamicMeshDict;
+    class       uniformDimensionedVectorField;
+    location    "constant";
+    object      g;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-dynamicFvMesh       dynamicMotionSolverFvMesh;
-motionSolverLibs    (fvMotionSolvers);
-
-solver              displacementLaplacian;
-
-displacementLaplacianCoeffs
-{
-    diffusivity     erseDistance (leftwall);
-}
+dimensions      [0 1 -2 0 0 0 0];
+value           (0 0 -9.81);
 
 
 // ************************************************************************* //
