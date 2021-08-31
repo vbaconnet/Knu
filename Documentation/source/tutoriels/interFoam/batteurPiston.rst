@@ -234,8 +234,8 @@ La deuxième ligne permet d'inclure la librairie de maillage dynamique. La
 troisième ligne indique le type de solveur à utiliser pour la propagation
 du déplacement du maillage. Le maillage sera comprimé/dilaté, et ce déplacement
 va être propagé dans le reste du maillage. Cette propagation est résolue
-avec différents solveurs. La `documentation <https://www.openfoam.com/documentation/guides/latest/doc/openfoam-guide-mesh-motion.html>`_
-d'OpenFOAM sur les maillages dynamiques étant très incomplète, vous pourrez
+avec différents solveurs. La `documentation d'OpenFOAM <https://www.openfoam.com/documentation/guides/latest/doc/openfoam-guide-mesh-motion.html>`_
+sur les maillages dynamiques étant très incomplète, vous pourrez
 voir le détail des solveurs disponibles en allant dans les 
 `fichiers source <https://www.openfoam.com/documentation/guides/latest/api/fvMotionSolver_8H.html>`_
 directement. 

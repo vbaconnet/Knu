@@ -5,7 +5,7 @@ Utilisez ces tutoriels de base pour découvrir ``isoAdvector``.
 
 .. NOTE::
 
-   Il suffit juste de réutiliser les tutoriels d'`interFoam<../interFoam/interFoam>`
+   Il suffit juste de réutiliser les tutoriels d':doc:`interFoam<../interFoam/interFoam>`
    et de remplacer la ligne::
 
       application interFoam

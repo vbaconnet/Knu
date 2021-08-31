@@ -211,25 +211,7 @@ AllpostProcess lireSondes.py resample.py spectre.py
 <p>Pour la géométrie de la simulation, nous utiliserons un canal rectangulaire,
 qui se génère aisément à partir de l’outil <code class="docutils literal notranslate"><span class="pre">blockMesh</span></code>. Le fichier de configuration
 se trouve dans <code class="docutils literal notranslate"><span class="pre">system/blockMeshDict</span></code>.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>/*--------------------------------*- C++ -*----------------------------------*\
-|                           |                                                 |
-| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
-|  \\    /   O peration     | Version:  v2006                                 |
-|   \\  /    A nd           | Website:  www.openfoam.com                      |
-|    \\/     M anipulation  |                                                 |
-\*---------------------------------------------------------------------------*/
-FoamFile
-{
-    version         2.0;
-    format          ascii;
-    class           dictionary;
-    object          blockMeshDict;
-}
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-
-scale   1;
-
-//Dimensions du canal
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>//Dimensions du canal
 xmin  0.0;
 xmax  26.0;
 xsep  4.0; //zone de séparation pour le premier bloc
@@ -411,8 +393,8 @@ dynamiques, consultez la <a class="reference external" href="https://www.openfoa
 troisième ligne indique le type de solveur à utiliser pour la propagation
 du déplacement du maillage. Le maillage sera comprimé/dilaté, et ce déplacement
 va être propagé dans le reste du maillage. Cette propagation est résolue
-avec différents solveurs. La <a class="reference external" href="https://www.openfoam.com/documentation/guides/latest/doc/openfoam-guide-mesh-motion.html">documentation</a>
-d’OpenFOAM sur les maillages dynamiques étant très incomplète, vous pourrez
+avec différents solveurs. La <a class="reference external" href="https://www.openfoam.com/documentation/guides/latest/doc/openfoam-guide-mesh-motion.html">documentation d’OpenFOAM</a>
+sur les maillages dynamiques étant très incomplète, vous pourrez
 voir le détail des solveurs disponibles en allant dans les
 <a class="reference external" href="https://www.openfoam.com/documentation/guides/latest/api/fvMotionSolver_8H.html">fichiers source</a>
 directement.
