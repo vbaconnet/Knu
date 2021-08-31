@@ -1,0 +1,23 @@
+﻿Tmin 0.87
+
+Tmax 2.19
+
+Tp 1.57
+
+Hs 0.05		    
+
+gamma 3.3		    
+
+xS 5.0			    % Coordonnée x du point de focus (m)
+tS 50.0			    % Temps du point de focus (s)
+Ncomposantes 1000	    % Nombre de composantes de houle
+
+h 1.38			    % Hauteur d'eau devant le batteur (m)
+
+duree_simu 100	            % Durée de la simulation (s)
+
+rampe 10		    % Durée de la rampe (s)
+fichier_sortie test1        	  % Nom du fichier de sortie (sans extension)
+afficher_graphiques 1 	    % Mettre à 1 pour afficher les graphiques
+
+sauvegarder_fichiers 0	    % Mettre à 0 pour ne pas sauvegarder les fichiers
