@@ -1,0 +1,20 @@
+#!/bin/bash
+
+# Lancer le maillage
+Allmesh -c
+
+# Générer la houle irrégulière
+genHouleIrreguliere
+
+# Copier le fichier turbulence à utiliser
+cp constant/turbulenceProperties.turbulent constant/turbulenceProperties
+
+# Lancer le calcul. L'option -s lance setFields
+Allrun -ts &
+
+# Attendre 2 secondes avant de lancer le monitoring
+sleep 2
+
+# Suivre la progression du calcul et lancer la commande
+# ls lorsque le calcul est terminé
+AllpostProcess ls

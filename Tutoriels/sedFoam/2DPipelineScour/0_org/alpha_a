@@ -59,7 +59,7 @@ boundaryField
     {
         type            codedFixedValue;
         value           uniform 0;
-        
+
         name    inlet;
 
         codeInclude

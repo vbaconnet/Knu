@@ -1,0 +1,14 @@
+#!/bin/bash
+
+echo "temps,a1,a2,a3,b1,b2,b3,c1,c2,c3" > orientation.csv
+grep "Orientation" log.overInterDyMFoam > temp.txt
+
+sed "s/    Orientation: (//" -i temp.txt
+sed "s/)//" -i temp.txt
+sed "s/ /,/g" -i temp.txt
+
+cat temp.txt >> orientation.csv
+rm temp.txt
+
+grep "^Time = " log.overInterDyMFoam |  grep -Eo '[+-]?[0-9]+([.][0-9]+)?' > times.csv
+

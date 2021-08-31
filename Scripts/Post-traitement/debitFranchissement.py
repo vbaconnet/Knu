@@ -75,12 +75,12 @@ if __name__ == "__main__":
     # Fichier de sortie
     outputFile = olec.readFileOption(sys.argv, ["-output","--output",
                                                 "-outputFile","--outputFile"],
-                                    default = "test.csv",
+                                    default = "debitFranchissement.csv",
                                     extension = "csv")
     
     # Chemin vers fichier de volumes
     path = olec.readFileOption(sys.argv, ["-path","--path"],
-                               default = "volFieldValue.dat",
+                               default = "postProcessing/waterVolume/0/volFieldValue.dat",
                                checkPath = True)
     
     # Lire échelle dans le fichier jonswapDict si il existe                   

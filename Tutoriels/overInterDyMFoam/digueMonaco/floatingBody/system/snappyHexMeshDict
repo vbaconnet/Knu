@@ -46,7 +46,7 @@ geometry
     monaco_flottante.stl
     {
         type triSurfaceMesh;
-	name floatingObject;
+	name floatingBody;
     }
 
     interface

@@ -16,8 +16,8 @@ FoamFile
 
 scale   1;
 
-xmin -100;
-xmax 400;
+xmin -50;
+xmax 450;
 ymin -100;
 ymax 100;
 zmin -16;

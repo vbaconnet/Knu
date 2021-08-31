@@ -58,7 +58,7 @@ sixDoFRigidBodyMotionCoeffs
     {
 	chaine1_horizontal
 	{
-	    sixDoFRigidBodyMotionRestraint fefeg;
+	    sixDoFRigidBodyMotionRestraint linearSpring;
             anchor 		(326.0  -15.14 0.56);
     	    refAttachmentPt	(326.0 -100.0  0.56);
 	    stiffness		50000;

@@ -1,12 +1,13 @@
 #!/bin/bash
 
-. ${WM_PROJECT_DIR:?}/bin/tools/RunFunctions  #Charger les scripts OpenFOAM
-
 # Lancer le maillage
-Allmesh -c 
+Allmesh -c
 
 # Générer la houle irrégulière
-genWaveProperties --inlet INLET --outlet RIGHT --Ncomposantes 500
+genHouleIrreguliere
+
+# Copier le fichier turbulence à utiliser
+cp constant/turbulenceProperties.laminaire constant/turbulenceProperties
 
 # Lancer le calcul. L'option -s lance setFields
 Allrun -ts &
