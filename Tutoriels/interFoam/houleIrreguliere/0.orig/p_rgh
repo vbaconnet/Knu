@@ -51,19 +51,6 @@ boundaryField
         type            totalPressure;
         p0              uniform 0;
     }
- 
-    actuel2
-    {
-        type            zeroGradient;
-    }
-/*
-    "procBoundary.*"
-    {     	      
-        type            processor;
-        value           uniform 0;
-    }     	  
-*/
-
 }
 
 

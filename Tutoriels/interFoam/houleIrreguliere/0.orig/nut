@@ -20,7 +20,7 @@ internalField   uniform 0.0;
 
 boundaryField
 {
-    "(actuel2|BOTTOM|outlet)"
+    "(BOTTOM|outlet)"
     {
         type            nutkWallFunction;
         Cmu             0.09;

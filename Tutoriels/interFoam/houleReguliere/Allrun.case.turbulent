@@ -1,0 +1,13 @@
+#!/bin/bash
+
+Allmesh
+
+genHouleReguliere
+
+cp constant/turbulenceProperties.komega constant/turbulenceProperties
+
+Allrun -s &
+
+sleep 2
+
+AllpostProcess lireSondes.py traceSondes.py

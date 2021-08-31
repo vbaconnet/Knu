@@ -20,7 +20,7 @@ internalField   uniform 0.00000001;
 
 boundaryField
 {
-    "(actuel2|BOTTOM|outlet)"
+    "(BOTTOM|outlet)"
     {
         type            kqRWallFunction;
         value           $internalField;

@@ -10,31 +10,20 @@ FoamFile
     version     2.0;
     format      ascii;
     class       dictionary;
-    object      surfaceFeatureExtractDict;
+    location    "constant";
+    object      turbulenceProperties;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
+simulationType  laminar;
 
-actuel2_canal_directionZ.stl
+RAS
 {
-	extractionMethod    extractFromSurface;
+    RASModel		kOmegaSST;
 
-	extractFromSurfaceCoeffs
-	{
-		includedAngle 150;
-	}
+    turbulence  	on;
 
-	subsetFeatures
-	{
-		nonManifoldEdges	yes;
-		openEdges		yes;
-	}
-	
-
-	writeObs yes;
+    printCoeffs		on;
 }
-
-
-
 
 // ************************************************************************* //
