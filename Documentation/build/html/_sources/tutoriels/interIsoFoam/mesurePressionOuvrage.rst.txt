@@ -1,7 +1,7 @@
-Mesure de débit de franchissement
+Mesure de pression sur un ouvrage
 ==================================
 
-Il vous suffit de reprendre le :doc:`tutoriel de mesure de débit de franchissement <../interFoam/debitFranchissement>`, en
+Il vous suffit de reprendre le :doc:`tutoriel de mesure de pression <../interFoam/mesurePressionOuvrage>`, en
 remplaçant la ligne::
 
     application     interFoam;

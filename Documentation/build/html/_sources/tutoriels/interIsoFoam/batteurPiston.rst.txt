@@ -1,7 +1,7 @@
-Mesure de débit de franchissement
+Mouvement de batteur piston
 ==================================
 
-Il vous suffit de reprendre le :doc:`tutoriel de mesure de débit de franchissement <../interFoam/debitFranchissement>`, en
+Il vous suffit de reprendre le :doc:`tutoriel du batteur piston <../interFoam/batteurPiston>`, en
 remplaçant la ligne::
 
     application     interFoam;

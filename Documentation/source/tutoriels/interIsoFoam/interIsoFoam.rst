@@ -1,24 +1,30 @@
 interIsoFoam
-===========
+==============
 
-Utilisez ces tutoriels de base pour construire vos simulations en utilisant
-l'algorithme ``isoAdvector``.
+Utilisez ces tutoriels de base pour découvrir ``isoAdvector``.
 
 .. NOTE::
-    
-    Il vous suffit de reprendre les tutoriels pour ``interFoam``, et remplacer 
-    la ligne::
 
-        application     interFoam;
+   Il suffit juste de réutiliser les tutoriels d'`interFoam<../interFoam/interFoam>`
+   et de remplacer la ligne::
 
-    par la ligne::
+      application interFoam
 
-        application     interIsoFoam;
-    
-    dans le fichier ``system/controlDict`` du tutoriel de votre choix.
+   par::
+
+      application interIsoFoam
+
+   dans votre fichier ``system/controlDict``. Evidemment, 
+   lorsque vous lancer une simulation, entrez la commande::
+
+       $ interIsoFoam > log.interIsoFoam &
 
 .. toctree::
    :maxdepth: 1
 
    houleReguliere
+   houleIrreguliere
+   mesurePressionOuvrage
+   obstaclePoreux
    debitFranchissement
+   batteurPiston

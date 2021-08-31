@@ -1,7 +1,7 @@
-Mesure de débit de franchissement
+Obstacle poreux
 ==================================
 
-Il vous suffit de reprendre le :doc:`tutoriel de mesure de débit de franchissement <../interFoam/debitFranchissement>`, en
+Il vous suffit de reprendre le :doc:`tutoriel d'obstacle poreux <../interFoam/obstaclePoreux>`, en
 remplaçant la ligne::
 
     application     interFoam;
