@@ -38,24 +38,6 @@ se trouve dans ``system/blockMeshDict``.
 
 .. code-block::
 
-    /*--------------------------------*- C++ -*----------------------------------*\
-    |                           |                                                 |
-    | \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
-    |  \\    /   O peration     | Version:  v2006                                 |
-    |   \\  /    A nd           | Website:  www.openfoam.com                      |
-    |    \\/     M anipulation  |                                                 |
-    \*---------------------------------------------------------------------------*/
-    FoamFile
-    {
-        version         2.0;
-        format          ascii;
-        class           dictionary;
-        object          blockMeshDict;
-    }
-    // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-
-    scale   1;
-
     //Dimensions du canal
     xmin  0.0;
     xmax  26.0;
