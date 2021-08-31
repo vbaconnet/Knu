@@ -10,4 +10,3 @@ de maillage dynamique de type overset.
 
    digueMonaco
    faucetAndSink
-   objetFlottant

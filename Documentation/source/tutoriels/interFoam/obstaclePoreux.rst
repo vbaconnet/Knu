@@ -1,7 +1,6 @@
 Milieu poreux
 ===============
 
-
 **Description de la situation**
 
 Ce tutoriel est une introduction aux milieux poreux sous OpenFOAM.

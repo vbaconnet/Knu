@@ -1,4 +1,4 @@
 faucetAndSink
-===============================
+==============
 
-Il n'y a rien encore ici
+Tutoriel complet en `vidéo <https://www.youtube.com/watch?v=nCIsS0VqypA>`_.

@@ -59,7 +59,6 @@ Des tutoriels détaillés pour tous types d'applications.
 * **Maillages dynamiques** :
   :doc:`Batteur piston </tutoriels/interFoam/batteurPiston>`  |
   :doc:`Digue flottante de Monaco </tutoriels/overInterDyMFoam/digueMonaco>` |
-  :doc:`Objet Flottant </tutoriels/overInterDyMFoam/objetFlottant>` |
   :doc:`Injection d'eau depuis une source mobile </tutoriels/overInterDyMFoam/faucetAndSink>` 
 
 * **Sédimentation et transport de sédiments** :
