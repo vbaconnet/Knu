@@ -53,15 +53,16 @@ Lien vers le `code source <https://github.com/victor13165/Knu/blob/main/Scripts/
 
 """
 
-import numpy as np
-import pandas as pd
-from matplotlib.pyplot import subplots, show
-import matplotlib.animation as animation
-from outilsDivers import plot
-import sys
-from os.path import exists
-
 if __name__ == "__main__":
+
+    import numpy as np
+    import pandas as pd
+    from matplotlib.pyplot import subplots, show
+    import matplotlib.animation as animation
+    from outilsDivers import plot
+    import sys
+    from os.path import exists
+
 
     probefile = sys.argv[1]
 
