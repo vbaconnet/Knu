@@ -92,6 +92,7 @@
               <p class="caption" role="heading"><span class="caption-text">Tutoriels</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="tutoriels/interFoam/interFoam.html">interFoam</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutoriels/interIsoFoam/interIsoFoam.html">interIsoFoam</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutoriels/olaFlow/olaFlow.html">olaFlow</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutoriels/overInterDyMFoam/overInterDyMFoam.html">overInterDyMFoam</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutoriels/sedFoam/sedFoam.html">sedFoam</a></li>
@@ -101,6 +102,7 @@
 <li class="toctree-l1"><a class="reference internal" href="generationHoule.html">Génération de houle</a></li>
 <li class="toctree-l1"><a class="reference internal" href="postTraitement.html">Post-traitement</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Guide de programmation du canal</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#utilisation-rapide">Utilisation rapide</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#generation-de-houle-irreguliere">Génération de houle irrégulière</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#theorie-batteur-piston">Théorie batteur-piston</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#controle-du-programme">Contrôle du programme</a></li>
@@ -181,6 +183,16 @@
 <p>Cette documentation présente la théorie et programmation du canal à houle
 et la génération de houle irrégulière et de vagues scélérates. Les
 programmes de génération sont situés dans le dossier <code class="docutils literal notranslate"><span class="pre">Knu/Scripts/Canal/</span></code>.</p>
+<div class="section" id="utilisation-rapide">
+<h2>Utilisation rapide<a class="headerlink" href="#utilisation-rapide" title="Lien permanent vers ce titre">¶</a></h2>
+<ol class="arabic simple">
+<li><p>Allez dans le dossier <code class="docutils literal notranslate"><span class="pre">Knu/Canal/houle_irreguliere</span></code></p></li>
+<li><p>Editez le fichier <code class="docutils literal notranslate"><span class="pre">params.txt</span></code>. Pour plus d’informations,
+lisez la sections sur le <a class="reference internal" href="#controleprogramme"><span class="std std-ref">rôle de chaque paramètre</span></a>.</p></li>
+<li><p>Exécutez le fichier <code class="docutils literal notranslate"><span class="pre">generer_irreguliere.m</span></code></p></li>
+<li><p>Récupérez les fichiers <code class="docutils literal notranslate"><span class="pre">.dat</span></code> et <code class="docutils literal notranslate"><span class="pre">.volts</span></code> générés.</p></li>
+</ol>
+</div>
 <div class="section" id="generation-de-houle-irreguliere">
 <h2>Génération de houle irrégulière<a class="headerlink" href="#generation-de-houle-irreguliere" title="Lien permanent vers ce titre">¶</a></h2>
 <p>La génération de houle irrégulière se fait à partir d’un spectre JONSWAP,
@@ -261,7 +273,7 @@ s’il n’est pas adapté.</p>
 </div>
 </div>
 <div class="section" id="controle-du-programme">
-<h2>Contrôle du programme<a class="headerlink" href="#controle-du-programme" title="Lien permanent vers ce titre">¶</a></h2>
+<span id="controleprogramme"></span><h2>Contrôle du programme<a class="headerlink" href="#controle-du-programme" title="Lien permanent vers ce titre">¶</a></h2>
 <p>Le contrôle des paramètres se fait dans le fichier <code class="docutils literal notranslate"><span class="pre">params.txt</span></code>:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Tmin 0.87
 Tmax 2.19

@@ -27,11 +27,9 @@ Une fois téléchargé, allez dans le dossier et chargez les variables d'environ
 
 	Si vous souhaitez utiliser le solveur ``sedFoam`` vous devrez installer
 	et compiler la dernière version vous-même (sauf si il est déjà installé).
-	Pour installer ``sedFoam``, rendez vous à l'adresse::
+	Le code source de ``sedFoam`` se télécharge à l'adresse::
 
 		https://github.com/sedfoam/sedfoam
-
-	et suivez les instructions d'installation.
 
 Tutoriels
 ---------
@@ -40,6 +38,7 @@ Des tutoriels détaillés pour tous types d'applications.
 
 * **Solveurs**:
   :doc:`interFoam </tutoriels/interFoam/interFoam>` |
+  :doc:`interIsoFoam </tutoriels/interIsoFoam/interIsoFoam>` |
   :doc:`olaFlow </tutoriels/olaFlow/olaFlow>` |
   :doc:`overInterDyMFoam </tutoriels/overInterDyMFoam/overInterDyMFoam>` |
   :doc:`sedFoam </tutoriels/sedFoam/sedFoam>`
@@ -73,6 +72,7 @@ Des tutoriels détaillés pour tous types d'applications.
    :caption: Tutoriels
 
    tutoriels/interFoam/interFoam
+   tutoriels/interIsoFoam/interIsoFoam
    tutoriels/olaFlow/olaFlow
    tutoriels/overInterDyMFoam/overInterDyMFoam
    tutoriels/sedFoam/sedFoam
@@ -104,7 +104,21 @@ la :doc:`gestion de scripts de post-traitement<fonctions/AllpostProcess>` et le
    automatisation
 
 
+
 Liens utiles 
 -------------
 
 * Introduction à OpenFOAM par `Joszef Nagy <https://www.youtube.com/watch?v=mGSUIXye9j4&list=PLcOe4WUSsMkH6DLHpsYyveaqjKxnEnQqB>`_
+
+* **Modèles de turbulence modifiés pour interFoam** : `stabRAS <https://github.com/BjarkeEltardLarsen/stabRAS_v1712>`_ (version v1712) | 
+  `kOmegaSSTBuoyancy <https://github.com/BrechtDevolder/buoyancyModifiedTurbulenceModels/tree/master/OFv1806>`_ (v1806)
+
+* **Programmer avec OpenFOAM** : Ajout d'équation de `transport scalaire passif <https://www.youtube.com/watch?v=L94iYGvZr9Q>`_ |
+  `Playlist complète <https://www.youtube.com/watch?v=_8A5CsIQ1xI&list=PLhPfNw4V4_YT9OgqS7ZPlot_Ucxzc6pQJ>`_ d'introduction à la 
+  programmation en C++ | Un `cours <https://www.youtube.com/watch?v=KB9HhggUi_E>`_ de l'UCL de programmation pour OpenFOAM |
+  `Plus de détails <https://www.youtube.com/watch?v=3iZfVmFkvB8>`_ sur OpenFOAM
+
+.. NOTE::
+
+  Des exemples de programmation avec OpenFOAM sont donnés dans les fichiers ``0.orig/Ua`` et ``0.orig/alpha_a``
+  du tutoriel d'`affouillement 2D </tutoriels/sedFoam/2DPipelineScour>`.

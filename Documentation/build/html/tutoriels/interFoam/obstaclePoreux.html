@@ -42,8 +42,8 @@
     
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Recherche" href="../../search.html" />
-    <link rel="next" title="Mouvement du batteur" href="batteurPiston.html" />
-    <link rel="prev" title="Mesures de débit de franchissement" href="debitFranchissement.html" /> 
+    <link rel="next" title="Mesures de débit de franchissement" href="debitFranchissement.html" />
+    <link rel="prev" title="Mesure de pression sur un ouvrage" href="mesurePressionOuvrage.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -94,11 +94,12 @@
 <li class="toctree-l2"><a class="reference internal" href="houleReguliere.html">Houle régulière</a></li>
 <li class="toctree-l2"><a class="reference internal" href="houleIrreguliere.html">Houle irrégulière</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mesurePressionOuvrage.html">Mesure de pression sur un ouvrage</a></li>
-<li class="toctree-l2"><a class="reference internal" href="debitFranchissement.html">Mesures de débit de franchissement</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Milieu poreux</a></li>
+<li class="toctree-l2"><a class="reference internal" href="debitFranchissement.html">Mesures de débit de franchissement</a></li>
 <li class="toctree-l2"><a class="reference internal" href="batteurPiston.html">Mouvement du batteur</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../interIsoFoam/interIsoFoam.html">interIsoFoam</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../olaFlow/olaFlow.html">olaFlow</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../overInterDyMFoam/overInterDyMFoam.html">overInterDyMFoam</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../sedFoam/sedFoam.html">sedFoam</a></li>
@@ -182,17 +183,188 @@
   <div class="section" id="milieu-poreux">
 <h1>Milieu poreux<a class="headerlink" href="#milieu-poreux" title="Lien permanent vers ce titre">¶</a></h1>
 <p><strong>Description de la situation</strong></p>
-<p>une description</p>
+<p>Ce tutoriel est une introduction aux milieux poreux sous OpenFOAM.</p>
+<p>L’ensemble des commandes à lancer est donné dans les fichiers <code class="docutils literal notranslate"><span class="pre">Allrun.case.laminaire</span></code> ou
+<code class="docutils literal notranslate"><span class="pre">Allrun.case.turbulent</span></code> selon le type de simulation que vous voulez lancer. Voici un
+extrait du fichier <code class="docutils literal notranslate"><span class="pre">Allrun.case.turbulent</span></code>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
+
+<span class="c1"># Lancer le maillage</span>
+Allmesh -c
+
+<span class="c1"># Générer la houle irrégulière</span>
+genHouleIrreguliere
+
+<span class="c1"># Copier le fichier turbulence à utiliser</span>
+cp constant/turbulenceProperties.turbulent constant/turbulenceProperties
+
+<span class="c1"># Lancer le calcul. L&#39;option -s lance setFields</span>
+Allrun -ts <span class="p">&amp;</span>
+
+<span class="c1"># Attendre 2 secondes avant de lancer le monitoring</span>
+sleep <span class="m">2</span>
+
+<span class="c1"># Suivre la progression du calcul et lancer la commande</span>
+<span class="c1"># ls lorsque le calcul est terminé</span>
+AllpostProcess ls
+</pre></div>
+</div>
 <p><strong>Maillage</strong></p>
-<p>Comment faire le maillage</p>
+<p>Le maillage est le même que pour le tutoriel de obstacle_zone.
+Lancez l’outil <code class="docutils literal notranslate"><span class="pre">blockMesh</span></code> avec la commande:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ blockMesh
+</pre></div>
+</div>
+<p>Vous pouvez visualiser ce maillage avec <code class="docutils literal notranslate"><span class="pre">ParaView</span></code>.</p>
 <p><strong>Génération de houle</strong></p>
-<p>houle</p>
+<p>La condition de houle est la même que pour le tutoriel de <a class="reference internal" href="houleIrreguliere.html"><span class="doc">houle irrégulière</span></a>.</p>
+<p><strong>Milieu poreux</strong></p>
+<p>Pour prendre en compte les enrochements, nous allons utiliser une modélisation
+de Darcy-Forchheimer. Pour plus de détails, consultez la <cite>documentation &lt;https://openfoamwiki.net/index.php/DarcyForchheimer&gt;</cite>
+sur le modèle de porosité. Si vous y avez accès, mon rapport de stage présente les théories
+de modélisation en milieu poreux.</p>
+<p>Dans un premier temps, il faut créer la zone poreuse. Pour cela,
+nous allons utiliser l’utilitaire <code class="docutils literal notranslate"><span class="pre">topoSet</span></code>. L’obstacle sera exactement
+le même que dans le tutoriel de <a class="reference internal" href="mesurePressionOuvrage.html"><span class="doc">mesure de pression</span></a>.
+Configurez le fichier <code class="docutils literal notranslate"><span class="pre">topoSetDict</span></code> comme suit:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>actions
+(
+
+// * * * * * * Zone d&#39;enrochements * * * * * * * * * *
+
+    {
+        name    c0;
+        type    cellSet;
+        action  new;
+        source  boxToCell;
+        sourceInfo
+        {
+            box (10 -99 -99) (15 99 1); // Edit box bounds as required
+        }
+    }
+
+    {
+        name    obstacle_zone;
+        type    cellZoneSet;
+        action  new;
+        source  setToCellZone;
+        set     c0;
+    }
+
+);
+</pre></div>
+</div>
+<p>Le premier sous-dictionnaire sélectionne la zone qui correspond à l’obstacle,
+sous la forme d’un <code class="docutils literal notranslate"><span class="pre">cellSet</span></code>. Le deuxième sous-dictionnaire permet de convertir
+ce <code class="docutils literal notranslate"><span class="pre">cellSet</span></code> en une <code class="docutils literal notranslate"><span class="pre">cellZone</span></code>. Nommons cette zone <code class="docutils literal notranslate"><span class="pre">obstacle_zone</span></code>. C’est
+avec ce nom que nous y ferons référence désormais.</p>
+<p>Lancez <code class="docutils literal notranslate"><span class="pre">topoSet</span></code> avec la commande:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">topoSet</span>
+</pre></div>
+</div>
+<p>Les paramètres du milieu poreux sont donnés dans le fichier <code class="docutils literal notranslate"><span class="pre">constant/fvOptions</span></code>:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>porosity1
+{
+    type            explicitPorositySource;
+
+    explicitPorositySourceCoeffs
+    {
+        selectionMode   cellZone;
+        cellZone        obstacle_zone;
+
+        type            DarcyForchheimer;
+
+        d   (2111.7 2111.7 2111.7);
+        f   (0.0 0.0 0.0);
+
+        coordinateSystem
+        {
+            origin  (0 0 0);
+            e1      (1 0 0);
+            e2      (0 1 0);
+        }
+    }
+
+}
+</pre></div>
+</div>
+<p>On y précise le type de modèle avec <code class="docutils literal notranslate"><span class="pre">type</span>&#160; <span class="pre">explicitPorositySource</span></code>. La zone poreuse
+s’indique avec le mot-clé <code class="docutils literal notranslate"><span class="pre">cellZone</span>&#160; <span class="pre">obstacle_zone</span></code>. Les coefficients
+du modèle de Darcy-Forchheimer sont les vecteurs <code class="docutils literal notranslate"><span class="pre">d</span></code> et <code class="docutils literal notranslate"><span class="pre">f</span></code>. Ce sont
+des vecteurs car vous pouvez préciser des coefficients différents selon chaque direction.
+Nous considérons un matériau homogène et isotrope, donc nos coefficients sont les mêmes
+dans chaque direction.</p>
 <p><strong>solveur</strong></p>
-<p>solver</p>
-<p><strong>Surveillance du statut de la simulation</strong></p>
-<p>Allpostprocess</p>
-<p><strong>Post-traitement</strong></p>
-<p>les graphes</p>
+<p>Les conditions limites sont inchangées par rappport au tutoriel <a class="reference internal" href="houleIrreguliere.html"><span class="doc">houle irrégulière</span></a>,
+mais vous pouvez aller les vérifier dans le dossier <code class="docutils literal notranslate"><span class="pre">0.orig</span></code>.</p>
+<p>Pensez à bien créer le dossier <code class="docutils literal notranslate"><span class="pre">0</span></code> en copiant le dossier <code class="docutils literal notranslate"><span class="pre">0.orig</span></code> avant de lancer <code class="docutils literal notranslate"><span class="pre">setFields</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cp</span> <span class="o">-</span><span class="n">r</span> <span class="mf">0.</span><span class="n">orig</span> <span class="mi">0</span>
+<span class="n">setFields</span>
+</pre></div>
+</div>
+<p>Notez que nous avons rajouté un point de mesure de pression dans <code class="docutils literal notranslate"><span class="pre">system/controlDict</span></code>:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>points
+{
+    type            sets;
+    libs            (&quot;libsampling.so&quot;);
+    enabled         true; // Mettre à false pour désactiver les sondes
+
+    // Contrôle d&#39;écriture :
+    //  - timeStep   : pas de temps
+    //  - adjustable : temps (si pas de temps adaptatif)
+    //  - runTime    : temps (si pas de temps constant)
+    writeControl     timeStep;
+    writeInterval    2;
+    fixedLocations false;
+    interpolationScheme cellPoint;
+    setFormat       raw;
+    sets
+    (
+        point1
+        {
+            type cloud;
+            axis distance;
+            points
+            (
+                (10 0 1)
+            );
+        }
+    );
+    fields
+    (
+        p
+    );
+}
+</pre></div>
+</div>
+<p>Ce point est le même que pour le tutoriel de <a class="reference internal" href="mesurePressionOuvrage.html"><span class="doc">mesure de pression sur un ouvrage</span></a>.
+Vous êtes maintenant prêt(e) à lancer la simulation. Ajustez vos paramètres de
+simulation dans <code class="docutils literal notranslate"><span class="pre">system/controlDict</span></code>. Lancez <code class="docutils literal notranslate"><span class="pre">interFoam</span></code> et redirigez
+la sortie dans un fichier log:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">interFoam</span> <span class="o">&gt;</span> <span class="n">log</span><span class="o">.</span><span class="n">interFoam</span> <span class="o">&amp;</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Toutes ces étapes peuvent être effectuées avec la commande:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Allrun</span> <span class="o">-</span><span class="n">st</span> <span class="o">&amp;</span>
+</pre></div>
+</div>
+</div>
+<p><strong>Surveillance du statut de la simulation et post-traitement</strong></p>
+<p>La commande <code class="docutils literal notranslate"><span class="pre">AllpostProcess</span></code> permet de lancer des scripts une fois
+que la simulation sera terminée. En attendant, vous pourrez
+voir le statut de simulation. Lancez la commande:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">AllpostProcess</span> <span class="n">lirePoints</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+<p>Lorsque la simulation sera finie, le script <code class="docutils literal notranslate"><span class="pre">lirePoints.py</span></code>
+va lire les données de pression, et les écrira dans un fichier .csv.</p>
+<p>Utilisez la commande suivante pour tracer la mesure de pression:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">traceSondes</span><span class="o">.</span><span class="n">py</span> <span class="n">points1</span><span class="o">.</span><span class="n">csv</span>
+</pre></div>
+</div>
+<p>Ou en remplaçant <code class="docutils literal notranslate"><span class="pre">points1.csv</span></code> par le nom de votre fichier de mesures.</p>
 </div>
 
 
@@ -201,8 +373,8 @@
           </div>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="batteurPiston.html" class="btn btn-neutral float-right" title="Mouvement du batteur" accesskey="n" rel="next">Suivant <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-        <a href="debitFranchissement.html" class="btn btn-neutral float-left" title="Mesures de débit de franchissement" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Précédent</a>
+        <a href="debitFranchissement.html" class="btn btn-neutral float-right" title="Mesures de débit de franchissement" accesskey="n" rel="next">Suivant <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="mesurePressionOuvrage.html" class="btn btn-neutral float-left" title="Mesure de pression sur un ouvrage" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Précédent</a>
     </div>
 
   <hr/>

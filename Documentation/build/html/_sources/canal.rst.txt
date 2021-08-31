@@ -11,6 +11,15 @@ Cette documentation présente la théorie et programmation du canal à houle
 et la génération de houle irrégulière et de vagues scélérates. Les 
 programmes de génération sont situés dans le dossier ``Knu/Scripts/Canal/``.
 
+Utilisation rapide
+-------------------
+
+1. Allez dans le dossier ``Knu/Canal/houle_irreguliere``
+2. Editez le fichier ``params.txt``. Pour plus d'informations, 
+   lisez la sections sur le :ref:`rôle de chaque paramètre <controleprogramme>`.
+3. Exécutez le fichier ``generer_irreguliere.m``
+4. Récupérez les fichiers ``.dat`` et ``.volts`` générés.
+
 Génération de houle irrégulière
 --------------------------------
 
@@ -128,6 +137,9 @@ c'est le cas, le programme renverra un avertissement.
    C'est à vous de générer un signal adapté aux contraintes
    mécaniques du batteur. Le programme ne corrige pas le signal
    s'il n'est pas adapté.
+
+
+.. _controleprogramme:
 
 Contrôle du programme
 ----------------------

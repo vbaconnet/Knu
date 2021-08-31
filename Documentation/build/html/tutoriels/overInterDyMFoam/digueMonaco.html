@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>digueMonaco &mdash; Documentation Canal Numérique 0.0.1</title>
+  <title>Digue flottante de Monaco &mdash; Documentation Canal Numérique 0.0.1</title>
   
 
   
@@ -36,6 +36,7 @@
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
         <script src="../../_static/translations.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
@@ -91,9 +92,10 @@
               <p class="caption" role="heading"><span class="caption-text">Tutoriels</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../interFoam/interFoam.html">interFoam</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../interIsoFoam/interIsoFoam.html">interIsoFoam</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../olaFlow/olaFlow.html">olaFlow</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="overInterDyMFoam.html">overInterDyMFoam</a><ul class="current">
-<li class="toctree-l2 current"><a class="current reference internal" href="#">digueMonaco</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Digue flottante de Monaco</a></li>
 <li class="toctree-l2"><a class="reference internal" href="faucetAndSink.html">faucetAndSink</a></li>
 <li class="toctree-l2"><a class="reference internal" href="objetFlottant.html">objetFlottant</a></li>
 </ul>
@@ -157,7 +159,7 @@
         
           <li><a href="overInterDyMFoam.html">overInterDyMFoam</a> &raquo;</li>
         
-      <li>digueMonaco</li>
+      <li>Digue flottante de Monaco</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -176,9 +178,431 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="diguemonaco">
-<h1>digueMonaco<a class="headerlink" href="#diguemonaco" title="Lien permanent vers ce titre">¶</a></h1>
-<p>Il n’y a rien encore ici</p>
+  <div class="section" id="digue-flottante-de-monaco">
+<h1>Digue flottante de Monaco<a class="headerlink" href="#digue-flottante-de-monaco" title="Lien permanent vers ce titre">¶</a></h1>
+<p><strong>Description de la situation</strong></p>
+<p>Nous allons dans ce tutoriel reproduire la digue flottante de Monaco,
+que nous allons soumettre à de la houle, et analyser son mouvement en rotation. La géométrie de
+la digue est donnée dans le fichier <code class="docutils literal notranslate"><span class="pre">floatingBody/constant/triSurface/monaco_flottante.stl</span></code>.</p>
+<p>Pour ce tutoriel, nous allons utiliser la technique de maillage dynamique de type « overset »,
+c’eest-à-dire qu’un morceau du maillage va se déplacer dans un maillage statique fixe. Pour
+plus d’informations sur le maillage overset, consultez la <a class="reference external" href="https://www.openfoam.com/documentation/guides/latest/doc/guide-overset.html">documentation</a>.</p>
+<p>Comme d’habitude, le script <code class="docutils literal notranslate"><span class="pre">Allrun.pre</span></code> vous permet de lancer le calcul automatiquement.</p>
+<p><strong>Maillage</strong></p>
+<p>Dans un premier temps, nous allons générer le maillage qui va se déplacer:
+le maillage « overset ». Pour cela, allez dans le dossier <code class="docutils literal notranslate"><span class="pre">floatingBody</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="n">floatingBody</span>
+</pre></div>
+</div>
+<p>Nous allons créer un maillage de base avec <code class="docutils literal notranslate"><span class="pre">blockMesh</span></code>, dans lequel nous allons
+découper la géométrie de la digue. Générez le maillage de base avec la commande:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">blockMesh</span>
+</pre></div>
+</div>
+<p>La configuration du <code class="docutils literal notranslate"><span class="pre">system/blockMeshDict</span></code> est un peu particulière, car nous
+fixons toutes les faces du domaine au type <code class="docutils literal notranslate"><span class="pre">overset</span></code>:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>xmin -10;
+xmax 360;
+ymin -32;
+ymax 32;
+zmin -10;
+zmax 30;
+
+dx 1.5;
+
+Nx #calc &quot;std::floor(($xmax - $xmin) / $dx)&quot;;
+Ny #calc &quot;std::floor(($ymax - $ymin) / $dx)&quot;;
+Nz #calc &quot;std::floor(($zmax - $zmin) / $dx)&quot;;
+
+vertices
+(
+    ($xmin $ymin $zmin)
+    ($xmax $ymin $zmin)
+    ($xmax $ymax $zmin)
+    ($xmin $ymax $zmin)
+
+    ($xmin $ymin $zmax)
+    ($xmax $ymin $zmax)
+    ($xmax $ymax $zmax)
+    ($xmin $ymax $zmax)
+);
+
+blocks
+(
+    hex (0 1 2 3 4 5 6 7) ($Nx $Ny $Nz) simpleGrading (1 1 1)
+);
+
+edges
+(
+);
+
+
+boundary
+(
+    sides
+    {
+        type overset;
+        faces
+        (
+            (2 6 5 1)
+            (1 5 4 0)
+            (3 7 6 2)
+            (0 4 7 3)
+            (0 3 2 1)
+            (4 5 6 7)
+        );
+    }
+);
+</pre></div>
+</div>
+<p>C’est très important, car sans cela nous ne pourrons pas utiliser le maillage overset.
+Le découpage de la digue se fait avec <code class="docutils literal notranslate"><span class="pre">snappyHexMesh</span></code>. Les paramètres de <code class="docutils literal notranslate"><span class="pre">snappyHexMesh</span></code>
+ne seront pas expliqués ici, mais vous trouverez une explication dans le tutoriel de
+<a class="reference internal" href="../interFoam/debitFranchissement.html"><span class="doc">mesure de débit de franchissement</span></a>. Lancez snappyHexMesh
+avec la commande:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">snappyHexMesh</span> <span class="o">-</span><span class="n">overwrite</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Vous pouvez directement lancer <code class="docutils literal notranslate"><span class="pre">blockMesh</span></code> et <code class="docutils literal notranslate"><span class="pre">snappyHexMesh</span></code>,
+en parallèle ou non, avec la commande:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Allmesh</span> <span class="o">-</span><span class="n">pS</span> <span class="o">&amp;</span>
+</pre></div>
+</div>
+<p>Omettez l’option <code class="docutils literal notranslate"><span class="pre">-p</span></code> si vous ne souhaitez pas lancer en parallèle.</p>
+</div>
+<p>Visualisez la géometrie créée avec <code class="docutils literal notranslate"><span class="pre">ParaView</span></code>.</p>
+<p>Une fois que nous avons créé le maillage mobile, nous allons créer le maillage fixe.
+Pour cela, allez dans le dossier <code class="docutils literal notranslate"><span class="pre">background</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="o">../</span><span class="n">background</span>
+</pre></div>
+</div>
+<p>Nous n’aurons besoin que de lancer <code class="docutils literal notranslate"><span class="pre">blockMesh</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">blockMesh</span>
+</pre></div>
+</div>
+<p>Ce maillage est plus grand que le précédent, ce qui est normal
+puisqu’il doit « contenir » le maillage mobile. A présent,
+nous allons fusionner les deux maillages avec l’outil <code class="docutils literal notranslate"><span class="pre">mergeMeshes</span></code>.
+Pour cela, lancez la commande:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mergeMeshes</span> <span class="o">.</span> <span class="o">../</span><span class="n">floatingBody</span> <span class="o">-</span><span class="n">overwrite</span>
+</pre></div>
+</div>
+<p>L’ordre des options est le suivant:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mergeMeshes</span> <span class="o">&lt;</span><span class="n">chemin_origine</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">chemin_fils</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>C’est-à-dire que l’on fusionne le maillage de <code class="docutils literal notranslate"><span class="pre">floatingBody</span></code> dans celui
+de <code class="docutils literal notranslate"><span class="pre">background</span></code>, et pas l’inverse.</p>
+<p>Le maillage est prêt! Visualisez-le avec <code class="docutils literal notranslate"><span class="pre">ParaView</span></code>. Voici un exemple
+de visualisation:</p>
+<p><strong>Configuration du maillage dynamique</strong></p>
+<p>Pour utiliser le maillage overset, il faut d’abord sélectionner la zone
+qui sera mobile. La zone mobile a été définie dans la création
+du maillage <code class="docutils literal notranslate"><span class="pre">floatingBody</span></code>. Lorsque nous avons utilisé <code class="docutils literal notranslate"><span class="pre">snappyHexMesh</span></code>, nous avons
+créé des nouvelles faces, que nous avons stocké dans le patch <code class="docutils literal notranslate"><span class="pre">floatingBody</span></code>. Ainsi,
+nous n’avons rien à faire de particulier, car nous pouvons directement utiliser ce patch
+pour faire référence à la digue. La configuration du maillage dynamique se fait
+dans le fichier <code class="docutils literal notranslate"><span class="pre">constant/dynamicMeshDict</span></code>.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>motionSolverLibs    (sixDoFRigidBodyMotion);
+
+dynamicFvMesh       dynamicOversetFvMesh;
+
+solver          sixDoFRigidBodyMotion;
+
+sixDoFRigidBodyMotionCoeffs
+{
+
+    patches         (floatingObject);
+    innerDistance   999.0;
+    outerDistance   1000.0;
+
+    mass            164286000;
+    centreOfMass    (171.88 0.005 8.32);
+
+    momentOfInertia (16011409852.7 1.6e+12 1.66e+12);
+
+    rotule      (-2.87 0 8.0);
+
+    report          on;
+    accelerationRelaxation 0.6;
+    accelerationDamping    0.9;
+
+    solver
+    {
+        type Newmark;
+    }
+
+    constraints
+    {
+        fixedPoint
+        {
+            sixDoFRigidBodyMotionConstraint point;
+            centreOfRotation $rotule;
+        }
+
+    }
+
+    /*
+        restraints
+        {
+            chaine1_horizontal
+            {
+                sixDoFRigidBodyMotionRestraint linearSpring;
+                anchor              (326.0  -15.14 0.56);
+                refAttachmentPt     (326.0 -100.0  0.56);
+                stiffness           50000;
+                damping             0;
+                restLength          0;
+            }
+        }
+    */
+}
+</pre></div>
+</div>
+<p>Les paramètres importants sont les suivants:</p>
+<ul>
+<li><p>Indication de l’utilisation du solveur de maillage overset : <code class="docutils literal notranslate"><span class="pre">dynamicFvMesh</span> <span class="pre">dynamicOversetFvMesh</span></code></p></li>
+<li><p><strong>Solveur</strong> de déplacement de la zone mobile : <code class="docutils literal notranslate"><span class="pre">solver</span> <span class="pre">sixDoFRigidBodyMotion</span></code></p></li>
+<li><p><strong>Zone</strong> à faire bouger : <code class="docutils literal notranslate"><span class="pre">patches</span> <span class="pre">(floatingBody)</span></code></p></li>
+<li><p><strong>Important</strong> : les mots-clés <code class="docutils literal notranslate"><span class="pre">innerDistance</span></code> et <code class="docutils literal notranslate"><span class="pre">outerDistance</span></code> correspondent respectivement à
+la distance à laquelle les éléments qui doivent bouger avec la digue se situent, et à la distance maximale
+à partir de laquelle bloquer le maillage. Pour des simulations en maillage overset, ces distances doivent
+être en dehors du maillage, et de sorte <code class="docutils literal notranslate"><span class="pre">innerDistance</span> <span class="pre">&lt;</span> <span class="pre">outerDistance</span></code>.</p></li>
+<li><dl class="simple">
+<dt><strong>Caractéristiques inertielles</strong> de la digue::</dt><dd><p>mass            164286000;
+centreOfMass    (171.88 0.005 8.32);
+momentOfInertia (16011409852.7 1.6e+12 1.66e+12);</p>
+</dd>
+</dl>
+<p>qui correspondent à la masse, aux coordonnées du centre de masse et au moment d’inertie de la digue.
+Vous pouvez calculer ces caractéristiques avec la commande <code class="docutils literal notranslate"><span class="pre">surfaceInertia</span> <span class="pre">constant/triSurface/monaco_flottante.stl</span></code>.
+Attention, les calculs sont faits avec une masse volumique de <span class="math notranslate nohighlight">\(1\,kg/m^3\)</span>, il faut donc faire attention
+d’avoir la masse volumique de la digue (dans l’hypothèse d’une digue homogène).</p>
+</li>
+<li><p><strong>Liaisons</strong> de fixation de la digue</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>fixedPoint
+{
+     sixDoFRigidBodyMotionConstraint point;
+     centreOfRotation $rotule;
+}
+</pre></div>
+</div>
+<p>La liaison de type <code class="docutils literal notranslate"><span class="pre">point</span></code> est une liaison rotule. Elle n’a besoin que d’un paramètre,
+le centre de rotation de la rotule. Ici nous avions défini au préalable la variable <code class="docutils literal notranslate"><span class="pre">rotule</span> <span class="pre">(-2.87</span> <span class="pre">0</span> <span class="pre">8.0)</span></code>.
+Il existe d’autres types de liaisons, par exemple:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">axis</span>
+<span class="n">line</span>
+<span class="n">orientation</span>
+<span class="n">plane</span>
+</pre></div>
+</div>
+<p>Pour un descriptif complet de chaque liaison, vous pouvez consulter la description des fichiers <cite>.H</cite>
+dans le dossier <code class="docutils literal notranslate"><span class="pre">src/sixDoFRigidBodyMotion/sixDoFRigidBodyMotion/constraints</span></code> de votre dossier
+d’installation OpenFOAM. Si vous ne savez pas où aller, essayez ce chemin:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">mount</span><span class="o">/</span><span class="n">internal</span><span class="o">/</span><span class="n">work</span><span class="o">-</span><span class="ow">in</span><span class="o">/</span><span class="n">apps</span><span class="o">/</span><span class="n">util</span><span class="o">/</span><span class="n">OpenFoam</span><span class="o">/</span><span class="n">v2006</span><span class="o">/</span><span class="n">Linux</span><span class="o">-</span><span class="mf">4.18</span><span class="o">.</span><span class="mi">0</span><span class="o">-</span><span class="mf">240.1</span><span class="o">.</span><span class="mf">1.</span><span class="n">el8_3</span><span class="o">.</span><span class="n">x86_64</span><span class="o">/</span><span class="n">OpenFOAM</span><span class="o">-</span><span class="n">v2006</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">sixDoFRigidBodyMotion</span><span class="o">/</span><span class="n">sixDoFRigidBodyMotion</span><span class="o">/</span><span class="n">constraints</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>Forces</strong> : vous pouvez ajouter des forces appliquées sur la digue. Dans ce tutoriels, elles ne sont pas utilisées, mais l’instruction
+à indiquer dans <code class="docutils literal notranslate"><span class="pre">constant/dynamicMeshDict</span></code> est écrite en commentaire tout en bas du fichier:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">restraints</span>
+<span class="p">{</span>
+    <span class="n">chaine1_horizontal</span>
+    <span class="p">{</span>
+        <span class="n">sixDoFRigidBodyMotionRestraint</span> <span class="n">linearSpring</span><span class="p">;</span>
+        <span class="n">anchor</span>              <span class="p">(</span><span class="mf">326.0</span>  <span class="o">-</span><span class="mf">15.14</span> <span class="mf">0.56</span><span class="p">);</span>
+        <span class="n">refAttachmentPt</span>     <span class="p">(</span><span class="mf">326.0</span> <span class="o">-</span><span class="mf">100.0</span>  <span class="mf">0.56</span><span class="p">);</span>
+        <span class="n">stiffness</span>           <span class="mi">50000</span><span class="p">;</span>
+        <span class="n">damping</span>             <span class="mi">0</span><span class="p">;</span>
+        <span class="n">restLength</span>          <span class="mi">0</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Dans cet exemple, nous avons ajouté une force de type ressort linéaire. Vous devez y préciser des
+paramètres comme le point d’attache fixe, point d’attache sur la digue, raideur, amortissement,
+longueur au repos.
+Il existe d’autres types de forces, que vous trouverez dans le dossier
+<code class="docutils literal notranslate"><span class="pre">src/sixDoFRigidBodyMotion/sixDoFRigidBodyMotion/restraints</span></code> de votre dossier d’installation
+OpenFOAM.
+Si vous ne savez pas où aller, essayez ce chemin:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">mount</span><span class="o">/</span><span class="n">internal</span><span class="o">/</span><span class="n">work</span><span class="o">-</span><span class="ow">in</span><span class="o">/</span><span class="n">apps</span><span class="o">/</span><span class="n">util</span><span class="o">/</span><span class="n">OpenFoam</span><span class="o">/</span><span class="n">v2006</span><span class="o">/</span><span class="n">Linux</span><span class="o">-</span><span class="mf">4.18</span><span class="o">.</span><span class="mi">0</span><span class="o">-</span><span class="mf">240.1</span><span class="o">.</span><span class="mf">1.</span><span class="n">el8_3</span><span class="o">.</span><span class="n">x86_64</span><span class="o">/</span><span class="n">OpenFOAM</span><span class="o">-</span><span class="n">v2006</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">sixDoFRigidBodyMotion</span><span class="o">/</span><span class="n">sixDoFRigidBodyMotion</span><span class="o">/</span><span class="n">restraints</span>
+</pre></div>
+</div>
+</li>
+</ul>
+<p>Il reste une dernière étape à faire avant de lancer la simulation. Le maillage overset utilise
+une variable nommée <code class="docutils literal notranslate"><span class="pre">zoneID</span></code>, qu’il faut initialiser correctement. Cette initialisation se fait
+dans le fichier <code class="docutils literal notranslate"><span class="pre">system/setFieldsDict</span></code>, pour utiliser l’outil <code class="docutils literal notranslate"><span class="pre">setFields</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">defaultFieldValues</span>
+<span class="p">(</span>
+    <span class="n">volScalarFieldValue</span> <span class="n">alpha</span><span class="o">.</span><span class="n">water</span> <span class="mi">0</span>
+    <span class="n">volScalarFieldValue</span> <span class="n">zoneID</span> <span class="mi">123</span>
+<span class="p">);</span>
+
+<span class="n">regions</span>
+<span class="p">(</span>
+    <span class="n">boxToCell</span>
+    <span class="p">{</span>
+        <span class="n">box</span> <span class="p">(</span> <span class="o">-</span><span class="mi">999</span> <span class="o">-</span><span class="mi">999</span> <span class="o">-</span><span class="mi">999</span> <span class="p">)</span> <span class="p">(</span> <span class="mi">999</span> <span class="mi">999</span> <span class="mi">16</span> <span class="p">);</span>
+        <span class="n">fieldValues</span>
+        <span class="p">(</span>
+            <span class="n">volScalarFieldValue</span> <span class="n">alpha</span><span class="o">.</span><span class="n">water</span> <span class="mi">1</span>
+        <span class="p">);</span>
+    <span class="p">}</span>
+
+
+    <span class="n">cellToCell</span>
+    <span class="p">{</span>
+        <span class="nb">set</span> <span class="n">c0</span><span class="p">;</span>
+
+        <span class="n">fieldValues</span>
+        <span class="p">(</span>
+            <span class="n">volScalarFieldValue</span> <span class="n">zoneID</span> <span class="mi">0</span>
+        <span class="p">);</span>
+    <span class="p">}</span>
+    <span class="n">cellToCell</span>
+    <span class="p">{</span>
+        <span class="nb">set</span> <span class="n">c1</span><span class="p">;</span>
+
+        <span class="n">fieldValues</span>
+        <span class="p">(</span>
+            <span class="n">volScalarFieldValue</span> <span class="n">zoneID</span> <span class="mi">1</span>
+        <span class="p">);</span>
+    <span class="p">}</span>
+
+<span class="p">);</span>
+</pre></div>
+</div>
+<p>Sans faire attention à l’initialisation de la hauteur d’eau, regardons les deux derniers
+sous-dictionnaires. Dans le cellSet <code class="docutils literal notranslate"><span class="pre">c0</span></code>, on fixe la <code class="docutils literal notranslate"><span class="pre">zoneID=0</span></code>, et dans
+le cellSet <code class="docutils literal notranslate"><span class="pre">c1</span></code>, on fixe la <code class="docutils literal notranslate"><span class="pre">zoneID=1</span></code>. Ces cellSet sont définis dans <code class="docutils literal notranslate"><span class="pre">system/topoSetDict</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">actions</span>
+<span class="p">(</span>
+    <span class="p">{</span>
+        <span class="n">name</span>    <span class="n">c0</span><span class="p">;</span>
+        <span class="nb">type</span>    <span class="n">cellSet</span><span class="p">;</span>
+        <span class="n">action</span>  <span class="n">new</span><span class="p">;</span>
+        <span class="n">source</span>  <span class="n">regionToCell</span><span class="p">;</span>
+        <span class="n">insidePoints</span> <span class="p">((</span><span class="mi">398</span> <span class="mi">10</span> <span class="mi">25</span><span class="p">));</span>
+    <span class="p">}</span>
+
+    <span class="p">{</span>
+        <span class="n">name</span>    <span class="n">c1</span><span class="p">;</span>
+        <span class="nb">type</span>    <span class="n">cellSet</span><span class="p">;</span>
+        <span class="n">action</span>  <span class="n">new</span><span class="p">;</span>
+        <span class="n">source</span>  <span class="n">cellToCell</span><span class="p">;</span>
+        <span class="nb">set</span>     <span class="n">c0</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="p">{</span>
+        <span class="n">name</span>    <span class="n">c1</span><span class="p">;</span>
+        <span class="nb">type</span>    <span class="n">cellSet</span><span class="p">;</span>
+        <span class="n">action</span>  <span class="n">invert</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">);</span>
+</pre></div>
+</div>
+<p>La première instruction sélectionne la région de maillage <code class="docutils literal notranslate"><span class="pre">background</span></code>, en
+faisant bien attention à ce que le point <code class="docutils literal notranslate"><span class="pre">insidePoints</span></code> soit à l’intérieur
+du maillage <code class="docutils literal notranslate"><span class="pre">background</span></code> mais à l’extérieur du maillage <code class="docutils literal notranslate"><span class="pre">floatingBody</span></code>. Ainsi,
+le cellSet <code class="docutils literal notranslate"><span class="pre">c0</span></code> contient le maillage <code class="docutils literal notranslate"><span class="pre">background</span></code>. La seconde instruction copie
+le cellSet <code class="docutils literal notranslate"><span class="pre">c0</span></code> vers un nouveau cellSet <code class="docutils literal notranslate"><span class="pre">c1</span></code>. Enfin, on inverse la séléction
+du cellSet <code class="docutils literal notranslate"><span class="pre">c1</span></code>, pour sélectionner les éléments du maillage <code class="docutils literal notranslate"><span class="pre">floatingBody</span></code>. Ainsi,
+le cellSet <code class="docutils literal notranslate"><span class="pre">c1</span></code> contient le maillage <code class="docutils literal notranslate"><span class="pre">floatingBody</span></code>.</p>
+<p>Finalement, nous allons donc fixer <code class="docutils literal notranslate"><span class="pre">zoneID=0</span></code> dans le maillage <code class="docutils literal notranslate"><span class="pre">background</span></code>, et
+<code class="docutils literal notranslate"><span class="pre">zoneID=1</span></code> dans le maillage <code class="docutils literal notranslate"><span class="pre">floatingBody</span></code>.</p>
+<p>Lancez <code class="docutils literal notranslate"><span class="pre">topoSet</span></code> pour créer <code class="docutils literal notranslate"><span class="pre">c0</span></code> et <code class="docutils literal notranslate"><span class="pre">c1</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">topoSet</span>
+</pre></div>
+</div>
+<p><strong>Lancement de la simulation</strong></p>
+<p>Nous y sommes presque. Nous n’irons pas en détails dans les conditions limites,
+mais notez l’ajout du fichier <code class="docutils literal notranslate"><span class="pre">0.orig/zoneID</span></code>, où nous avons ajouté des conditions
+limites (qui n’ont aucune importance):</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>dimensions      [0 0 0 0 0 0 0];
+
+internalField   uniform 0;
+
+boundaryField
+{
+    #includeEtc &quot;caseDicts/setConstraintTypes&quot;
+
+    &quot;(inlet|bottom|wall1|wall2|wall3)&quot;
+    {
+        type            zeroGradient;
+    }
+
+    atmosphere
+    {
+        type            zeroGradient;
+    }
+
+    floatingObject
+    {
+        type            zeroGradient;
+    }
+}
+</pre></div>
+</div>
+<p>Pensez à créer le dossier <code class="docutils literal notranslate"><span class="pre">0</span></code> en copiant le dossier <code class="docutils literal notranslate"><span class="pre">0.orig</span></code> avant de lancer setFields:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cp</span> <span class="o">-</span><span class="n">r</span> <span class="mf">0.</span><span class="n">orig</span> <span class="mi">0</span>
+<span class="n">setFields</span>
+</pre></div>
+</div>
+<p>Vous pouvez maintenant lancer la simulation:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">overInterDyMFoam</span> <span class="o">&gt;</span> <span class="n">log</span><span class="o">.</span><span class="n">overInterDyMFoam</span> <span class="o">&amp;</span>
+</pre></div>
+</div>
+<p>Vous pouvez directement effectuer toutes ces étapes avec la commande:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Allrun</span> <span class="o">-</span><span class="n">psrt</span> <span class="o">&amp;</span>
+</pre></div>
+</div>
+<p>L’option <code class="docutils literal notranslate"><span class="pre">-r</span></code> permet de ne pas reconstruire les fichiers processeurs à la
+fin de la simulation, car ils sont très lourd et la reconstruction prend beaucoup de temps.
+Libre à vous de l’enlever si vous le souhaitez.</p>
+<p><strong>Surveillance de la simulation et post-traitement</strong></p>
+<p>Le but de la simulation est de mesurer les angles de roulis, lacet, et tangage de la digue.
+Si vous lisez la sortie du solveur overInterDyMFoam, vous remarquerez qu’à chaque itération
+on peut voir des informations liées au mouvement de la digue:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>6-DoF rigid body motion
+    Centre of rotation: (-2.87 0 8)
+    Centre of mass: (171.880000089 0.00500000105165 8.31995137852)
+    Orientation: (1 -7.31678947183e-16 2.78234418913e-07 -1.82737563546e-16 1 3.28649674005e-09 -2.78234418913e-07 -3.28649674005e-09 1)
+    Linear velocity: (0 0 0)
+    Angular velocity: (-1.7030972555e-06 0.000144184008078 2.71368210221e-14)
+</pre></div>
+</div>
+<p>Ce qui noue intéresse pour mesurer les angles, c’est la valeur de <code class="docutils literal notranslate"><span class="pre">Orientation</span></code>.
+En fait, la série de chiffres qui suit sont les coordonnées du référentiel lié à la digue.
+La syntaxe de cette série de chiffre est <span class="math notranslate nohighlight">\((xx\,xy\,xz\,yx\,yy\,yz\,zx\,zy\,zz)\)</span>. Ainsi, le vecteur
+<span class="math notranslate nohighlight">\(\vec{x}\)</span> aura pour coordonnées <span class="math notranslate nohighlight">\((xx\,xy\,xz)\)</span>, et ainsi de suite.</p>
+<p>Le script <code class="docutils literal notranslate"><span class="pre">read_orientation</span></code> permet de récupérer les coordonnées et les stocker dans un fichier
+<code class="docutils literal notranslate"><span class="pre">orientation.csv</span></code>, et lit également chaque pas de temps et stocke le signal temporel dans le fichier
+<code class="docutils literal notranslate"><span class="pre">time.csv</span></code>. Le script <code class="docutils literal notranslate"><span class="pre">angles.py</span></code> permet de calculer les angles à partir de l’orientation
+des vecteurs. Les calculs ont été obtenus à partir des formules de matrices de rotations. L’exécution
+de <code class="docutils literal notranslate"><span class="pre">angles.py</span></code> crée un fichier <code class="docutils literal notranslate"><span class="pre">angles.csv</span></code> dans lesquels les angles sont affichés. Pour rappel:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">alpha</span> <span class="o">-&gt;</span> <span class="n">tangage</span> <span class="p">(</span><span class="n">rotation</span> <span class="n">axe</span> <span class="n">y</span><span class="p">)</span>
+<span class="n">beta</span>  <span class="o">-&gt;</span> <span class="n">lacet</span>   <span class="p">(</span><span class="n">rotation</span> <span class="n">axe</span> <span class="n">z</span><span class="p">)</span>
+<span class="n">gamma</span> <span class="o">-&gt;</span> <span class="n">roulis</span>  <span class="p">(</span><span class="n">rotation</span> <span class="n">axe</span> <span class="n">x</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Tracez ensuite les angles avec la commande:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">traceSondes</span><span class="o">.</span><span class="n">py</span> <span class="n">angles</span><span class="o">.</span><span class="n">csv</span>
+</pre></div>
+</div>
+<p>En attendant que la simulation termine, vous pouvez surveiller son statut et lancer
+les scripts lorsqu’elle sera terminée:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">AllpostProcess</span> <span class="o">./</span><span class="n">read_orientation</span> <span class="o">./</span><span class="n">angles</span><span class="o">.</span><span class="n">csv</span>
+</pre></div>
+</div>
+<p>Puis:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">traceSondes</span><span class="o">.</span><span class="n">py</span> <span class="n">angles</span><span class="o">.</span><span class="n">csv</span>
+</pre></div>
+</div>
+<p>Lorsqu’elle sera terminée.</p>
 </div>
 
 

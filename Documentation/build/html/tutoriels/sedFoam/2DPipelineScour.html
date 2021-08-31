@@ -91,6 +91,7 @@
               <p class="caption" role="heading"><span class="caption-text">Tutoriels</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../interFoam/interFoam.html">interFoam</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../interIsoFoam/interIsoFoam.html">interIsoFoam</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../olaFlow/olaFlow.html">olaFlow</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../overInterDyMFoam/overInterDyMFoam.html">overInterDyMFoam</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="sedFoam.html">sedFoam</a><ul class="current">
@@ -177,7 +178,126 @@
             
   <div class="section" id="afouillement-sous-un-cylindre">
 <h1>Afouillement sous un cylindre<a class="headerlink" href="#afouillement-sous-un-cylindre" title="Lien permanent vers ce titre">¶</a></h1>
-<p>Il n’y a rien encore ici</p>
+<p>Ce tutoriel est un tutoriel disponible avec l’installation
+de <code class="docutils literal notranslate"><span class="pre">sedFoam</span></code>. Une description détaillée du tutoriel est donnée
+sur son <a class="reference external" href="https://sedfoam.github.io/sedfoam/tutorials_2d3d.html#Scour2DCylinder">site web</a>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Pour installer <code class="docutils literal notranslate"><span class="pre">sedFoam</span></code>, rendez-vous sur <a class="reference external" href="https://github.com/sedfoam/sedfoam">https://github.com/sedfoam/sedfoam</a>
+et suivez les instructions d’installation.</p>
+</div>
+<p>Le script <code class="docutils literal notranslate"><span class="pre">Allrun</span></code> vous permet de lancer le calcul automatiquement.</p>
+<p>Une fonctionnalité intéressante utilisée dans les fichiers de <code class="docutils literal notranslate"><span class="pre">sedFoam</span></code>
+est l’intégration de morceaux de code dans le fichier <code class="docutils literal notranslate"><span class="pre">0.orig/Ua</span></code>
+par exemple. Cela permet de spécifier un profil de vitesse de type couche limite
+en entrée:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>inlet
+{
+    type            codedFixedValue;
+    value           uniform (0 0 0);
+
+    name    inlet;
+
+    codeInclude
+    #{
+        #include &quot;fvCFD.H&quot;
+    #};
+
+    codeOptions
+    #{
+        -I$(LIB_SRC)/finiteVolume/lnInclude \
+        -I$(LIB_SRC)/meshTools/lnInclude
+    #};
+    codeLibs
+    #{
+        -lfiniteVolume \
+        -lmeshTools
+    #};
+    code
+    #{
+        const fvPatch&amp; boundaryPatch = patch();
+        const vectorField&amp; Cf = boundaryPatch.Cf();
+        vectorField&amp; field = *this;
+        scalar t = this-&gt;db().time().value(); // Accès au temps de simulation
+
+        forAll(Cf, faceI) // Parcourir les faces du patch inlet
+        {
+           if (Cf[faceI].y() &gt;= -0.025)
+           {
+              if (t &lt;= 4.0)
+              {
+                 field[faceI] = (0.1 + 0.9*(t/4.0))
+                                 *vector
+                                  (
+                                     0.04318/0.41
+                                     *log(30*(Cf[faceI].y()+0.025)
+                                          /9e-4),
+                                     0,
+                                     0
+                                   );
+              }
+              else
+              {
+                 field[faceI] = vector
+                                (
+                                   0.04318/0.41
+                                   *log(30*(Cf[faceI].y()+0.025)
+                                        /9e-4),
+                                   0,
+                                   0
+                                );
+              }
+           }
+           else
+           {
+              field[faceI] = vector(0,0,0);
+           }
+        }
+    #};
+}
+</pre></div>
+</div>
+<p>La condition limite <code class="docutils literal notranslate"><span class="pre">codedFixedValue</span></code> permet d’intégrer du code. Notez l’inclusion
+d’options de compilation avec <code class="docutils literal notranslate"><span class="pre">codeInclude</span></code>, de librairies avec <code class="docutils literal notranslate"><span class="pre">codeLibs</span></code>, et le code
+lui-même avec le mot-clé <code class="docutils literal notranslate"><span class="pre">code</span></code>.</p>
+<ul>
+<li><p>Le code est écrit en C++</p></li>
+<li><p>L’accès aux éléments sur la face <code class="docutils literal notranslate"><span class="pre">inlet</span></code> se fait avec:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">const</span> <span class="n">fvPatch</span><span class="o">&amp;</span> <span class="n">boundaryPatch</span> <span class="o">=</span> <span class="n">patch</span><span class="p">();</span>
+</pre></div>
+</div>
+</li>
+<li><p>La ligne</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">const</span> <span class="n">vectorField</span><span class="o">&amp;</span> <span class="n">Cf</span> <span class="o">=</span> <span class="n">boundaryPatch</span><span class="o">.</span><span class="n">Cf</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>permet d’avoir accès aux faces des éléments qui sont sur le patch <code class="docutils literal notranslate"><span class="pre">inlet</span></code>,
+et c’est sur ces faces que nous allons modifier la valeur de la vitesse.</p>
+</li>
+<li><p>Pour avoir accès aux coordonnées de chaque face du patch, utilisez:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Cf</span><span class="p">[</span><span class="n">faceI</span><span class="p">]</span><span class="o">.</span><span class="n">x</span><span class="p">();</span>
+<span class="n">Cf</span><span class="p">[</span><span class="n">faceI</span><span class="p">]</span><span class="o">.</span><span class="n">y</span><span class="p">();</span>
+<span class="n">Cf</span><span class="p">[</span><span class="n">faceI</span><span class="p">]</span><span class="o">.</span><span class="n">z</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>Notez que <code class="docutils literal notranslate"><span class="pre">faceI</span></code> est l’indice de la face désirée. Vous pouvez parcourir toutes
+les faces d’un coup à l’aide d’une boucle <code class="docutils literal notranslate"><span class="pre">forAll</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">forAll</span><span class="p">(</span><span class="n">Cf</span><span class="p">,</span> <span class="n">faceI</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="o">//</span> <span class="n">code</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</li>
+</ul>
+<p>Le reste est du C++ classique. N’hésitez pas à regarder les liens fournis sur la
+<cite>page principale &lt;/index&gt;</cite> qui expliquent la programmation sous OpenFOAM.</p>
+<div class="admonition warning">
+<p class="admonition-title">Avertissement</p>
+<p>La simulation pour ce cas est lancée en parallèle avec 16 processeurs.
+Vérifiez que vous avez les ressources disponibles, ou diminuez
+le nombre de processeurs.</p>
+</div>
 </div>
 
 

@@ -36,14 +36,15 @@
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
         <script src="../../_static/translations.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
     
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Recherche" href="../../search.html" />
-    <link rel="next" title="Milieu poreux" href="obstaclePoreux.html" />
-    <link rel="prev" title="Mesure de pression sur un ouvrage" href="mesurePressionOuvrage.html" /> 
+    <link rel="next" title="Mouvement du batteur" href="batteurPiston.html" />
+    <link rel="prev" title="Milieu poreux" href="obstaclePoreux.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -94,11 +95,12 @@
 <li class="toctree-l2"><a class="reference internal" href="houleReguliere.html">Houle régulière</a></li>
 <li class="toctree-l2"><a class="reference internal" href="houleIrreguliere.html">Houle irrégulière</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mesurePressionOuvrage.html">Mesure de pression sur un ouvrage</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Mesures de débit de franchissement</a></li>
 <li class="toctree-l2"><a class="reference internal" href="obstaclePoreux.html">Milieu poreux</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Mesures de débit de franchissement</a></li>
 <li class="toctree-l2"><a class="reference internal" href="batteurPiston.html">Mouvement du batteur</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../interIsoFoam/interIsoFoam.html">interIsoFoam</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../olaFlow/olaFlow.html">olaFlow</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../overInterDyMFoam/overInterDyMFoam.html">overInterDyMFoam</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../sedFoam/sedFoam.html">sedFoam</a></li>
@@ -185,18 +187,575 @@
 <p>Ce tutoriel est une copie de la géométrie de Port-La-Galère, pour montrer
 comment mesurer un débit de franchissement.</p>
 <p>La géométrie de Port-La-Galère utilisée porte le nom de « actuel2 », et comporte
-une couche d’enrochements. Ci-dessous, vous trouverez la géométrie à l’échelle
-du canal réel</p>
+une couche d’enrochements. Ci-dessous, vous trouverez la configuration
+testée en canal réel lors de la campagne d’essais.</p>
+<p>Vous trouverez l’ensemble des commandes à effectuer dans les fichiers
+<code class="docutils literal notranslate"><span class="pre">Allrun.case.serial</span></code> ou <code class="docutils literal notranslate"><span class="pre">Allrun.case.parallel</span></code> selon si vous voulez
+lancer la simulation en parallèle ou non.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
+
+<span class="c1"># Lancer le maillage</span>
+Allmesh -eSc
+
+<span class="c1"># Générer la houle irrégulière</span>
+genHouleIrreguliere
+
+<span class="c1"># Lancer le calcul. L&#39;option -s lance setFields</span>
+Allrun -st <span class="p">&amp;</span>
+
+<span class="c1"># Attendre 5 secondes avant de lancer le monitoring</span>
+sleep <span class="m">5</span>
+
+<span class="c1"># Suivre la progression du calcul et lancer le calcul de débits de franchissement</span>
+<span class="c1"># lorsque terminé</span>
+AllpostProcess debitFranchissement.py
+</pre></div>
+</div>
 <p><strong>Maillage</strong></p>
-<p>Comment faire le maillage</p>
+<p>Pour générer le profil de la géométrie actuel2, il faut d’abord générer un maillage
+de base dans lequel nous allons « découper ». Ce maillage de base se génère avec l’outil
+<code class="docutils literal notranslate"><span class="pre">blockMesh</span></code>, selon les paramètres définis dans <code class="docutils literal notranslate"><span class="pre">system/blockMeshDict</span></code></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>xmin  0.0;
+xmax 30.0;
+ymin -0.5;
+ymax  0.5;
+zmin  0.0;
+zmax  2.0;
+
+Nz    60;
+
+Nx #calc &quot;$Nz * ( $xmax - $xmin) / ( $zmax - $zmin )&quot;;
+
+vertices
+(
+
+    ( $xmin $ymin $zmin) //0
+    ( $xmax $ymin $zmin) //1
+    ( $xmax $ymax $zmin) //2
+    ( $xmin $ymax $zmin) //3
+
+    ( $xmin $ymin $zmax) //4
+    ( $xmax $ymin $zmax) //5
+    ( $xmax $ymax $zmax) //6
+    ( $xmin $ymax $zmax) //7
+
+
+);
+
+blocks
+(
+    hex (0 1 2 3 4 5 6 7) ($Nx 1 $Nz) simpleGrading (1 1 1)
+);
+
+edges
+(
+);
+
+boundary
+(
+    inlet
+    {
+        type patch;
+        faces
+        (
+            (0 4 7 3)
+        );
+    }
+    outlet
+    {
+        type wall;
+        faces
+        (
+            (1 5 6 2)
+        );
+    }
+    BOTTOM
+    {
+        type wall;
+        faces
+        (
+            (0 1 2 3)
+        );
+    }
+    TOP
+    {
+        type patch;
+        faces
+        (
+            (4 5 6 7)
+        );
+    }
+    frontPlane
+    {
+        type empty;
+        faces
+        (
+            (0 1 5 4)
+        );
+    }
+    backPlane
+    {
+        type empty;
+        faces
+        (
+            (3 2 6 7)
+        );
+    }
+
+
+);
+</pre></div>
+</div>
+<p>Lancez l’outil <code class="docutils literal notranslate"><span class="pre">blockMesh</span></code> avec la commande:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ blockMesh
+</pre></div>
+</div>
+<p>Vous pouvez visualiser ce maillage avec <code class="docutils literal notranslate"><span class="pre">ParaView</span></code>. La géométrie de Port-La-Galère
+se trouve dans <code class="docutils literal notranslate"><span class="pre">constant/triSurface/</span></code>, c’est le fichier <code class="docutils literal notranslate"><span class="pre">actuel2.stl</span></code>. Avec
+<code class="docutils literal notranslate"><span class="pre">ParaView</span></code>, vous pouvez afficher la géométrie par dessus le maillage que vous venez
+de générer pour visualiser où nous allons découper. Le deuxième fichier <code class="docutils literal notranslate"><span class="pre">actuel2_enrochement.stl</span></code>
+correspond à la zone d’enrochements. Vous pouvez aussi la visualiser avec <code class="docutils literal notranslate"><span class="pre">ParaView</span></code>.</p>
+<p>La découpe du maillage se fait avec l’outil <code class="docutils literal notranslate"><span class="pre">snappyHexMesh</span></code>, selon les paramètres donnés
+dans <code class="docutils literal notranslate"><span class="pre">system/snappyHexMeshDict</span></code>. Ce fichier étant assez long, nous allons nous concentrer
+sur les paramètres dont nous avons besoin pour ce tutoriel. Pour plus de détails sur l’utilisation
+de <code class="docutils literal notranslate"><span class="pre">snappyHexMesh</span></code>, consultez la <a class="reference external" href="https://www.openfoam.com/documentation/guides/latest/doc/guide-meshing-snappyhexmesh.html">documentation</a>.</p>
+<p>Dans un premier temps, nous définissons les zones avec lesquelles nous allons travailler:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>geometry
+{
+    actuel2.stl
+    {
+        type triSurfaceMesh;
+        name actuel2;
+    }
+
+    interface
+    {
+        type   searchableBox;
+        min    (-99  -99  0.8);
+        max    (21.0  99  0.97);
+    }
+
+}
+</pre></div>
+</div>
+<p>Le premier sous-dictionnaire charge la surface nommée <code class="docutils literal notranslate"><span class="pre">actuel2.stl</span></code>. Le mot-clé <code class="docutils literal notranslate"><span class="pre">type</span> <span class="pre">triSurfaceMesh</span></code>
+indique le type de maillage sur cette surface. Ne changez pas ce paramètre. Le mot-clé <code class="docutils literal notranslate"><span class="pre">name</span></code> permet de
+donner un nom à cette surface. C’est ce nom que vous utiliserez pour faire référence à cette surface désormais.
+Le deuxième sous-dictionnaire nous permet de sélectionner une zone, dans notre cas une boîte. Les dimensions
+sont telles que cette boîte englobe l’interface eau/air, dans laquelle nous allons raffiner le maillage.
+Vous pourrez visualiser le raffinement après avoir lancé <code class="docutils literal notranslate"><span class="pre">snappyHexMesh</span></code>.</p>
+<p>Une fois les zones définies, nous allons indiquer ce que nous souhaitons faire avec ces dernières. Cela se fait
+dans le dictionnaire <code class="docutils literal notranslate"><span class="pre">castellatedMeshControls</span></code>. Référez vous à la <a class="reference external" href="https://www.openfoam.com/documentation/guides/latest/doc/guide-meshing-snappyhexmesh.html">documentation</a>
+pour plus de détails. Dans ce dictionnaire, le contrôle de s’effectue dans le sous-dictionnaire <code class="docutils literal notranslate"><span class="pre">refinementRegions</span></code>:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>refinementRegions
+{
+    actuel2
+    {
+        mode distance;
+        levels ((0.15 1));
+    }
+    interface
+    {
+        mode inside;
+        levels ((1 1));
+    }
+}
+</pre></div>
+</div>
+<p>Ce sous-dictionnaire nous permet d’indiquer où raffiner, et à quel niveau raffiner.
+Notez qu’il n’est pas nécessaire de raffiner, et que l’outil va découper par défaut
+la géométrie <code class="docutils literal notranslate"><span class="pre">actuel2</span></code>. En revanche, la zone <code class="docutils literal notranslate"><span class="pre">interface</span></code> n’aura aucune influence
+tant qu’une instruction de raffinement ne sera pas donnée. La première instruction
+concerne donc la géométrie <code class="docutils literal notranslate"><span class="pre">actuel2</span></code>. Le mot-clé <code class="docutils literal notranslate"><span class="pre">mode</span> <span class="pre">distance</span></code> permet d’indiquer
+que nous allons raffiner par rapport à la distance à cette surface. Le mot-clé
+<code class="docutils literal notranslate"><span class="pre">levels</span> <span class="pre">((0.15</span> <span class="pre">1))</span></code> précise que nous allons raffiner 1 seule fois les mailles
+qui se trouvent à <span class="math notranslate nohighlight">\(0.15\,m\)</span> de notre surface <code class="docutils literal notranslate"><span class="pre">actuel2</span></code>. Notez que vous pourriez
+donner plusieurs niveaux pour plusieurs distances, en écrivant par exemple</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>actuel2
+{
+    mode distance;
+    levels ((0.15 3) (0.5 2) (1.2 1));
+}
+</pre></div>
+</div>
+<p>Pour raffiner 3 fois à <span class="math notranslate nohighlight">\(0.15\,m\)</span>, 2 fois à <span class="math notranslate nohighlight">\(0.5\,m\)</span>, etc. La deuxième instruction
+traite la zone <code class="docutils literal notranslate"><span class="pre">interface</span></code>. le mot-clé <code class="docutils literal notranslate"><span class="pre">mode</span> <span class="pre">inside</span></code> indique que nous allons traiter
+l’intérieur de la zone (on pourrait aussi traiter l’extérieur uniquement, du type
+« raffiner tout sauf dans cette zone »). Le mot-clé <code class="docutils literal notranslate"><span class="pre">levels</span> <span class="pre">((1</span> <span class="pre">1))</span></code> indique que nous allons
+raffiner une seule fois. Notez que le premier <code class="docutils literal notranslate"><span class="pre">1</span></code> n’est pas utilisé par <code class="docutils literal notranslate"><span class="pre">snappyHexMesh</span></code>. Le
+niveau de raffinement est à indiquer avec le deuxième chiffre.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Un raffinement de niveau 1 signifie que chaque élément sera divisé en deux dans toutes les directions.
+Par exemple, si un élément du maillage est de dimensions <code class="docutils literal notranslate"><span class="pre">(1x2x1)</span></code>, un
+raffinement de niveau 1 donnera 8 sous-éléments de dimensions <code class="docutils literal notranslate"><span class="pre">(0.5x1x0.5)</span></code>.</p>
+</div>
+<p>Vous pouvez consulter le fichier <code class="docutils literal notranslate"><span class="pre">system/snappyHexMeshDict</span></code> pour voir tous les paramètres
+qui existent. Le fichier est annoté pour expliquer au mieux à quoi servent les paramètres.
+Si vous rencontrez un problème, référez vous à la <a class="reference external" href="https://www.openfoam.com/documentation/guides/latest/doc/guide-meshing-snappyhexmesh.html">documentation</a>.
+Il existe aussi beaucoup de ressources, en particulier sur le forum cfd-online.com ou sur YouTube. Le problème
+que vous avez a déjà été rencontré par quelqu’un avant vous, <code class="docutils literal notranslate"><span class="pre">snappyHexMesh</span></code> n’est pas un outil
+simple à utiliser!</p>
+<p>Lancez <code class="docutils literal notranslate"><span class="pre">snappyHexMesh</span></code> avec la commande:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">snappyHexMesh</span> <span class="o">-</span><span class="n">overwrite</span>
+</pre></div>
+</div>
+<p>L’option <code class="docutils literal notranslate"><span class="pre">-ovewrite</span></code> permet d’écrire le nouveau maillage directement par-dessus le
+maillage existant. Sans cette option, le nouveau maillage découpé sera écrit dans un
+autre dossier.</p>
+<p><code class="docutils literal notranslate"><span class="pre">snappyHexMesh</span></code> peut parfois effectuer des calculs assez lourds, selon
+la taille de votre maillage de base et du niveau de raffinement demandé.
+Vous pouvez donc le lancer en parallèle pour gagner du temps. Pour cela,
+configurez le fichier <code class="docutils literal notranslate"><span class="pre">system/decomposeParDict</span></code> comme suit:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>numberOfSubdomains 4;
+
+method          hierarchical;
+
+coeffs
+{
+    n           (4 1 1);
+}
+</pre></div>
+</div>
+<p>Le premier mot-clé correspond au nombre de sous-domaines avec lequel vous allez
+découper votre maillage. Il correspond au nombre de processeurs que vous allez utiliser.
+Le mot-clé <code class="docutils literal notranslate"><span class="pre">method</span>&#160;&#160; <span class="pre">hierarchical</span></code> permet d’indiquer la méthode de découpage. Il en existe
+plusieurs, plus d’informations <a class="reference external" href="https://www.openfoam.com/documentation/guides/latest/doc/openfoam-guide-parallel.html">ici</a>.
+Enfin, le sous-dictionnaire <code class="docutils literal notranslate"><span class="pre">coeffs</span></code> vous permet d’indiquer le nombre de fois qu’il faut
+découper le maillage dans les 3 directions. Le produit des trois nombres doit être égal
+au nombre de processeurs/sous-divisions. Par exemple, on aurait pu aussi donner <code class="docutils literal notranslate"><span class="pre">n</span>&#160;&#160; <span class="pre">(2</span> <span class="pre">1</span> <span class="pre">2)</span></code> pour
+découper deux fois dans la directions <span class="math notranslate nohighlight">\(\vec{x}\)</span>, une fois dans la direction <span class="math notranslate nohighlight">\(\vec{y}\)</span>
+et deux fois dans la direction <span class="math notranslate nohighlight">\(\vec{z}\)</span>.</p>
+<p>Découpez le maillage existant avec l’outil <code class="docutils literal notranslate"><span class="pre">decomposePar</span></code>, avec la commande:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">decomposePar</span>
+</pre></div>
+</div>
+<p>Notez que de nouveaux dossiers ont été créés dans votre dossier courant, dont les noms sont
+<code class="docutils literal notranslate"><span class="pre">processor0</span></code>, <code class="docutils literal notranslate"><span class="pre">processor1</span></code>, etc. Chaque sous-domaine du maillage est stocké dans son
+fichier processeur individuel. Pour lancer <code class="docutils literal notranslate"><span class="pre">snappyHexMesh</span></code> en parallèle, nous allons
+utiliser l’utilitaire <code class="docutils literal notranslate"><span class="pre">MPI</span></code>. Pour cela, lancez la commande:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mpirun</span> <span class="o">-</span><span class="n">n</span> <span class="mi">4</span> <span class="n">snappyHexMesh</span> <span class="o">-</span><span class="n">parallel</span> <span class="o">-</span><span class="n">overwrite</span>
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Avertissement</p>
+<p>Si vous avez plus de 4 processeurs, pensez à modifier la commande.
+Pour ne pas avoir à ajuster ce nombre à chaque fois, vous pouvez
+utiliser la commande <code class="docutils literal notranslate"><span class="pre">runParallel</span></code>, en chargeant bien la bibliothèque d’OpenFOAM:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>. ${WM_PROJECT_DIR:?}/bin/tools/RunFunctions
+runParallel snappyHexMesh -overwrite
+</pre></div>
+</div>
+</div>
+<p>Notez que nous utilisons l’option <code class="docutils literal notranslate"><span class="pre">-parallel</span></code>, sans laquelle l’outil ne peut pas se lancer
+en parallèle. Autrement dit, sans cette option, vous lancerez <code class="docutils literal notranslate"><span class="pre">snappyHexMesh</span></code> 4 fois indépendamment,
+au lieu de lui indiquer d’aller travailler dans les fichiers processeurs <code class="docutils literal notranslate"><span class="pre">processorN</span></code>.</p>
+<p>Une fois le maillage terminé, vous pouvez le reconstruire à l’aide de la commande:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">reconstructParMesh</span> <span class="o">-</span><span class="n">constant</span>
+</pre></div>
+</div>
+<p>Qui vous permet de reconstruire le maillage à partir des fichiers <code class="docutils literal notranslate"><span class="pre">processorN</span></code>. L’option
+<code class="docutils literal notranslate"><span class="pre">-constant</span></code> permet d’écrire le maillage reconstruit dans le dossier <code class="docutils literal notranslate"><span class="pre">constant/polyMesh</span></code>, là
+où le maillage est stocké par défaut. Cette option fait quasiment le même travail que <code class="docutils literal notranslate"><span class="pre">-overwrite</span></code>.</p>
+<p>Supprimez les fichiers processeurs pour libérer de l’espace:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">rm</span> <span class="o">-</span><span class="n">rf</span> <span class="n">processor</span><span class="o">*</span>
+</pre></div>
+</div>
+<p>Une fois que <code class="docutils literal notranslate"><span class="pre">snappyHexMesh</span></code> est terminé, visualisez le maillage sous <code class="docutils literal notranslate"><span class="pre">ParaView</span></code>. Lors
+de la découpe, les nouvelles faces créées ont été attribuées à une nouvelle condition limite
+(un nouveau <code class="docutils literal notranslate"><span class="pre">patch</span></code>) nommé <code class="docutils literal notranslate"><span class="pre">actuel2</span></code>.</p>
+<p>Notez que le maillage initial généré avec <code class="docutils literal notranslate"><span class="pre">blockMesh</span></code> était en 2 dimension, c’est-à-dire
+que le maillage n’avait qu’un seul élément dans la direction <span class="math notranslate nohighlight">\(\vec{y}\)</span>, mais que ce
+n’est plus le cas. En effet, <code class="docutils literal notranslate"><span class="pre">snappyHexMesh</span></code> va raffiner dans toutes les
+directions quel que soit le nombre d’éléments. Pour revenir à une géométrie 2D,
+nous allons utiliser l’outil <code class="docutils literal notranslate"><span class="pre">extrudeMesh</span></code>. Le paramétrage s’effectue dans <code class="docutils literal notranslate"><span class="pre">system/extrudeMeshDict</span></code>:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>constructFrom patch;    //surface;
+
+// If construct from (flipped) patch
+sourceCase &quot;.&quot;;
+sourcePatches (backPlane);
+exposedPatchName backPlane;
+
+// Flip surface normals before usage.
+flipNormals false;
+
+// Do front and back need to be merged? Usually only makes sense for 360
+// degree wedges.
+mergeFaces false; //true;
+
+//- Linear extrusion in point-normal direction
+extrudeModel        linearNormal;
+
+nLayers          1; // was 20;
+
+linearNormalCoeffs
+{
+    thickness       1.0; // was 0.05;
+}
+</pre></div>
+</div>
+<p>Dans l’ordre d’apparition des paramètres, nous indiquons que nous allons extraire
+le maillage depuis un <code class="docutils literal notranslate"><span class="pre">patch</span></code>, c’est-à-dire une de nos conditions limites. Ensuite,
+nous indiquons le chemin d’accès vers le dossier de travail, ici <code class="docutils literal notranslate"><span class="pre">.</span></code>, et le patch
+source à partir duquel extraire le maillage. Ici, nous utiliserons la face <code class="docutils literal notranslate"><span class="pre">backPlane</span></code>.
+Le mot-clé <code class="docutils literal notranslate"><span class="pre">exposedPatchName</span>&#160; <span class="pre">backPlane</span></code> permet d’indiquer un nouveau nom à la face
+extrudée. Le prochain paramètre important est <code class="docutils literal notranslate"><span class="pre">extrudeModel</span>&#160;&#160;&#160;&#160;&#160; <span class="pre">linearNormal</span></code> qui
+indique que nous allone extruder selon une direction normale à la face d’extrusion. Le
+mot-clé <code class="docutils literal notranslate"><span class="pre">nLayers</span>&#160;&#160; <span class="pre">1</span></code> indique le nombre d’éléments a créer après l’extrusion, dans la
+direction de cette dernière. C’est cela qui va nous permettre de revenir vers un maillage 2D.
+Notez que la direction normale à <code class="docutils literal notranslate"><span class="pre">backPlane</span></code> est bien la direction <span class="math notranslate nohighlight">\(\vec{y}\)</span>. Si
+vous n’êtes pas convaincu, aidez-vous de <code class="docutils literal notranslate"><span class="pre">ParaView</span></code>. Le dernier sous-dictionnaire
+<code class="docutils literal notranslate"><span class="pre">linearNormalCoeffs</span></code>, et le mot-clé <code class="docutils literal notranslate"><span class="pre">thickness</span>&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">1.0</span></code> contrôle la distance
+d’extrusion. Ici, nous allons extraire sur 1 mètre, c’est-à-dire que notre
+géométrie aura une épaisseur de 1 mètre.</p>
+<p>Lancez l’outil avec la commande:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">extrudeMesh</span>
+</pre></div>
+</div>
+<p>Toutes ces étapes peuvent se faire avec une seule commande:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Allmesh</span> <span class="o">-</span><span class="n">peS</span>
+</pre></div>
+</div>
+<p>Pour ne pas lancer en parallèle, omettez l’option <code class="docutils literal notranslate"><span class="pre">-p</span></code>.</p>
+<p>Félicitations! Votre maillage est maintenant prêt à l’emploi.</p>
 <p><strong>Génération de houle</strong></p>
-<p>houle</p>
+<p>Nous allons soumettre notre ouvrage à de la houle irrégulière. La génération
+suit le même principe que le tutoriel de <a class="reference internal" href="houleIrreguliere.html"><span class="doc">houle irrégulière</span></a>.</p>
+<p>Les paramètres de houle sont donnés dans le fichie <code class="docutils literal notranslate"><span class="pre">jonswapDict</span></code>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Tmin</span>  <span class="mf">5.3</span>
+<span class="n">Tmax</span>  <span class="mf">13.2</span>
+<span class="n">Tp</span>    <span class="mf">9.5</span>
+<span class="n">Hs</span>    <span class="mf">2.8</span>
+<span class="n">gamma</span> <span class="mf">1.0</span>
+<span class="n">scale</span> <span class="mf">28.6</span>
+<span class="n">Ncomposantes</span> <span class="mi">1000</span>
+</pre></div>
+</div>
+<p>Générez le fichier de houle irrégulière avec la commande:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">genHouleIrreguliere</span>
+</pre></div>
+</div>
+<p>Vérifiez le fichier <code class="docutils literal notranslate"><span class="pre">constant/waveProperties</span></code> et modifiez ce dont vous avez
+besoin.</p>
+<p><strong>Enrochements</strong></p>
+<p>Pour prendre en compte les enrochements, nous allons utiliser une modélisation
+de Darcy-Forchheimer. Pour plus de détails, consultez la <cite>documentation &lt;https://openfoamwiki.net/index.php/DarcyForchheimer&gt;</cite>
+sur le modèle de porosité. Si vous y avez accès, mon rapport de stage présente les théories
+de modélisation en milieu poreux.</p>
+<p>Dans un premier temps, il faut créer la zone d’enrochements, en prenant en
+compte la surface <code class="docutils literal notranslate"><span class="pre">constant/triSurface/actuel2_enrochement.stl</span></code>. Pour cela,
+nous allons utiliser l’utilitaire <code class="docutils literal notranslate"><span class="pre">topoSet</span></code>. Configurez l’outil avec le fichier
+<code class="docutils literal notranslate"><span class="pre">system/topoSetDict</span></code>.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>actions
+(
+
+// * * * * * * Zone d&#39;enrochements * * * * * * * * * *
+
+    {
+        name    porousCellSet;
+        type    cellSet;
+        action  new;
+        source  surfaceToCell;
+        file    &quot;constant/triSurface/actuel2_enrochements.stl&quot;;
+        outsidePoints
+        (
+            (10.0 0.5 1.0)
+        );
+
+        includeCut      true;
+        includeInside   true;
+        includeOutside  false;
+        nearDistance    -1;
+        curvature       -100;
+    }
+
+    {
+        name actuel2_enrochements;
+        type cellZoneSet;
+        action new;
+        source setToCellZone;
+        sourceInfo
+        {
+            set porousCellSet;
+        }
+
+    }
+
+);
+</pre></div>
+</div>
+<p>Le premier sous-dictionnaire permet de sélectionner la zone délimitée par
+la surface sous la forme d’un <code class="docutils literal notranslate"><span class="pre">cellSet</span></code>. Utilisez le mot-clé <code class="docutils literal notranslate"><span class="pre">source</span> <span class="pre">surfaceToCell</span></code>
+pour indiquer que la zone provient d’un fichier de surface, et indiquez son chemin
+d’accès avec <code class="docutils literal notranslate"><span class="pre">file</span> <span class="pre">&quot;constant/triSurface/actuel2_enrochements.stl&quot;</span></code>. Le mot-clé
+<code class="docutils literal notranslate"><span class="pre">oustidePoints</span></code> doit être un point en dehors de la zone de la surface.</p>
+<p>Le deuxième sous-dictionnaire permet de convertir le <code class="docutils literal notranslate"><span class="pre">cellSet</span></code> en une <code class="docutils literal notranslate"><span class="pre">cellZone</span></code>.
+Nous nommons cette <code class="docutils literal notranslate"><span class="pre">cellZone</span></code> avec le mot-clé <code class="docutils literal notranslate"><span class="pre">name</span> <span class="pre">actuel2_enrochements</span></code>. C’est
+avec ce nom que nous feront référence à la <code class="docutils literal notranslate"><span class="pre">cellZone</span></code>.</p>
+<p>Les paramètres du milieu poreux sont donnés dans le fichier <code class="docutils literal notranslate"><span class="pre">constant/fvOptions</span></code>:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>porosity1
+{
+    type            explicitPorositySource;
+
+    explicitPorositySourceCoeffs
+    {
+        selectionMode   cellZone;
+        cellZone        actuel2_enrochements;
+
+        type            DarcyForchheimer;
+
+        d   (211.7 211.7 211.7);
+        f   (0.0 0.0 0.0);
+
+        coordinateSystem
+        {
+            origin  (0 0 0);
+            e1      (1 0 0);
+            e2      (0 1 0);
+        }
+    }
+
+}
+</pre></div>
+</div>
+<p>On y précise le type de modèle avec <code class="docutils literal notranslate"><span class="pre">type</span>&#160; <span class="pre">explicitPorositySource</span></code>. La zone poreuse
+s’indique avec le mot-clé <code class="docutils literal notranslate"><span class="pre">cellZone</span>&#160; <span class="pre">actuel2_enrochements</span></code>. Les coefficients
+du modèle de Darcy-Forchheimer sont les vecteurs <code class="docutils literal notranslate"><span class="pre">d</span></code> et <code class="docutils literal notranslate"><span class="pre">f</span></code>. Ce sont
+des vecteurs car vous pouvez préciser des coefficients différents selon chaque direction.
+Nous considérons un matériau homogène et isotrope, donc nos coefficients sont les mêmes
+dans chaque direction.</p>
+<p>Ne lancez pas encore <code class="docutils literal notranslate"><span class="pre">topoSet</span></code>, nous avons quelques choses à ajouter avant.</p>
+<p><strong>Débit de franchissement</strong></p>
+<p>Pour calculer le débit de franchissement, il faut mesurer le volume d’eau dans
+le bac de récupération. Dans un premier temps, définissez la zone de votre bac
+de récupération en ajoutant le sous-dictionnaire suivant à <code class="docutils literal notranslate"><span class="pre">system/topoSetDict</span></code>:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>{
+    name    bacCellSet;
+    type    cellSet;
+    action  new;
+    source  boxToCell;
+    box     (21.6 -2 -2) (22.0 2 2);
+}
+
+{
+    name    bac;
+    type    cellZoneSet;
+    action  new;
+    source  setToCellZone;
+    set     bacCellSet;
+}
+</pre></div>
+</div>
+<p>Vous commencez à y être habitué: on délimite la zone du bac par une boîte
+dont on donne les dimensions. Cela va sélectionner les éléments du maillage
+dans cette zone, sous la forme d’un <code class="docutils literal notranslate"><span class="pre">cellSet</span></code>. Ensuite, nous convertissons
+ce <code class="docutils literal notranslate"><span class="pre">cellSet</span></code> en un <code class="docutils literal notranslate"><span class="pre">cellZone</span></code>, que nous nommons <code class="docutils literal notranslate"><span class="pre">bac</span></code>.</p>
+<p>Pour mesurer le volume d’eau dans le bac, nous allons effectuer une intégrale
+de volume sur chaque élément du maillage de la <code class="docutils literal notranslate"><span class="pre">cellZone</span></code> :</p>
+<div class="math notranslate nohighlight">
+\[V_{eau} = \iiint_{bac}{\alpha \delta V}\]</div>
+<p>Où <span class="math notranslate nohighlight">\(\alpha\)</span> est la variable <code class="docutils literal notranslate"><span class="pre">alpha.water</span></code>. Pour calculer cette intégrale,
+il faut se rendre dans le fichier <code class="docutils literal notranslate"><span class="pre">system/controlDict</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">functions</span>
+<span class="p">{</span>
+
+    <span class="n">waterVolume</span>
+    <span class="p">{</span>
+        <span class="nb">type</span>            <span class="n">volFieldValue</span><span class="p">;</span>
+        <span class="n">libs</span>            <span class="p">(</span><span class="s2">&quot;libfieldFunctionObjects.so&quot;</span><span class="p">);</span>
+        <span class="n">log</span>             <span class="n">true</span><span class="p">;</span>
+
+        <span class="n">enabled</span>         <span class="n">true</span><span class="p">;</span>
+
+        <span class="n">writeControl</span>    <span class="n">adjustableRunTime</span><span class="p">;</span>
+        <span class="n">writeInterval</span>   <span class="mi">20</span><span class="p">;</span>
+
+        <span class="n">writeFields</span>     <span class="n">true</span><span class="p">;</span>
+
+        <span class="n">regionType</span>      <span class="n">cellZone</span><span class="p">;</span>
+        <span class="n">name</span>            <span class="n">bac</span><span class="p">;</span>
+
+        <span class="n">operation</span>       <span class="n">volIntegrate</span><span class="p">;</span>
+        <span class="n">fields</span>
+        <span class="p">(</span>
+            <span class="n">alpha</span><span class="o">.</span><span class="n">water</span>
+        <span class="p">);</span>
+
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Il y a 3 choses importantes ici:</p>
+<ol class="arabic">
+<li><p>Le nom de la zone dans laquelle intégrer. Indiquez qu’elle est de type <code class="docutils literal notranslate"><span class="pre">cellZone</span></code>
+avec le mot-clé <code class="docutils literal notranslate"><span class="pre">regionType</span> <span class="pre">cellZone</span></code>, puis son nom avec le mot-clé <code class="docutils literal notranslate"><span class="pre">name</span> <span class="pre">bac</span></code>.</p></li>
+<li><p>L’opération « intégrale de volume » s’indique dans le paramètre <code class="docutils literal notranslate"><span class="pre">operation</span>&#160; <span class="pre">volIntegrate</span></code>,
+et le champ à intégrer est bien <code class="docutils literal notranslate"><span class="pre">alpha.water</span></code>, à mettre dans la liste <code class="docutils literal notranslate"><span class="pre">fields</span></code>.</p></li>
+<li><p>L’intervalle d’écriture des valeurs se contrôle avec les mot-clés <code class="docutils literal notranslate"><span class="pre">writeControl</span></code> et
+<code class="docutils literal notranslate"><span class="pre">writeInterval</span></code>. Le premier vous permet d’indiquer si vous voulez écrire par itération (<code class="docutils literal notranslate"><span class="pre">timeStep</span></code>),
+ou par valeur de temps directement (<code class="docutils literal notranslate"><span class="pre">adjustableRunTime</span></code> si vous utilisez un pas de temps adaptatif,
+<code class="docutils literal notranslate"><span class="pre">runTime</span></code> pour un pas de temps constant). Le mot-clé <code class="docutils literal notranslate"><span class="pre">writeInterval</span></code> correspond à l’intervalle
+d’écriture. Dans notre cas, nous écrivons toutes les 20 secondes. Si vous auriez voulu écrire
+toutes les 5 itérations, vous auriez écrit:</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">writeControl</span>    <span class="n">timeStep</span><span class="p">;</span>
+<span class="n">writeInterval</span>   <span class="mi">5</span><span class="p">;</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>Vous êtes presque prêt(e) à lancer la simulation!</p>
 <p><strong>solveur</strong></p>
-<p>solver</p>
-<p><strong>Surveillance du statut de la simulation</strong></p>
-<p>Allpostprocess</p>
-<p><strong>Post-traitement</strong></p>
-<p>les graphes</p>
+<p>Il ne nous manque plus que les conditions limites. Allez voir les fichiers
+dans le dossier <code class="docutils literal notranslate"><span class="pre">0.orig</span></code> pour les vérifier. Notez qu’il faut ajouter
+des conditions limites pour notre ouvrage <code class="docutils literal notranslate"><span class="pre">actuel2</span></code>, car nous
+avons créé de nouvelles faces lors de la découpe du maillage. Toutes les faces
+(ou <code class="docutils literal notranslate"><span class="pre">patch</span></code>) doivent être traités. Notez que <code class="docutils literal notranslate"><span class="pre">actuel2_enrochements</span></code> n’est
+pas un patch, car nous n’avons pas découpé dans le maillage, seulement défini
+une zone dans laquelle appliquer le modèle de porosité.</p>
+<p>Vous pouvez maintenant lancer <code class="docutils literal notranslate"><span class="pre">topoSet</span></code>, et <code class="docutils literal notranslate"><span class="pre">setFields</span></code>, qui va initialiser
+une hauteur d’eau de <span class="math notranslate nohighlight">\(0.864\,m\)</span>. Pensez à bien créer le dossier <code class="docutils literal notranslate"><span class="pre">0</span></code> en copiant
+le dossier <code class="docutils literal notranslate"><span class="pre">0.orig</span></code> avant de lancer <code class="docutils literal notranslate"><span class="pre">setFields</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">topoSet</span>
+<span class="n">cp</span> <span class="o">-</span><span class="n">r</span> <span class="mf">0.</span><span class="n">orig</span> <span class="mi">0</span>
+<span class="n">setFields</span>
+</pre></div>
+</div>
+<p>Vous êtes maintenant prêt à lancer la simulation. Ajustez
+vos paramètres de simulation dans <code class="docutils literal notranslate"><span class="pre">system/controlDict</span></code>. Par défaut,
+la durée de simulation est de 2000 secondes pour simuler une durée
+de tempête. Ce calcul vous prendra du temps: réduisez la durée de simulation
+si besoin. Lancez le solveur et redirigez la sortie dans un fichier log avec la commande:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">interFoam</span> <span class="o">&gt;</span> <span class="n">log</span><span class="o">.</span><span class="n">interFoam</span> <span class="o">&amp;</span>
+</pre></div>
+</div>
+<p>Pour lancer le calcul en parallèle, relancez <code class="docutils literal notranslate"><span class="pre">decomposePar</span></code> et utilisez
+la même syntaxe que pour <code class="docutils literal notranslate"><span class="pre">snappyHexMesh</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">decomposePar</span>
+<span class="n">mpirun</span> <span class="o">-</span><span class="n">n</span> <span class="mi">4</span> <span class="n">interFoam</span> <span class="o">-</span><span class="n">parallel</span> <span class="o">&gt;</span> <span class="n">log</span><span class="o">.</span><span class="n">interFoam</span> <span class="o">&amp;</span>
+</pre></div>
+</div>
+<p>Ce calcul étant assez long, vous pouvez augmenter le nombre de processeurs à 8 ou 12
+si besoin.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Toutes ces étapes peuvent être lancées directement avec la commande:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Allrun</span> <span class="o">-</span><span class="n">pst</span>
+</pre></div>
+</div>
+<p>Pour ne pas lancer en parallèle, omettez l’option <code class="docutils literal notranslate"><span class="pre">-p</span></code></p>
+</div>
+<p><strong>Surveillance du statut de la simulation et post-traitement</strong></p>
+<p>La commande <code class="docutils literal notranslate"><span class="pre">AllpostProcess</span></code> permet de lancer des scripts une fois
+que la simulation sera terminée. Lancez la commande:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">AllpostProcess</span> <span class="n">debitFranchissement</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+<p>Lorsque la simulation sera finie, le script <code class="docutils literal notranslate"><span class="pre">debitFranchissement.py</span></code>
+va aller lire les mesures de volume et les convertir en débit de
+franchissement. Le résultat sera écrit dans le fichier <code class="docutils literal notranslate"><span class="pre">debitFranchissement.csv</span></code>.
+Libre à vous d’afficher et de traiter ces données comme vous le souhaitez.</p>
 </div>
 
 
@@ -205,8 +764,8 @@ du canal réel</p>
           </div>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="obstaclePoreux.html" class="btn btn-neutral float-right" title="Milieu poreux" accesskey="n" rel="next">Suivant <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-        <a href="mesurePressionOuvrage.html" class="btn btn-neutral float-left" title="Mesure de pression sur un ouvrage" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Précédent</a>
+        <a href="batteurPiston.html" class="btn btn-neutral float-right" title="Mouvement du batteur" accesskey="n" rel="next">Suivant <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="obstaclePoreux.html" class="btn btn-neutral float-left" title="Milieu poreux" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Précédent</a>
     </div>
 
   <hr/>
