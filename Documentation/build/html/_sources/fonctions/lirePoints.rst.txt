@@ -4,7 +4,7 @@ Exportation de mesures de points
 Informations
 -------------
 
-    * Fichier : ``lireSondes.py``
+    * Fichier : ``Knu/Scripts/Post-traitement/lireSondes.py``
     * Auteur: Victor Baconnet
     * Date de dernière modification: 27 août 2021
 

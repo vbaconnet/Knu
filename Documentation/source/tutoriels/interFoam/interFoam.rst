@@ -7,9 +7,9 @@ découvrir OpenFOAM.
 .. toctree::
    :maxdepth: 1
 
-   debitFranchissement
-   houleIrreguliere
    houleReguliere
+   houleIrreguliere
    mesurePressionOuvrage
+   debitFranchissement
    obstaclePoreux
    batteurPiston

@@ -4,7 +4,7 @@ Reconstruction de spectre
 Informations
 ---------------
 
-    * Fichier: ``spectre.py``
+    * Fichier: ``Knu/Scripts/Post-traitement/spectre.py``
     * Auteur: Victor Baconnet
     * Date de dernière modification: 27 août 2021
 

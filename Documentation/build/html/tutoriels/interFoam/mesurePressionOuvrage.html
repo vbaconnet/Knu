@@ -36,14 +36,15 @@
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
         <script src="../../_static/translations.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
     
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Recherche" href="../../search.html" />
-    <link rel="next" title="Milieu poreux" href="obstaclePoreux.html" />
-    <link rel="prev" title="Houle régulière" href="houleReguliere.html" /> 
+    <link rel="next" title="Mesures de débit de franchissement" href="debitFranchissement.html" />
+    <link rel="prev" title="Houle irrégulière" href="houleIrreguliere.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -91,10 +92,10 @@
               <p class="caption" role="heading"><span class="caption-text">Tutoriels</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="interFoam.html">interFoam</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="debitFranchissement.html">Mesures de débit de franchissement</a></li>
-<li class="toctree-l2"><a class="reference internal" href="houleIrreguliere.html">Houle irrégulière</a></li>
 <li class="toctree-l2"><a class="reference internal" href="houleReguliere.html">Houle régulière</a></li>
+<li class="toctree-l2"><a class="reference internal" href="houleIrreguliere.html">Houle irrégulière</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Mesure de pression sur un ouvrage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="debitFranchissement.html">Mesures de débit de franchissement</a></li>
 <li class="toctree-l2"><a class="reference internal" href="obstaclePoreux.html">Milieu poreux</a></li>
 <li class="toctree-l2"><a class="reference internal" href="batteurPiston.html">Mouvement du batteur</a></li>
 </ul>
@@ -109,6 +110,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../postTraitement.html">Post-traitement</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../canal.html">Guide de programmation du canal</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../outils.html">Librairies d’outils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../automatisation.html">Automatisation pour OpenFOAM</a></li>
 </ul>
 
             
@@ -180,18 +182,159 @@
             
   <div class="section" id="mesure-de-pression-sur-un-ouvrage">
 <h1>Mesure de pression sur un ouvrage<a class="headerlink" href="#mesure-de-pression-sur-un-ouvrage" title="Lien permanent vers ce titre">¶</a></h1>
+<p>Ce tutoriel est destiné à la mesure de pression en un ou plusieurs
+points.</p>
 <p><strong>Description de la situation</strong></p>
-<p>une description</p>
+<p>On se place dans la même géométrie que pour le tutoriel de
+<a class="reference internal" href="houleIrreguliere.html"><span class="doc">houle irrégulière</span></a>. A cette géométrie,
+nous allons ajouter un obstacle rectangulaire, comme affiché sur la figure suivante.</p>
+<img alt="Géométrie" src="../../_images/mesurePression_geometrie.PNG" />
 <p><strong>Maillage</strong></p>
-<p>Comment faire le maillage</p>
+<p>Le maillage est le même que pour le tutoriel de <a class="reference internal" href="houleIrreguliere.html"><span class="doc">houle irrégulière</span></a>. La
+seule différence est l’ajout d’une condition limite vide dans le fichier <code class="docutils literal notranslate"><span class="pre">system/blockMeshDict</span></code></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>obstacle
+{
+    type wall;
+    faces ();
+}
+</pre></div>
+</div>
+<p>C’est le patch qui va contenir les face de l’obstacle. Lancez <code class="docutils literal notranslate"><span class="pre">blockMesh</span></code> avec la commande:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ blockMesh
+</pre></div>
+</div>
+<p>Pour définir les contours de l’obstacle, nous allons utiliser l’outil <code class="docutils literal notranslate"><span class="pre">topoSet</span></code>,
+selon les paramètres indiqués dans <code class="docutils literal notranslate"><span class="pre">system/topoSetDict</span></code></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>actions
+(
+    {
+        name    c0;
+        type    cellSet;
+        action  new;
+        source  boxToCell;
+        sourceInfo
+        {
+            box (10 -99 -99) (15 99 1); // Edit box bounds as required
+        }
+    }
+
+    {
+        name c0;
+        type cellSet;
+        action invert;
+    }
+);
+</pre></div>
+</div>
+<p>On y trouve deux sections:</p>
+<ul class="simple">
+<li><p>La première section permet de définir les contours du rectangle qui fera office
+d’obstacle. Pour cela, on va créer un objet <code class="docutils literal notranslate"><span class="pre">cellSet</span></code>, que l’on nomme <code class="docutils literal notranslate"><span class="pre">c0</span></code>.
+Le mot-clé <code class="docutils literal notranslate"><span class="pre">boxToCell</span></code> nous permet de sélectionner une « boîte » dont les coordonnées
+sont donnés dans le sous-dictionnaire <code class="docutils literal notranslate"><span class="pre">sourceInfo</span></code>. Il ne faut indiquer que 2 points
+pour générer une boîte. Dans notre cas, notre boîte est de dimensions <code class="docutils literal notranslate"><span class="pre">(5x198x100)</span></code>.
+Notez que certaines coordonnées sont très grandes ou très petites. En théorie, notre boîte
+n’est que de dimensions <code class="docutils literal notranslate"><span class="pre">(5x1x1)</span></code>. Si l’on avait mis les coordonnées exactes avec les limites
+exactes de notre canal rectangulaire, il arrive parfois que l’outil ne sélectionne pas certains
+éléments du maillage à cause des erreurs de précision machine. Ainsi, si l’on veut sélectionner
+toute la largeur du canal par exemple, il est préférable d’indiquer des limites aberrantes
+telles que <code class="docutils literal notranslate"><span class="pre">(-99,99)</span></code> plutôt que les coordonnées exactes <code class="docutils literal notranslate"><span class="pre">(-0.5,0.5)</span></code>.</p></li>
+<li><p>La deuxième section vient inverser la sélection des mailles sélectionnées par notre boîte, et remplace
+cette nouvelle sélection.</p></li>
+</ul>
+<p>Lancez l’outil topoSet avec la commande:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ topoSet
+</pre></div>
+</div>
+<p>Maintenant, nous avons ajouté une zone de type <code class="docutils literal notranslate"><span class="pre">cellSet</span></code> nommée <code class="docutils literal notranslate"><span class="pre">c0</span></code>, mais il ne s’est encore rien
+passé sur le maillage. Pour « découper » le maillage généré avec <code class="docutils literal notranslate"><span class="pre">blockMesh</span></code>, nous allons
+utiliser l’outil <code class="docutils literal notranslate"><span class="pre">subsetMesh</span></code>, avec la commande:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ subsetMesh c0 -patch obstacle -overwrite
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>La première option à indiquer est la zone <code class="docutils literal notranslate"><span class="pre">cellSet</span></code> à découper dans le maillage.</p></li>
+<li><p>L’option <code class="docutils literal notranslate"><span class="pre">-patch</span> <span class="pre">&lt;patch&gt;</span></code> permet d’ajouter les nouvelles faces crées à une condition
+limite. Dans notre cas, nous avons créé un rectangle, dont les faces sont des
+nouvelles conditions limites. Le patch <code class="docutils literal notranslate"><span class="pre">obstacle</span></code> contient maintenant les faces
+de la boîte créée.</p></li>
+<li><p>L’option <code class="docutils literal notranslate"><span class="pre">-overwrite</span></code> permet d’écrire le nouveau maillage par dessus le précédent.</p></li>
+</ul>
+<p>Vous pouvez visualiser votre nouveau maillage sur <code class="docutils literal notranslate"><span class="pre">ParaView</span></code>.</p>
 <p><strong>Génération de houle</strong></p>
-<p>houle</p>
-<p><strong>solveur</strong></p>
-<p>solver</p>
-<p><strong>Surveillance du statut de la simulation</strong></p>
-<p>Allpostprocess</p>
+<p>La condition de houle est la même que pour le tutoriel de <a class="reference internal" href="houleIrreguliere.html"><span class="doc">houle irrégulière</span></a>.</p>
+<p><strong>Lancement de la simulation</strong></p>
+<p>Si vous le souhaitez, vous pouvez utiliser un modèle de turbulence. Pour cela,
+utilisez le script <code class="docutils literal notranslate"><span class="pre">Allrun.case.turbulent</span></code> ou lancez la commande:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mv constant/turbulenceProperties.komega constant/turbulenceProperties
+</pre></div>
+</div>
+<p>En faisant cela, vous allez utiliser le modèle de turbulence <span class="math notranslate nohighlight">\(k-\omega\)</span> SST.</p>
+<p>N’oubliez pas de copier le fichier <code class="docutils literal notranslate"><span class="pre">0.orig</span></code> vers un nouveau dossier <code class="docutils literal notranslate"><span class="pre">0</span></code> et de
+lancer <code class="docutils literal notranslate"><span class="pre">setFields</span></code>, pour initialiser une hauteur d’eau de <span class="math notranslate nohighlight">\(0.864\,m\)</span>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>cp -r <span class="m">0</span>.orig <span class="m">0</span>
+setFields
+</pre></div>
+</div>
+<p>En plus des sondes, nous avons rajouté un point de mesure de pression :</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>points
+{
+    type            sets;
+    libs            (&quot;libsampling.so&quot;);
+    enabled         true; // Mettre à false pour désactiver les sondes
+
+    // Contrôle d&#39;écriture :
+    //  - timeStep   : pas de temps
+    //  - adjustable : temps (si pas de temps adaptatif)
+    //  - runTime    : temps (si pas de temps constant)
+    writeControl     timeStep;
+    writeInterval    2;
+    fixedLocations false;
+    interpolationScheme cellPoint;
+    setFormat       raw;
+    sets
+    (
+        point1
+        {
+            type cloud;
+            axis distance;
+            points
+            (
+                (10 0 1)
+            );
+        }
+    );
+    fields
+    (
+        p
+    );
+}
+</pre></div>
+</div>
+<p>Pour donner un point de mesure dans OpenFOAM, il faut d’abord donner un <code class="docutils literal notranslate"><span class="pre">set</span></code> de mesures,
+puis des sous-dictionnaires avec notre nuage de points de type <code class="docutils literal notranslate"><span class="pre">cloud</span></code>. Par exemple, le nom
+du set ci-dessus est <code class="docutils literal notranslate"><span class="pre">points</span></code>, et le nom du nuage de points est <code class="docutils literal notranslate"><span class="pre">point1</span></code>. Ainsi,
+si l’on veut spécifier plusieurs points, il y a deux façons de le faire: en ajoutant un
+set avec un autre <code class="docutils literal notranslate"><span class="pre">cloud</span></code> (par exemple, <code class="docutils literal notranslate"><span class="pre">point2</span></code>), ou alors ajouter un autre point
+dans la liste des points du <code class="docutils literal notranslate"><span class="pre">cloud</span></code> de <code class="docutils literal notranslate"><span class="pre">point1</span></code>. Dans le premier cas, les
+résultats pour <code class="docutils literal notranslate"><span class="pre">points1</span></code> et <code class="docutils literal notranslate"><span class="pre">points2</span></code> seront écrits dans deux fichiers différents.
+Dans le deuxième cas, les points seront écrits dans les même fichiers, ce qui facilite le
+traitement des données.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Vous pouvez aussi rajouter un nouveau sous-dictionnaire sur le modèle du set <code class="docutils literal notranslate"><span class="pre">points</span></code>. Dans
+ce cas, les données seront écrites dans des dossiers différents.</p>
+</div>
 <p><strong>Post-traitement</strong></p>
-<p>les graphes</p>
+<p>Un fois que la simulation est lancée, vous pouvez la surveiller avec le
+script <code class="docutils literal notranslate"><span class="pre">AllpostProcess</span></code>. En options, vous pouvez y ajouter des scripts
+que vous voulez exécuter. Dans notre cas, nous allons exécuter le fichier
+de lecture des mesures de pression avec <code class="docutils literal notranslate"><span class="pre">lirePoints.py</span></code>. Puis nous afficherons
+le signal de pression.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ AllpostProcess lirePoints.py
+$ traceSondes.py --probefile point1.csv <span class="c1"># trace la pression</span>
+</pre></div>
+</div>
 </div>
 
 
@@ -200,8 +343,8 @@
           </div>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="obstaclePoreux.html" class="btn btn-neutral float-right" title="Milieu poreux" accesskey="n" rel="next">Suivant <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-        <a href="houleReguliere.html" class="btn btn-neutral float-left" title="Houle régulière" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Précédent</a>
+        <a href="debitFranchissement.html" class="btn btn-neutral float-right" title="Mesures de débit de franchissement" accesskey="n" rel="next">Suivant <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="houleIrreguliere.html" class="btn btn-neutral float-left" title="Houle irrégulière" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Précédent</a>
     </div>
 
   <hr/>

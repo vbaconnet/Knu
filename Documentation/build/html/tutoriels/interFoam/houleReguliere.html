@@ -36,14 +36,15 @@
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
         <script src="../../_static/translations.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
     
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Recherche" href="../../search.html" />
-    <link rel="next" title="Mesure de pression sur un ouvrage" href="mesurePressionOuvrage.html" />
-    <link rel="prev" title="Houle irrégulière" href="houleIrreguliere.html" /> 
+    <link rel="next" title="Houle irrégulière" href="houleIrreguliere.html" />
+    <link rel="prev" title="interFoam" href="interFoam.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -91,10 +92,10 @@
               <p class="caption" role="heading"><span class="caption-text">Tutoriels</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="interFoam.html">interFoam</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="debitFranchissement.html">Mesures de débit de franchissement</a></li>
-<li class="toctree-l2"><a class="reference internal" href="houleIrreguliere.html">Houle irrégulière</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Houle régulière</a></li>
+<li class="toctree-l2"><a class="reference internal" href="houleIrreguliere.html">Houle irrégulière</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mesurePressionOuvrage.html">Mesure de pression sur un ouvrage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="debitFranchissement.html">Mesures de débit de franchissement</a></li>
 <li class="toctree-l2"><a class="reference internal" href="obstaclePoreux.html">Milieu poreux</a></li>
 <li class="toctree-l2"><a class="reference internal" href="batteurPiston.html">Mouvement du batteur</a></li>
 </ul>
@@ -109,6 +110,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../postTraitement.html">Post-traitement</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../canal.html">Guide de programmation du canal</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../outils.html">Librairies d’outils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../automatisation.html">Automatisation pour OpenFOAM</a></li>
 </ul>
 
             
@@ -181,13 +183,358 @@
   <div class="section" id="houle-reguliere">
 <h1>Houle régulière<a class="headerlink" href="#houle-reguliere" title="Lien permanent vers ce titre">¶</a></h1>
 <p><strong>Description de la situation</strong></p>
-<p>une description</p>
+<p>Ce tutoriel est une introduction à la génération de houle régulière sous OpenFOAM.</p>
+<p>L’ensemble des commandes à lancer est donné dans les fichiers <code class="docutils literal notranslate"><span class="pre">Allrun.case.laminaire</span></code> ou
+<code class="docutils literal notranslate"><span class="pre">Allrun.case.turbulent</span></code> selon le type de simulation que vous voulez lancer. Voici un
+extrait du fichier <code class="docutils literal notranslate"><span class="pre">Allrun.case.laminaire</span></code>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
+
+Allmesh
+
+genHouleReguliere
+
+mv constant/turbulenceProperties.laminar constant/turbulenceProperties
+
+Allrun -s <span class="p">&amp;</span>
+
+sleep <span class="m">2</span>
+
+AllpostProcess lireSondes.py traceSondes.py
+</pre></div>
+</div>
 <p><strong>Maillage</strong></p>
-<p>Comment faire le maillage</p>
+<p>Nous utiliserons une géométrie rectangulaire 2D. Le maillage est défini dans le fichier
+<code class="docutils literal notranslate"><span class="pre">system/blockMeshDict</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>xmin  0.0;
+xmax 10.0;
+ymin -0.5;
+ymax  0.5;
+zmin  0.0;
+zmax  2.0;
+
+Nz    60;
+
+Nx #calc &quot;$Nz * ( $xmax - $xmin) / ( $zmax - $zmin )&quot;;
+
+vertices
+(
+
+    ( $xmin $ymin $zmin) //0
+    ( $xmax $ymin $zmin) //1
+    ( $xmax $ymax $zmin) //2
+    ( $xmin $ymax $zmin) //3
+
+    ( $xmin $ymin $zmax) //4
+    ( $xmax $ymin $zmax) //5
+    ( $xmax $ymax $zmax) //6
+    ( $xmin $ymax $zmax) //7
+
+);
+
+blocks
+(
+    hex (0 1 2 3 4 5 6 7) ($Nx 1 $Nz) simpleGrading (1 1 1)
+);
+
+edges
+(
+);
+
+boundary
+(
+    inlet
+    {
+        type patch;
+        faces
+        (
+            (0 4 7 3)
+        );
+    }
+    outlet
+    {
+        type wall;
+        faces
+        (
+            (1 5 6 2)
+        );
+    }
+    BOTTOM
+    {
+        type wall;
+        faces
+        (
+            (0 1 2 3)
+        );
+    }
+    TOP
+    {
+        type patch;
+        faces
+        (
+            (4 5 6 7)
+        );
+    }
+    frontPlane
+    {
+        type empty;
+        faces
+        (
+            (0 1 5 4)
+        );
+    }
+    backPlane
+    {
+        type empty;
+        faces
+        (
+            (3 2 6 7)
+        );
+    }
+);
+</pre></div>
+</div>
+<p>Exécutez <code class="docutils literal notranslate"><span class="pre">blockMesh</span></code> avec la commande</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ blockMesh
+</pre></div>
+</div>
+<p>Vous pouvez visualiser le maillage avec <code class="docutils literal notranslate"><span class="pre">ParaView</span></code>.</p>
 <p><strong>Génération de houle</strong></p>
-<p>houle</p>
+<p>Nous allons générer de la houle régulière. Les paramètres doivent être donnés
+dans le fichier <code class="docutils literal notranslate"><span class="pre">regularWaveDict</span></code> :</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>waveHeight 0.12       // Hauteur ( = 2*amplitude )
+wavePeriod 1.3        // Période
+activeAbsorption yes  // Absorption sur la face d&#39;entrée
+ramptime   0.5        // Durée de la rampe en entrée
+</pre></div>
+</div>
+<p>Vous pouvez éventuellement rajouter d’autres paramètres. Pour plus de détails sur
+les paramètres à rajouter, consultez la documentation du fichier de génération de houle
+régulière <a class="reference internal" href="../../fonctions/genHouleReguliere.html"><span class="doc">genHouleReguliere.py</span></a>.</p>
+<p>Pour générer le fichier de houle régulière, lancez la commande:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ genHouleReguliere.py
+</pre></div>
+</div>
+<p>Cette commande générera le fichier <code class="docutils literal notranslate"><span class="pre">constant/waveProperties</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">inlet</span>
+<span class="p">{</span>
+    <span class="n">alpha</span>            <span class="n">alpha</span><span class="o">.</span><span class="n">water</span><span class="p">;</span>
+    <span class="n">waveModel</span>        <span class="n">StokesI</span><span class="p">;</span>
+    <span class="n">nPaddle</span>          <span class="mi">1</span><span class="p">;</span>
+
+    <span class="n">rampTime</span>         <span class="mf">0.5</span><span class="p">;</span>
+    <span class="n">activeAbsorption</span> <span class="n">yes</span><span class="p">;</span>
+    <span class="n">waveHeight</span>       <span class="mf">0.12</span><span class="p">;</span>
+    <span class="n">wavePeriod</span>       <span class="mf">1.3</span><span class="p">;</span>
+
+    <span class="n">waveAngle</span>        <span class="mf">0.0</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="o">//</span>  <span class="n">Absorption</span> <span class="n">sur</span> <span class="n">la</span> <span class="n">face</span> <span class="n">de</span> <span class="n">sortie</span>
+<span class="n">outlet</span>
+<span class="p">{</span>
+    <span class="n">alpha</span>            <span class="n">alpha</span><span class="o">.</span><span class="n">water</span><span class="p">;</span>
+    <span class="n">waveModel</span>        <span class="n">shallowWaterAbsorption</span><span class="p">;</span>
+    <span class="n">nPaddle</span>          <span class="mi">1</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Comme vous pouvez le voir, d’autres paramètres que ceux spécifiés dans le
+<code class="docutils literal notranslate"><span class="pre">regularWaveDict</span></code> sont présents par défaut. Le programme a aussi généré
+une condition d’absorption dynamique sur la face <code class="docutils literal notranslate"><span class="pre">outlet</span></code> par défaut.</p>
+<p><strong>Conditions limites</strong></p>
+<p>Pour indiquer une condition de houle sur les faces d’entrée/sortie,
+nous devons spécifier la condition <code class="docutils literal notranslate"><span class="pre">waveAlpha</span></code> dans le fichier
+<code class="docutils literal notranslate"><span class="pre">0.orig/alpha.water</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">dimensions</span>      <span class="p">[</span><span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span><span class="p">];</span>
+
+<span class="n">internalField</span>   <span class="n">uniform</span> <span class="mi">0</span><span class="p">;</span>
+
+<span class="n">boundaryField</span>
+<span class="p">{</span>
+    <span class="n">inlet</span>
+    <span class="p">{</span>
+        <span class="nb">type</span>            <span class="n">waveAlpha</span><span class="p">;</span>
+        <span class="n">value</span>           <span class="n">uniform</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="n">outlet</span>
+    <span class="p">{</span>
+        <span class="nb">type</span>            <span class="n">waveAlpha</span><span class="p">;</span>
+        <span class="n">value</span>           <span class="n">uniform</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="n">BOTTOM</span>
+    <span class="p">{</span>
+        <span class="nb">type</span>            <span class="n">zeroGradient</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="n">TOP</span>
+    <span class="p">{</span>
+        <span class="nb">type</span>            <span class="n">inletOutlet</span><span class="p">;</span>
+        <span class="n">inletValue</span>      <span class="n">uniform</span> <span class="mi">0</span><span class="p">;</span>
+        <span class="n">value</span>           <span class="n">uniform</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="n">frontPlane</span>
+    <span class="p">{</span>
+        <span class="nb">type</span>            <span class="n">empty</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="n">backPlane</span>
+    <span class="p">{</span>
+        <span class="nb">type</span>            <span class="n">empty</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>De manière générale, un mur sera de type <code class="docutils literal notranslate"><span class="pre">zeroGradient</span></code>. Notez la condition
+<code class="docutils literal notranslate"><span class="pre">inletOutlet</span></code> pour la face horizontale supérieure, qui modélise une condition
+d’atmosphère.</p>
+<p>Il faut également rajouter une condition limite de type <code class="docutils literal notranslate"><span class="pre">waveVelocity</span></code> dans le
+fichier <code class="docutils literal notranslate"><span class="pre">0.orig/U</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">dimensions</span>      <span class="p">[</span><span class="mi">0</span> <span class="mi">1</span> <span class="o">-</span><span class="mi">1</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span><span class="p">];</span>
+
+<span class="n">internalField</span>   <span class="n">uniform</span> <span class="p">(</span><span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span><span class="p">);</span>
+
+<span class="n">boundaryField</span>
+<span class="p">{</span>
+    <span class="n">inlet</span>
+    <span class="p">{</span>
+        <span class="nb">type</span>            <span class="n">waveVelocity</span><span class="p">;</span>
+        <span class="n">value</span>           <span class="n">uniform</span> <span class="p">(</span><span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="n">outlet</span>
+    <span class="p">{</span>
+        <span class="nb">type</span>            <span class="n">waveVelocity</span><span class="p">;</span>
+        <span class="n">value</span>           <span class="n">uniform</span> <span class="p">(</span><span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="n">BOTTOM</span>
+    <span class="p">{</span>
+        <span class="nb">type</span>            <span class="n">fixedValue</span><span class="p">;</span>
+        <span class="n">value</span>           <span class="n">uniform</span> <span class="p">(</span><span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="n">TOP</span>
+    <span class="p">{</span>
+        <span class="nb">type</span>            <span class="n">pressureInletOutletVelocity</span><span class="p">;</span>
+        <span class="n">value</span>           <span class="n">uniform</span> <span class="p">(</span><span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="n">frontPlane</span>
+    <span class="p">{</span>
+        <span class="nb">type</span>            <span class="n">empty</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="n">backPlane</span>
+    <span class="p">{</span>
+        <span class="nb">type</span>            <span class="n">empty</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Notez là aussi la condition <code class="docutils literal notranslate"><span class="pre">pressureInletOutletVelocity</span></code> pour la modélisation
+de l’atmosphère pour la face horizontale supérieure.</p>
+<p>Il n’y a pas de traitement particulier pour les conditions limites de pression.</p>
+<p><strong>Lancement de la simulation</strong></p>
+<p>Si vous le souhaitez, vous pouvez utiliser un modèle de turbulence. Pour cela,
+utilisez le script <code class="docutils literal notranslate"><span class="pre">Allrun.case.turbulent</span></code> ou lancez la commande:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mv constant/turbulenceProperties.komega constant/turbulenceProperties
+</pre></div>
+</div>
+<p>En faisant cela, vous allez utiliser le modèle de turbulence <span class="math notranslate nohighlight">\(k-\omega\)</span> SST.</p>
+<p>N’oubliez pas de copier le fichier <code class="docutils literal notranslate"><span class="pre">0.orig</span></code> vers un nouveau dossier <code class="docutils literal notranslate"><span class="pre">0</span></code> et de
+lancer <code class="docutils literal notranslate"><span class="pre">setFields</span></code>, pour initialiser une hauteur d’eau de <span class="math notranslate nohighlight">\(0.864\,m\)</span>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>cp -r <span class="m">0</span>.orig <span class="m">0</span>
+setFields
+</pre></div>
+</div>
+<p>Vous pouvez maintenant lancer <code class="docutils literal notranslate"><span class="pre">interFoam</span></code>. Si vous le souhaitez, modifiez les
+paramètres de <code class="docutils literal notranslate"><span class="pre">system/controlDict</span></code>. Par défaut, le temps de simulation est de
+10 secondes avec une sauvegarde toutes les 0.1 secondes.</p>
+<p>Nous avons aussi posé 4 sondes le long du canal, définies dans le dictionnaire
+<code class="docutils literal notranslate"><span class="pre">functions</span></code> de <code class="docutils literal notranslate"><span class="pre">system/controlDict</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>// Indiquer ici les sondes et leurs coordonnées (position x en m)
+sonde1      S1-1.0;
+x1          1.0;
+sonde2      S2-4.0;
+x2          4.0;
+sonde3      S3-7.0;
+x3          7.0;
+
+// Coordonnées des points de mesure
+ystart      0.0;
+yend        0.0;
+zstart      0.0;
+zend        2.0;
+N           301; // Nombre de points
+
+functions
+{
+
+    line
+    {
+        type            sets;
+        libs            (&quot;libsampling.so&quot;);
+        enabled         true; // Mettre à false pour désactiver les sondes
+
+        // Contrôle d&#39;écriture :
+        //  - timeStep   : pas de temps
+        //  - adjustable : temps (si pas de temps adaptatif)
+        //  - runTime    : temps (si pas de temps constant)
+        writeControl     timeStep;
+        writeInterval    2;
+
+        fixedLocations false;
+        interpolationScheme cellPoint;
+        setFormat       raw;
+        sets
+        (
+            $sonde1
+            {
+                type uniform;
+                axis distance;
+                start   ( $x1 $ystart $zstart );
+                end     ( $x1 $yend   $zend   );
+                nPoints $N;
+            }
+            $sonde2
+            {
+                type uniform;
+                axis distance;
+                start   ( $x2 $ystart $zstart );
+                end     ( $x2 $yend   $zend   );
+                nPoints $N;
+            }
+            $sonde3
+            {
+                type uniform;
+                axis distance;
+                start   ( $x3 $ystart $zstart );
+                end     ( $x3 $yend   $zend   );
+                nPoints $N;
+            }
+        );
+        fields (
+            alpha.water
+        );
+    }
+}
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>interFoam &gt; log.interFoam <span class="p">&amp;</span>
+</pre></div>
+</div>
 <p><strong>Post-traitement</strong></p>
-<p>les graphes</p>
+<p>Un fois que la simulation est lancée, vous pouvez la surveiller avec le
+script <code class="docutils literal notranslate"><span class="pre">AllpostProcess</span></code>. En options, vous pouvez y ajouter des scripts
+que vous voulez exécuter. Dans notre cas, nous allons exécuter le fichier
+de lecture de sondes <code class="docutils literal notranslate"><span class="pre">lireSondes.py</span></code>, puis afficher le signal de houle
+mesuré par ces sondes.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>AllpostProcess lireSondes.py traceSondes.py
+</pre></div>
+</div>
 </div>
 
 
@@ -196,8 +543,8 @@
           </div>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="mesurePressionOuvrage.html" class="btn btn-neutral float-right" title="Mesure de pression sur un ouvrage" accesskey="n" rel="next">Suivant <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-        <a href="houleIrreguliere.html" class="btn btn-neutral float-left" title="Houle irrégulière" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Précédent</a>
+        <a href="houleIrreguliere.html" class="btn btn-neutral float-right" title="Houle irrégulière" accesskey="n" rel="next">Suivant <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="interFoam.html" class="btn btn-neutral float-left" title="interFoam" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Précédent</a>
     </div>
 
   <hr/>

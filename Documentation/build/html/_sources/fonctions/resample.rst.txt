@@ -4,7 +4,7 @@ Rééchantillonnage des données de sondes
 Informations
 ---------------
 
-    * Fichier : ``resample.py``
+    * Fichier : ``Knu/Scripts/Post-traitement/resample.py``
     * Auteur: Victor Baconnet
     * Date de dernière modification: 27 août 2021
 

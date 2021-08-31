@@ -4,7 +4,7 @@ Génération de houle irrégulière
 Informations
 ------------
 
-* Fichier : ``genHouleIrreguliere.py`` 
+* Fichier : ``Knu/Scripts/Automatisation-OpenFOAM/genHouleIrreguliere.py`` 
 
 * Auteur: Victor Baconnet
     

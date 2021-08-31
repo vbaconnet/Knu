@@ -1,0 +1,280 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="fr" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Tracé rapide de valeurs &mdash; Documentation Canal Numérique 0.0.1</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/translations.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Recherche" href="../search.html" />
+    <link rel="next" title="Exportation de mesures de points" href="lirePoints.html" />
+    <link rel="prev" title="Exportation de mesures de sondes" href="lireSondes.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Canal Numérique
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Rechercher docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption" role="heading"><span class="caption-text">Tutoriels</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutoriels/interFoam/interFoam.html">interFoam</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutoriels/olaFlow/olaFlow.html">olaFlow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutoriels/overInterDyMFoam/overInterDyMFoam.html">overInterDyMFoam</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutoriels/sedFoam/sedFoam.html">sedFoam</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../generationHoule.html">Génération de houle</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../postTraitement.html">Post-traitement</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="lireSondes.html">Exportation de mesures de sondes</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Tracé rapide de valeurs</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#informations">Informations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#description">Description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#utilisation">Utilisation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#code-source">Code source</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="lirePoints.html">Exportation de mesures de points</a></li>
+<li class="toctree-l2"><a class="reference internal" href="debitFranchissement.html">Calcul de débit de franchissement</a></li>
+<li class="toctree-l2"><a class="reference internal" href="resample.html">Rééchantillonnage des données de sondes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="spectre.html">Reconstruction de spectre</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../canal.html">Guide de programmation du canal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../outils.html">Librairies d’outils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../automatisation.html">Automatisation pour OpenFOAM</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Canal Numérique</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../postTraitement.html">Post-traitement</a> &raquo;</li>
+        
+      <li>Tracé rapide de valeurs</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/fonctions/traceSondes.rst.txt" rel="nofollow"> Afficher la source de la page</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-traceSondes">
+<span id="trace-rapide-de-valeurs"></span><h1>Tracé rapide de valeurs<a class="headerlink" href="#module-traceSondes" title="Lien permanent vers ce titre">¶</a></h1>
+<div class="section" id="informations">
+<h2>Informations<a class="headerlink" href="#informations" title="Lien permanent vers ce titre">¶</a></h2>
+<ul class="simple">
+<li><p>Fichier : <code class="docutils literal notranslate"><span class="pre">Knu/Scripts/Post-traitement/traceSondes.py</span></code></p></li>
+<li><p>Auteur : Victor Baconnet</p></li>
+<li><p>Dernière modification le : 30/08/2021</p></li>
+</ul>
+</div>
+<div class="section" id="description">
+<h2>Description<a class="headerlink" href="#description" title="Lien permanent vers ce titre">¶</a></h2>
+<p>Tracer des données à partir d’un fichier .csv, avec en première colonne le 
+signal temporel. Trace toutes les valeurs sur le même graphique.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Pour un affichage de graphiques détaillé, consultez les fonctions 
+disponibles dans <a class="reference internal" href="outilsExcel.html"><span class="doc">outilsExcel</span></a> pour
+exporter vos valeurs vers Excel et générer des graphiques 
+automatiquement</p>
+</div>
+</div>
+<div class="section" id="utilisation">
+<h2>Utilisation<a class="headerlink" href="#utilisation" title="Lien permanent vers ce titre">¶</a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ traceSondes.py &lt;fichier&gt;
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">&lt;fichier&gt;</span></code> doit être au format <code class="docutils literal notranslate"><span class="pre">.csv</span></code>, et doit être formaté comme 
+le modèle suivant:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>temps,nom_1,nom_2,...,nom_N
+t_1,val_11,val_12,...,val_1N
+...
+t_N,val_M1,val_M2,...,val_MN
+</pre></div>
+</div>
+<p>En résumé, les données sont organisées en colonnes, et la première
+doit être un vecteur de temps.</p>
+</div>
+<div class="section" id="code-source">
+<h2>Code source<a class="headerlink" href="#code-source" title="Lien permanent vers ce titre">¶</a></h2>
+<p>Lien vers le <a class="reference external" href="https://github.com/victor13165/Knu/blob/main/Scripts/Post-traitement/traceSondes.py">code source</a></p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="lirePoints.html" class="btn btn-neutral float-right" title="Exportation de mesures de points" accesskey="n" rel="next">Suivant <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="lireSondes.html" class="btn btn-neutral float-left" title="Exportation de mesures de sondes" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Précédent</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Victor Baconnet.
+
+    </p>
+  </div>
+    
+    
+    
+    Compilé avec <a href="https://www.sphinx-doc.org/">Sphinx</a> en utilisant un
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">thème</a>
+    
+    fourni par <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

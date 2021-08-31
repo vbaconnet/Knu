@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>AllpostProcess &mdash; Documentation Canal Numérique 0.0.1</title>
+  <title>Gestion des scripts de post-traitement &mdash; Documentation Canal Numérique 0.0.1</title>
   
 
   
@@ -41,7 +41,9 @@
 
     
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Recherche" href="../search.html" /> 
+    <link rel="search" title="Recherche" href="../search.html" />
+    <link rel="next" title="Nettoyer un répertoire OpenFOAM" href="Allclean.html" />
+    <link rel="prev" title="Automatisation de lancement de calculs" href="Allrun.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -94,11 +96,24 @@
 <li class="toctree-l1"><a class="reference internal" href="../tutoriels/sedFoam/sedFoam.html">sedFoam</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
-<ul>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../generationHoule.html">Génération de houle</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../postTraitement.html">Post-traitement</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../canal.html">Guide de programmation du canal</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../outils.html">Librairies d’outils</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../automatisation.html">Automatisation pour OpenFOAM</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="Allmesh.html">Automatisation de maillage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Allrun.html">Automatisation de lancement de calculs</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Gestion des scripts de post-traitement</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#informations">Informations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#description">Description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#utilisation">Utilisation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#code-source">Code source</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Allclean.html">Nettoyer un répertoire OpenFOAM</a></li>
+</ul>
+</li>
 </ul>
 
             
@@ -147,7 +162,9 @@
     
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
-      <li>AllpostProcess</li>
+          <li><a href="../automatisation.html">Automatisation pour OpenFOAM</a> &raquo;</li>
+        
+      <li>Gestion des scripts de post-traitement</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -166,9 +183,61 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="allpostprocess">
-<h1>AllpostProcess<a class="headerlink" href="#allpostprocess" title="Lien permanent vers ce titre">¶</a></h1>
-<p>Rien à voir ici encore</p>
+  <div class="section" id="gestion-des-scripts-de-post-traitement">
+<h1>Gestion des scripts de post-traitement<a class="headerlink" href="#gestion-des-scripts-de-post-traitement" title="Lien permanent vers ce titre">¶</a></h1>
+<div class="section" id="informations">
+<h2>Informations<a class="headerlink" href="#informations" title="Lien permanent vers ce titre">¶</a></h2>
+<ul class="simple">
+<li><p>Nom du fichier : <code class="docutils literal notranslate"><span class="pre">Knu/Scripts/Automatisation-OpenFOAM/AllpostProcess</span></code></p></li>
+<li><p>Auteur: Victor Baconnet</p></li>
+<li><p>Date de dernière modification: 08 Juillet 2021</p></li>
+</ul>
+</div>
+<div class="section" id="description">
+<h2>Description<a class="headerlink" href="#description" title="Lien permanent vers ce titre">¶</a></h2>
+<p>Lance une série de scripts lorsque la simulation est terminée. La
+fin de la simulation est basée sur le fichier log de sortie de
+simulation, au format <code class="docutils literal notranslate"><span class="pre">log.nomSolver</span></code>, où <code class="docutils literal notranslate"><span class="pre">nomSolver</span></code> est le nom du
+solveur donné dans <code class="docutils literal notranslate"><span class="pre">controlDict</span></code>. Il est possible de changer le nom
+du fichier avec l’option <code class="docutils literal notranslate"><span class="pre">--log=&lt;fichier_log&gt;</span></code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Il est conseillé de faire en sorte que ce fichier soit accessible dans la
+variable d’environnement <code class="docutils literal notranslate"><span class="pre">$PATH</span></code>. Pour cela, dans le dossier Knu, lancez:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ source sourceMe
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="utilisation">
+<h2>Utilisation<a class="headerlink" href="#utilisation" title="Lien permanent vers ce titre">¶</a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ AllpostProcess <span class="o">[</span>OPTIONS<span class="o">]</span> &lt;script1&gt; &lt;script2&gt; ... &lt;scriptN&gt;
+</pre></div>
+</div>
+<p><strong>Options</strong></p>
+<dl class="option-list">
+<dt><kbd><span class="option">--log=<var>&lt;log_file&gt;</var></span></kbd></dt>
+<dd><p>définir un autre fichier log dans
+lequel lire.</p>
+</dd>
+<dt><kbd><span class="option">-h</span>, <span class="option">--help</span></kbd></dt>
+<dd><p>Afficher l’aide</p>
+</dd>
+</dl>
+<div class="admonition warning">
+<p class="admonition-title">Avertissement</p>
+<p>Si vous spécifiez un fichier log alternatif, mettez le bien en première
+option après <code class="docutils literal notranslate"><span class="pre">AllpostProcess</span></code>, comme indiqué au dessus. Sinon,
+le traitement des scripts mis en paramètres ne sera pas bien effectué.</p>
+</div>
+<p><strong>Erreurs</strong></p>
+<p>1 en cas de problème de lecture d’option
+2 en cas de problème de lecture de fichier</p>
+</div>
+<div class="section" id="code-source">
+<h2>Code source<a class="headerlink" href="#code-source" title="Lien permanent vers ce titre">¶</a></h2>
+<p>Lien vers le <a class="reference external" href="https://github.com/victor13165/Knu/blob/main/Scripts/Automatisation-OpenFOAM/AllpostProcess">code source</a></p>
+</div>
 </div>
 
 
@@ -176,6 +245,10 @@
            
           </div>
           <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="Allclean.html" class="btn btn-neutral float-right" title="Nettoyer un répertoire OpenFOAM" accesskey="n" rel="next">Suivant <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="Allrun.html" class="btn btn-neutral float-left" title="Automatisation de lancement de calculs" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Précédent</a>
+    </div>
 
   <hr/>
 

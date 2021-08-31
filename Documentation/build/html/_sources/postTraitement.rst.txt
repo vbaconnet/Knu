@@ -8,6 +8,7 @@ Description des programmes de post-traitement
    :caption: Post-traitement
 
    fonctions/lireSondes
+   fonctions/traceSondes
    fonctions/lirePoints
    fonctions/debitFranchissement
    fonctions/resample

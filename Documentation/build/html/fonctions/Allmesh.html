@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Allmesh &mdash; Documentation Canal Numérique 0.0.1</title>
+  <title>Automatisation de maillage &mdash; Documentation Canal Numérique 0.0.1</title>
   
 
   
@@ -41,7 +41,9 @@
 
     
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Recherche" href="../search.html" /> 
+    <link rel="search" title="Recherche" href="../search.html" />
+    <link rel="next" title="Automatisation de lancement de calculs" href="Allrun.html" />
+    <link rel="prev" title="Automatisation pour OpenFOAM" href="../automatisation.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -94,11 +96,25 @@
 <li class="toctree-l1"><a class="reference internal" href="../tutoriels/sedFoam/sedFoam.html">sedFoam</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
-<ul>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../generationHoule.html">Génération de houle</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../postTraitement.html">Post-traitement</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../canal.html">Guide de programmation du canal</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../outils.html">Librairies d’outils</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../automatisation.html">Automatisation pour OpenFOAM</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Automatisation de maillage</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#informations">Informations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#description">Description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#utilisation">Utilisation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dependances">Dépendances</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#code-source">Code source</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Allrun.html">Automatisation de lancement de calculs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="AllpostProcess.html">Gestion des scripts de post-traitement</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Allclean.html">Nettoyer un répertoire OpenFOAM</a></li>
+</ul>
+</li>
 </ul>
 
             
@@ -147,7 +163,9 @@
     
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
-      <li>Allmesh</li>
+          <li><a href="../automatisation.html">Automatisation pour OpenFOAM</a> &raquo;</li>
+        
+      <li>Automatisation de maillage</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -166,9 +184,80 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="allmesh">
-<h1>Allmesh<a class="headerlink" href="#allmesh" title="Lien permanent vers ce titre">¶</a></h1>
-<p>Rien à voir ici encore</p>
+  <div class="section" id="automatisation-de-maillage">
+<h1>Automatisation de maillage<a class="headerlink" href="#automatisation-de-maillage" title="Lien permanent vers ce titre">¶</a></h1>
+<div class="section" id="informations">
+<h2>Informations<a class="headerlink" href="#informations" title="Lien permanent vers ce titre">¶</a></h2>
+<ul class="simple">
+<li><p>Nom du fichier : <code class="docutils literal notranslate"><span class="pre">Knu/Scripts/Automatisation-OpenFOAM/Allmesh</span></code></p></li>
+<li><p>Auteur: Victor Baconnet</p></li>
+<li><p>Date de dernière modification: 08 Juillet 2021</p></li>
+</ul>
+</div>
+<div class="section" id="description">
+<h2>Description<a class="headerlink" href="#description" title="Lien permanent vers ce titre">¶</a></h2>
+<p>Outil d’automatisation de maillage (blockMesh, snappyHexMesh), avec possibilité de
+lancement en parallèle et gestion des erreurs. Par défaut, ne lance que blockMesh.
+Pour lancer snappyHexMesh, utilisez l’option -S ou –snappyhexmesh.
+Le script supprime le maillage existant par défaut. blockMesh n’est jamais lancé en parallèle.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Il est conseillé de faire en sorte que ce fichier soit accessible dans la
+variable d’environnement <code class="docutils literal notranslate"><span class="pre">$PATH</span></code>. Pour cela, dans le dossier Knu, lancez:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ source sourceMe
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="utilisation">
+<h2>Utilisation<a class="headerlink" href="#utilisation" title="Lien permanent vers ce titre">¶</a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ Allmesh <span class="o">[</span>OPTIONS<span class="o">]</span>
+</pre></div>
+</div>
+<p><strong>Options</strong></p>
+<dl class="option-list">
+<dt><kbd><span class="option">-c</span>, <span class="option">--clean</span></kbd></dt>
+<dd><p>Nettoyer le répertoire. Le maillage existant
+(polyMesh) est supprimé par défaut.</p>
+</dd>
+<dt><kbd><span class="option">-p</span>, <span class="option">-p<var>arallel</var></span></kbd></dt>
+<dd><p>Lancer snappyHexMesh en parallèle avec le nombre de
+processeurs défini dans decomposeParDict.</p>
+</dd>
+<dt><kbd><span class="option">-e</span>, <span class="option">--extrudemesh</span></kbd></dt>
+<dd><p>Lancer l’extrusion de maillage selon les
+critères définis dans extrudeMeshDict.</p>
+</dd>
+<dt><kbd><span class="option">-S</span>, <span class="option">--snappyhexmesh</span></kbd></dt>
+<dd><p>Lancer snappyHexMesh selon les critères
+définis dans snappyHexMeshDict.</p>
+</dd>
+<dt><kbd><span class="option">-h</span>, <span class="option">--help</span></kbd></dt>
+<dd><p>Afficher l’aide</p>
+</dd>
+</dl>
+<p><strong>Erreurs</strong></p>
+<ul class="simple">
+<li><p>1 pour argument ou option invalide »</p></li>
+<li><p>2 si erreur dans blockMesh »</p></li>
+<li><p>3 si erreur dans snappyHexMesh »</p></li>
+<li><p>4 si erreur dans decomposePar »</p></li>
+<li><p>5 si erreur dans extrudeMesh »</p></li>
+<li><p>6 si erreur dans reconstructParMesh »</p></li>
+</ul>
+</div>
+<div class="section" id="dependances">
+<h2>Dépendances<a class="headerlink" href="#dependances" title="Lien permanent vers ce titre">¶</a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">numpy</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sys</span></code>, <code class="docutils literal notranslate"><span class="pre">os</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">outilsLecture</span></code></p></li>
+</ul>
+</div>
+<div class="section" id="code-source">
+<h2>Code source<a class="headerlink" href="#code-source" title="Lien permanent vers ce titre">¶</a></h2>
+<p>Lien vers le <a class="reference external" href="https://github.com/victor13165/Knu/blob/main/Scripts/Automatisation-OpenFOAM/Allmesh">code source</a></p>
+</div>
 </div>
 
 
@@ -176,6 +265,10 @@
            
           </div>
           <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="Allrun.html" class="btn btn-neutral float-right" title="Automatisation de lancement de calculs" accesskey="n" rel="next">Suivant <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="../automatisation.html" class="btn btn-neutral float-left" title="Automatisation pour OpenFOAM" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Précédent</a>
+    </div>
 
   <hr/>
 
