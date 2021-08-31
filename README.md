@@ -4,6 +4,19 @@
 
 Bienvenue dans le repository du canal numérique. Vous y trouverez différents scripts et programmes, ainsi que des tutoriels pour différentes applications. Vous pouvez consulter la documentation complète sur <https://knu.readthedocs.io/en/latest/>.
 
+## Installation
+
+Téléchargez le code source
+```bash
+git clone https://github.com/victor13165/Knu
+```
+Allez dans le dossier ``Knu`` et initialisez les variables d'environnement
+```bash
+cd Knu
+source sourceMe
+```
+Si vous comptez utiliser les outils du Knu souvent, il est conseillé d'intégrer ces lignes dans votre ``~/.bashrc`` ou ``~/.profile``.
+
 ## Scripts Python
 
 - Génération de houle régulière et irrégulière
@@ -21,19 +34,6 @@ Bienvenue dans le repository du canal numérique. Vous y trouverez différents s
 - sedFoam
 - olaFlow
 - overInterDyMFoam
-
-## Installation
-
-Téléchargez le code source
-```bash
-git clone https://github.com/victor13165/Knu
-```
-Allez dans le dossier ``Knu`` et initialisez les variables d'environnement
-```bash
-cd Knu
-source sourceMe
-```
-Si vous comptez utiliser les outils du Knu souvent, il est conseillé d'intégrer ces lignes dans votre ``~/.bashrc`` ou ``~/.profile``.
 
 ## Ressources additionnelles
 

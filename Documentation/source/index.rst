@@ -27,9 +27,11 @@ Une fois téléchargé, allez dans le dossier et chargez les variables d'environ
 
 	Si vous souhaitez utiliser le solveur ``sedFoam`` vous devrez installer
 	et compiler la dernière version vous-même (sauf si il est déjà installé).
-	Le code source de ``sedFoam`` se télécharge à l'adresse::
+	Pour installer ``sedFoam``, rendez vous à l'adresse::
 
 		https://github.com/sedfoam/sedfoam
+
+	et suivez les instructions d'installation.
 
 Tutoriels
 ---------
