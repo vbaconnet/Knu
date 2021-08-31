@@ -1,0 +1,23 @@
+#!/bin/bash
+
+# Lancer le maillage
+Allmesh -c
+
+# Générer la houle irrégulière
+genHouleIrreguliere --solver olaFlow
+
+# Choisir le modèle de turbulence kEpsilon
+cp constant/turbulenceProperties.turbulent constant/turbulenceProperties
+
+# Lancer le calcul. L'option -s lance setFields
+Allrun -s &
+
+# Attendre 3 secondes avant de lancer le monitoring
+sleep 3
+
+# Suivre la progression du calcul et lancer la 
+# lecture des points de mesure de pression
+AllpostProcess lirePoints.py
+
+# Afficher les mesures de pression
+traceSondes.py point1.csv
