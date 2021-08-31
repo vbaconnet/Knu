@@ -13,12 +13,11 @@ usage() {
 
 send_help() {
 	echo 
-	echo "Utilisation : Allmesh [OPTIONS]"
+	echo "Utilisation : Allclean [OPTIONS]"
 	echo
-	echo "Permet de lancer les outils de maillage d'OpenFOAM. Par défaut, ne "
-	echo "lance que blockMesh. Pour lancer snappyHexMesh, utilisez l'option  "
-	echo "-S ou --snappyhexmesh. Le script supprime le maillage existant par "
-	echo "défaut. blockMesh n'est jamais lancé en parallèle."
+	echo "Permet de nettoyer un répertoire OpenFOAM. Nettoie uniquement les "
+	echo "fichiers log, le maillage, les dossiers temporels et les dossiers"
+	echo "processeurs."
 	echo 
 	echo "OPTIONS"
 	echo "-------"

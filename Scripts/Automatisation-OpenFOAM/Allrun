@@ -266,7 +266,6 @@ SETFIELDS=false
 TOPOSET=false
 SURFACE_EXTRACT=false
 SOLVE=true
-DRYRUN=false
 #-------------------------------
 
 #Lire les arguments et options avec getopt
@@ -332,11 +331,6 @@ while [ ! "${#}" -eq 0 ] ; do
 		-e|--surfacefeature)
 		SURFACE_EXTRACT=true
 		echo "Extraction de surface"
-		shift
-		;;
-		-d|--dryrun)
-		DRYRUN=true
-		echo "Lancement en dry-run"
 		shift
 		;;
 		--)                   # Fin des arguments
@@ -408,13 +402,8 @@ if $PARALLEL && $SOLVE; then
 	 }
 
 	#Lancer le solveur donné dans system/controlDict
-	if ! ${DRYRUN}; then
-		runParallel $(getApplication) 
-		check_exit_code $(getApplication) 7
-	else
-		runParallel $(getApplication) -dry-run
-		check_exit_code $(getApplication) 7
-	fi
+	runParallel $(getApplication) 
+	check_exit_code $(getApplication) 7
 
 	#Reconstruction des fichiers et effaçage des dossiers si succès 
 	if $RECONSTRUCT ; then
@@ -432,12 +421,7 @@ if $PARALLEL && $SOLVE; then
 elif $SOLVE; then
  
 	#Lancer le solveur donné dans system/controlDict
-	if ! ${DRYRUN}; then
-		launch_app $(getApplication) 7
-	else
-		runApplication $(getApplication) -dry-run
-		check_exit_code $(getApplication) 7
-	fi
+	launch_app $(getApplication) 7
      
 fi
 

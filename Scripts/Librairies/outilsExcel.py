@@ -2,6 +2,7 @@
 Informations
 ============
 
+    * Fichier : ``Knu/Scripts/Librairies/outilsExcel.py``
     * Auteur: Victor Baconnet
     * Date de dernière modification: 27 août 2021
 

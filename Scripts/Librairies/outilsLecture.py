@@ -2,7 +2,7 @@
 Informations
 ============
 
-* Fichier: ``outilsLecture.py``
+* Fichier: ``Knu/Scripts/Librairies/outilsLecture.py``
 * Auteur: Victor Baconnet
 * Date de dernière modification: 27 août 2021
 
