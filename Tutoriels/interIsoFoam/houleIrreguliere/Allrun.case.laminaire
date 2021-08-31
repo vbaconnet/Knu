@@ -1,0 +1,23 @@
+#!/bin/bash
+
+# Lancer le maillage
+Allmesh
+
+# Générer la houle irrégulière
+genHouleIrreguliere
+
+# Charger le fichier de turbulence
+cp constant/turbulenceProperties.laminar constant/turbulenceProperties
+
+# Lancer le calcul. L'option -s lance setFields
+Allrun -s &
+
+# Attendre 3 secondes avant de lancer le monitoring
+sleep 3
+
+# Suivre la progression du calcul et lancer la commande
+# de lecture de sondes lorsque le calcul est terminé
+AllpostProcess lireSondes.py 
+
+# Tracer les sondes
+traceSondes.py line_probes.csv  

@@ -1,0 +1,15 @@
+#!/bin/bash
+
+# Lancer le maillage
+Allmesh
+
+# Lancer le calcul. L'option -s lance setFields
+Allrun -s &
+
+# Attendre 2 secondes avant de lancer le monitoring
+sleep 2
+
+# Suivre la progression du calcul et lancer la 
+# lecture de sondes, avec reconstruction du spectre
+# lorsque le calcul est terminé
+AllpostProcess lireSondes.py resample.py spectre.py

@@ -1,0 +1,27 @@
+#!/bin/bash
+
+# Lancer le maillage
+Allmesh -c
+
+# Générer l'obstacle
+runApplication topoSet
+runApplication subsetMesh c0 -patch obstacle -overwrite
+
+# Générer la houle irrégulière
+genHouleIrreguliere
+
+# Charger le fichier de turbulence
+cp constant/turbulenceProperties.turbulent constant/turbulenceProperties
+
+# Lancer le calcul. L'option -s lance setFields
+Allrun -s &
+
+# Attendre 5 secondes avant de lancer le monitoring
+sleep 5
+
+# Suivre la progression du calcul et lancer la commande
+# de lecture de sondes lorsque le calcul est terminé
+AllpostProcess lireSondes.py lirePoints.py 
+
+traceSondes.py point1.csv
+traceSondes.py line_probes.csv
