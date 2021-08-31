@@ -16,5 +16,7 @@ Allrun -ts &
 sleep 2
 
 # Suivre la progression du calcul et lancer la commande
-# ls lorsque le calcul est terminé
-AllpostProcess ls
+# de lecture de mesure de pression lorsque le calcul est terminé
+AllpostProcess lirePoints.py
+
+traceSondes.py point1.csv

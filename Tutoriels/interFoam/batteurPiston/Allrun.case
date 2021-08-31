@@ -1,7 +1,5 @@
 #!/bin/bash
 
-. ${WM_PROJECT_DIR:?}/bin/tools/RunFunctions  #Charger les scripts OpenFOAM
-
 # Lancer le maillage
 Allmesh
 
@@ -11,6 +9,7 @@ Allrun -s &
 # Attendre 2 secondes avant de lancer le monitoring
 sleep 2
 
-# Suivre la progression du calcul et lancer la commande
-# ls lorsque le calcul est terminé
+# Suivre la progression du calcul et lancer la 
+# lecture de sondes, avec reconstruction du spectre
+# lorsque le calcul est terminé
 AllpostProcess lireSondes.py resample.py spectre.py

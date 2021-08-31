@@ -23,7 +23,9 @@ extrait du fichier ``Allrun.case.laminaire``:
 
     sleep 2
 
-    AllpostProcess lireSondes.py traceSondes.py
+    AllpostProcess lireSondes.py 
+
+    traceSondes.py line_probes.csv
 
 
 
@@ -381,4 +383,6 @@ mesuré par ces sondes.
 
 .. code-block:: bash
 
-    AllpostProcess lireSondes.py traceSondes.py
+    AllpostProcess lireSondes.py 
+    traceSondes.py line_probes.csv
+

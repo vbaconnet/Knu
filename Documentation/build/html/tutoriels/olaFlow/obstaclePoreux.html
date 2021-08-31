@@ -177,7 +177,270 @@
             
   <div class="section" id="obstacle-poreux">
 <h1>Obstacle poreux<a class="headerlink" href="#obstacle-poreux" title="Lien permanent vers ce titre">¶</a></h1>
-<p>Il n’y a rien encore ici</p>
+<p>Ce tutoriel est une introduction à l’outil <code class="docutils literal notranslate"><span class="pre">olaFlow</span></code>. <code class="docutils literal notranslate"><span class="pre">olaFlow</span></code> est un solveur
+spécialement conçu pour l’ingénierie côtière. Vous pouvez le télécharger à l’adresse:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">phicau</span><span class="o">/</span><span class="n">olaFlow</span>
+</pre></div>
+</div>
+<p>en suivant les instructions. Consultez aussi
+sa <a class="reference external" href="https://olaflow.github.io/">page web</a>, qui expose toutes les
+capacités du solveur.</p>
+<p>Pour nos simulations, <code class="docutils literal notranslate"><span class="pre">olaFlow</span></code> est intéressant car il utilise une
+modélisation assez avancée des milieux poreux. En ingénierie côtière,
+les milieux poreux nous permettent de modéliser les enrochements sur des digues
+de protection, par exemple.</p>
+<p>Ce tutoriel est similaire au tutoriel de l”<a class="reference internal" href="../interFoam/obstaclePoreux.html"><span class="doc">obstacle poreux</span></a>
+pour le solveur <code class="docutils literal notranslate"><span class="pre">interFoam</span></code>. La seule différence est dans la modélisation du milieu poreux.
+Ce tutoriel est directement tiré des tutoriels d’olaFlow.</p>
+<p>L’ensemble des commandes à exécuter se trouve dans les fichiers <code class="docutils literal notranslate"><span class="pre">Allrun.case.laminar</span></code>
+et <code class="docutils literal notranslate"><span class="pre">Allrun.case.turbulent</span></code> selon le type de simulation que vous voulez effectuer. Vous
+pouvez les exécuter directement pour ne pas avoir à exécuter chaque commande individuellement.
+Voici un exemple avec le fichier <code class="docutils literal notranslate"><span class="pre">Allrun.case.turbulent</span></code>:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>#!/bin/bash
+
+# Lancer le maillage
+Allmesh -c
+
+# Générer la houle irrégulière
+genHouleIrreguliere --solver olaFlow
+
+# Choisir le modèle de turbulence kEpsilon
+cp constant/turbulenceProperties.turbulent constant/turbulenceProperties
+
+# Lancer le calcul. L&#39;option -s lance setFields
+Allrun -s &amp;
+
+# Attendre 2 secondes avant de lancer le monitoring
+sleep 5
+
+# Suivre la progression du calcul et lancer la lecture
+# des points de mesure de pression
+AllpostProcess lirePoints.py
+
+traceSondes.py point1.csv
+</pre></div>
+</div>
+<p><strong>Maillage</strong></p>
+<p>Le maillage que nous allons utiliser est un maillage rectangulaire simple.
+Consultez le fichier <code class="docutils literal notranslate"><span class="pre">system/blockMeshDict</span></code> pour plus de détails.</p>
+<p>Lancez <code class="docutils literal notranslate"><span class="pre">blockMesh</span></code> avec la commande:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">blockMesh</span>
+</pre></div>
+</div>
+<p>Visualisez-le si besoin avec <code class="docutils literal notranslate"><span class="pre">ParaView</span></code>.</p>
+<p><strong>Paramétrage du milieu poreux</strong></p>
+<p>La géométrie que nous allons étudier utilise plusieurs zones d’enrochements,
+définies par des surfaces dans le dossier <code class="docutils literal notranslate"><span class="pre">constant/triSurface/</span></code>. Chaque surface
+correspond à un type d’enrochement différent, donc à un milieu poreux différent.</p>
+<p>Dans <code class="docutils literal notranslate"><span class="pre">olaFlow</span></code>, chaque milieu poreux est marqué par la variable <code class="docutils literal notranslate"><span class="pre">porosityIndex</span></code>, qui
+part de la valeur 0 pour un milieu non-poreux, et qui s’incrémente de 1 pour référencer
+chaque milieu poreux ajouté. Pour initialiser la valeur de <code class="docutils literal notranslate"><span class="pre">porosityIndex</span></code> à chaque
+surface, nous utilisons l’outil <code class="docutils literal notranslate"><span class="pre">setFields</span></code>. Le paramétrage s’effectue dans le fichier
+<code class="docutils literal notranslate"><span class="pre">system/setFieldsDict</span></code>:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>defaultFieldValues
+(
+    volScalarFieldValue alpha.water 0
+    volScalarFieldValue porosityIndex 0
+);
+
+regions
+(
+    boxToCell
+    {
+        box (-10 -10 -10) (500 10 0.8);
+
+        fieldValues
+        (
+            volScalarFieldValue alpha.water 1
+        );
+    }
+
+    surfaceToCell
+    {
+        file            &quot;./constant/triSurface/primLayer.stl&quot;;
+        outsidePoints   ((16 0.001 0.25));    // definition of outside
+        includeCut      true;              // cells cut by surface
+        includeInside   true;              // cells not on outside of surf
+        includeOutside  false;              // cells on outside of surf
+        nearDistance    -1;                 // cells with centre near surf
+                                            // (set to -1 if not used)
+        curvature       -100;                // cells within nearDistance
+                                            // and near surf curvature
+                                            // (set to -100 if not used)
+
+        fieldValues
+        (
+            volScalarFieldValue porosityIndex 3
+        );
+    }
+
+    surfaceToCell
+    {
+        file            &quot;./constant/triSurface/secLayer.stl&quot;;
+        outsidePoints   ((16 0.001 0.25));    // definition of outside
+        includeCut      true;              // cells cut by surface
+        includeInside   true;              // cells not on outside of surf
+        includeOutside  false;              // cells on outside of surf
+        nearDistance    -1;                 // cells with centre near surf
+                                            // (set to -1 if not used)
+        curvature       -100;                // cells within nearDistance
+                                            // and near surf curvature
+                                            // (set to -100 if not used)
+
+        fieldValues
+        (
+            volScalarFieldValue porosityIndex 2
+        );
+    }
+
+    surfaceToCell
+    {
+        file            &quot;./constant/triSurface/core.stl&quot;;
+        outsidePoints   ((16 0.001 0.25));    // definition of outside
+        includeCut      true;              // cells cut by surface
+        includeInside   true;              // cells not on outside of surf
+        includeOutside  false;              // cells on outside of surf
+        nearDistance    -1;                 // cells with centre near surf
+                                            // (set to -1 if not used)
+        curvature       -100;                // cells within nearDistance
+                                            // and near surf curvature
+                                            // (set to -100 if not used)
+
+        fieldValues
+        (
+            volScalarFieldValue porosityIndex 1
+        );
+    }
+);
+</pre></div>
+</div>
+<p>La première liste <code class="docutils literal notranslate"><span class="pre">defaultFieldValues</span></code> met une valeur par défaut pour chaque
+variable dans l’ensemble du domaine. Le premier sous-dictionnaire de la liste
+<code class="docutils literal notranslate"><span class="pre">regions</span></code> permet d’initialiser la hauteur d’eau, mais ce n’est pas ce qui nous
+intéresse ici. Le deuxième sous-dossier initialise la valeur 3 dans la zone
+délimitée par la surface <code class="docutils literal notranslate"><span class="pre">./constant/triSurface/primLayer.stl</span></code>. On effectue la même
+chose pour les 2 autres surfaces, en leur attribuant un <code class="docutils literal notranslate"><span class="pre">porosityIndex</span></code> différent.</p>
+<p>Créez le dossier <code class="docutils literal notranslate"><span class="pre">0</span></code> en copiant le dossier <code class="docutils literal notranslate"><span class="pre">0.orig</span></code>, et lancez <code class="docutils literal notranslate"><span class="pre">setFields</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cp</span> <span class="o">-</span><span class="n">r</span> <span class="mf">0.</span><span class="n">orig</span> <span class="mi">0</span>
+<span class="n">setFields</span>
+</pre></div>
+</div>
+<p>Visualisez les zones poreuses sous <code class="docutils literal notranslate"><span class="pre">ParaView</span></code> en affichant le champ <code class="docutils literal notranslate"><span class="pre">porosityIndex</span></code>.</p>
+<p><strong>Génération de houle</strong></p>
+<p>Nous allons générer de la houle irrégulière, de la même manière que pour
+le tutoriel de <a class="reference internal" href="../interFoam/houleIrreguliere.html"><span class="doc">houle irrégulière</span></a>. les
+paramètres du spectre de JONSWAP sont donnés dans le fichier <code class="docutils literal notranslate"><span class="pre">jonswapDict</span></code>:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Tmin  5.9
+Tmax  14.8
+Tp    10.6
+Hs    3.1
+gamma 1.0
+scale 28.6
+</pre></div>
+</div>
+<p>Générez le fichier <code class="docutils literal notranslate"><span class="pre">constant/waveProperties</span></code> avec la commande:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">genHouleIrreguliere</span> <span class="o">--</span><span class="n">solver</span> <span class="n">olaFlow</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">olaFlow</span></code> utilise un format légèrement différent de <code class="docutils literal notranslate"><span class="pre">interFoam</span></code>, pour
+indiquer les paramètres de houle dans <code class="docutils literal notranslate"><span class="pre">constant/waveProperties</span></code>,
+donc il faut préciser l’option <code class="docutils literal notranslate"><span class="pre">--solver</span> <span class="pre">olaFlow</span></code> pour qu’il soit pris
+en compte par le programme de génération de houle.</p>
+<p>De même, il faut modifier les conditions limites de houle dans les fichiers
+<code class="docutils literal notranslate"><span class="pre">0.orig/alpha.water</span></code>:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>inlet
+{
+    type            waveAlpha;
+    waveDictName    waveProperties;
+    value           uniform 0;
+}
+</pre></div>
+</div>
+<p>et <code class="docutils literal notranslate"><span class="pre">0.orig/U</span></code>:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>inlet
+{
+    type            waveVelocity;
+    waveDictName    waveProperties;
+    value           uniform (0 0 0);
+}
+
+outlet
+{
+    type            waveAbsorption2DVelocity;
+    absorptionDir   666.0;
+    value           uniform (0 0 0);
+}
+</pre></div>
+</div>
+<p>Notez dans ce dernier fichier que la condition d’absorption
+sur le patch <code class="docutils literal notranslate"><span class="pre">outlet</span></code> peut se donner directement dans la condition limite, sans définir
+cette condition dans <code class="docutils literal notranslate"><span class="pre">constant/waveProperties</span></code>.</p>
+<p><strong>Lancement de la simulation</strong></p>
+<p>Vérifiez les paramètres de simulation dans <code class="docutils literal notranslate"><span class="pre">system/controlDict</span></code>. Notez que nous avons posé
+deux points de mesure de part et d’autre du système d’enrochements, où nous préleverons
+la pression pour mettre en lumière les effets des enrochements.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>functions
+{
+
+    points
+    {
+        type            sets;
+        libs            (&quot;libsampling.so&quot;);
+        enabled         true; // Mettre à false pour désactiver les sondes
+
+        // Contrôle d&#39;écriture :
+        //  - timeStep   : pas de temps
+        //  - adjustable : temps (si pas de temps adaptatif)
+        //  - runTime    : temps (si pas de temps constant)
+        writeControl     timeStep;
+        writeInterval    1;
+        fixedLocations false;
+        interpolationScheme cellPoint;
+        setFormat       raw;
+        sets
+        (
+            point1
+            {
+                type cloud;
+                axis distance;
+                points
+                (
+                    (17.5 0 0.8)
+                    (19.3 0 0.95)
+                );
+            }
+        );
+        fields
+        (
+            p
+        );
+    }
+}
+</pre></div>
+</div>
+<p>Pour une explication détaillée de la mesure de pression en plusieurs points,
+consultez le tutoriel sur la <a class="reference internal" href="../interFoam/mesurePressionOuvrage.html"><span class="doc">mesure de pression</span></a>.</p>
+<p>Vous pouvez maintenant lancer la simulation, en exécutant la commande:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">olaFlow</span> <span class="o">&gt;</span> <span class="n">log</span><span class="o">.</span><span class="n">olaFlow</span> <span class="o">&amp;</span>
+</pre></div>
+</div>
+<p>Vous pouvez aussi lancer <code class="docutils literal notranslate"><span class="pre">setFields</span></code> et <code class="docutils literal notranslate"><span class="pre">olaFlow</span></code> directement avec</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Allrun</span> <span class="o">-</span><span class="n">s</span> <span class="o">&amp;</span>
+</pre></div>
+</div>
+<p><strong>Surveillance de simulation et post-traitement</strong></p>
+<p>Exécutez la commande suivante pour suivre le statut de votre simulation,
+et lire les points de mesure de pression lorsqu’elle sera terminée:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">AllpostProcess</span> <span class="n">lirePoints</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+<p>Une fois tous les points lus, <code class="docutils literal notranslate"><span class="pre">traceSondes.py</span></code> va créer un fichier
+<code class="docutils literal notranslate"><span class="pre">.csv</span></code> avec les mesures de pression. Exécutez la commande suivante pour tracer
+ces mesures de pression:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">traceSondes</span><span class="o">.</span><span class="n">py</span> <span class="n">points1</span><span class="o">.</span><span class="n">csv</span>
+</pre></div>
+</div>
+<p>Ou en remplaçant <code class="docutils literal notranslate"><span class="pre">points1.csv</span></code> par le nom de votre fichier.</p>
 </div>
 
 

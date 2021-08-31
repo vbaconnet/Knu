@@ -4,6 +4,7 @@
 Informations
 ============
 
+    * Fichier : ``Knu/Scripts/Post-traitement/lirePoints.py``
     * Auteur: Victor Baconnet
     * Date de dernière modification: 27 août 2021
 
@@ -62,6 +63,7 @@ Code source
 Lien vers le `code source <https://github.com/victor13165/Knu/blob/main/Scripts/Post-traitement/lirePoints.py>`_
 """
 
+from numpy import genfromtxt
 import os
 import pandas as pd
 import outilsLecture as olec
@@ -83,12 +85,6 @@ if __name__ == "__main__":
     cloudname  = olec.readValueOption(sys.argv, ["-name","--name"],
                                       default = None,
                                       valueType=str)
-
-    #Read output file option
-    outputFile = olec.readFileOption(sys.argv, ["-output","--output",
-                                                "-outputfile","--outputfile"],
-                                    default = "line_probes.csv",
-                                    extension = "csv")
     
     # Choix du champ à lire
     field = olec.readValueOption(sys.argv,
@@ -168,10 +164,10 @@ if __name__ == "__main__":
         for cloudfile in os.listdir(os.path.join(cwd, folder)):
             
             cloudfilepath = os.path.join(cwd,folder,cloudfile)
-            data = pd.read_csv(cloudfilepath, header = None, delimiter = '\t')
+            data = genfromtxt(cloudfilepath)
             print("Extraction {} / {}".format(idx,len(all_folders)))
-            pointIds = data.iloc[:,0]
-            df.at[float(folder),:] = data.iloc[:,1]
+            pointIds = [i[0] for i in data]
+            df.at[float(folder),:] = [i[1] for i in data]
     
     print("Sauvegarde dans {}".format(cloudname.split('_')[0]+".csv"))
     df.to_csv(cloudname.split('_')[0]+".csv", sep=",", index_label="time")

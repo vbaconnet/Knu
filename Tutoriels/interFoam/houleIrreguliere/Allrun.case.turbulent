@@ -16,5 +16,7 @@ Allrun -s &
 sleep 5
 
 # Suivre la progression du calcul et lancer la commande
-# ls lorsque le calcul est terminé
-AllpostProcess lireSondes.py ./traceSondes.py
+# de lecture de sondes lorsque le calcul est terminé
+AllpostProcess lireSondes.py 
+
+traceSondes.py line_probes.csv

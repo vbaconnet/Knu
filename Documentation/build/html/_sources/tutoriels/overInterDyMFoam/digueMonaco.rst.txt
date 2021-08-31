@@ -393,6 +393,10 @@ Vous pouvez maintenant lancer la simulation::
 
     overInterDyMFoam > log.overInterDyMFoam &
 
+.. WARNING::
+
+    Cette géométrie est (très) lourde. Privilégiez le calcul parallèle!
+
 Vous pouvez directement effectuer toutes ces étapes avec la commande::
 
     Allrun -psrt &

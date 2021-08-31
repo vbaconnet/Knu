@@ -27,6 +27,7 @@ Utilisation
 .. code-block:: bash
 
     $ traceSondes.py <fichier>
+    $ traceSondes.py <fichier> <ymin> <ymax>
 
 ``<fichier>`` doit être au format ``.csv``, et doit être formaté comme 
 le modèle suivant:
@@ -40,6 +41,10 @@ le modèle suivant:
 
 En résumé, les données sont organisées en colonnes, et la première
 doit être un vecteur de temps.
+
+Les options ``ymin`` et ``ymax`` sont optionnelles, mais permettent
+si besoin de régler les dimensions de l'axe des ordonnées, et doivent
+être au format ``float``.
 
 Code source
 ------------
@@ -60,11 +65,18 @@ if __name__ == "__main__":
 
     probefile = sys.argv[1]
 
+    try:
+        ymin = float(sys.argv[2])
+        ymax = float(sys.argv[3])
+    except:
+        print("Pas de ymin ou ymax")
+        ymin, ymax = None, None
+
     if probefile == "":
         raise ValueError("Précisez un fichier dans lequel lire!")
 
     if not exists(probefile):
-        raise FileNotFoundError("Fichier {} inexistant")
+        raise FileNotFoundError(f"Fichier {probefile} inexistant")
 
     print("Probefile : {}".format(probefile))
     sondeData =  pd.read_csv(probefile)
@@ -76,11 +88,11 @@ if __name__ == "__main__":
 
     fig, ax = subplots()
 
-    for i in range(1,len(cols)-1):
-        plot(cols[0], cols[i], fig, ax, label = sondeData.columns[i],
-      	     tight_layout = False, grid = True)
+    for i in range(1,len(cols)):
 
-    plot(cols[0], cols[-1], fig, ax, label = sondeData.columns[-1],
-	 tight_layout = True, xlabel = "Temps (s)")
+        print("plot {}".format(sondeData.columns[i]))
+        plot(cols[0], cols[i], fig, ax, label = sondeData.columns[i],
+      	     tight_layout = True, grid = True,
+             xlabel = "Temps (s)", ymin = ymin, ymax = ymax)
 
     show()

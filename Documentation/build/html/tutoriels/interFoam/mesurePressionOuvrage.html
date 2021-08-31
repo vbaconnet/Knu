@@ -190,6 +190,38 @@ points.</p>
 <a class="reference internal" href="houleIrreguliere.html"><span class="doc">houle irrégulière</span></a>. A cette géométrie,
 nous allons ajouter un obstacle rectangulaire, comme affiché sur la figure suivante.</p>
 <img alt="Géométrie" src="../../_images/mesurePression_geometrie.PNG" />
+<p>Vous pouvez directement exécuter les scripts <code class="docutils literal notranslate"><span class="pre">Allrun.case.turbulent</span></code> ou
+<code class="docutils literal notranslate"><span class="pre">Allrun.case.laminaire</span></code>, qui comprennent la suite de commandes à exécuter
+pour lancer la simulation:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
+
+<span class="c1"># Lancer le maillage</span>
+<span class="n">Allmesh</span> <span class="o">-</span><span class="n">c</span>
+
+<span class="c1"># Générer l&#39;obstacle</span>
+<span class="n">runApplication</span> <span class="n">topoSet</span>
+<span class="n">runApplication</span> <span class="n">subsetMesh</span> <span class="n">c0</span> <span class="o">-</span><span class="n">patch</span> <span class="n">obstacle</span> <span class="o">-</span><span class="n">overwrite</span>
+
+<span class="c1"># Générer la houle irrégulière</span>
+<span class="n">genHouleIrreguliere</span>
+
+<span class="c1"># Charger le fichier de turbulence</span>
+<span class="n">cp</span> <span class="n">constant</span><span class="o">/</span><span class="n">turbulenceProperties</span><span class="o">.</span><span class="n">turbulent</span> <span class="n">constant</span><span class="o">/</span><span class="n">turbulenceProperties</span>
+
+<span class="c1"># Lancer le calcul. L&#39;option -s lance setFields</span>
+<span class="n">Allrun</span> <span class="o">-</span><span class="n">s</span> <span class="o">&amp;</span>
+
+<span class="c1"># Attendre 5 secondes avant de lancer le monitoring</span>
+<span class="n">sleep</span> <span class="mi">5</span>
+
+<span class="c1"># Suivre la progression du calcul et lancer la commande</span>
+<span class="c1"># de lecture de sondes lorsque le calcul est terminé</span>
+<span class="n">AllpostProcess</span> <span class="n">lireSondes</span><span class="o">.</span><span class="n">py</span> <span class="n">lirePoints</span><span class="o">.</span><span class="n">py</span>
+
+<span class="n">traceSondes</span><span class="o">.</span><span class="n">py</span> <span class="n">point1</span><span class="o">.</span><span class="n">csv</span>
+<span class="n">traceSondes</span><span class="o">.</span><span class="n">py</span> <span class="n">line_probes</span><span class="o">.</span><span class="n">csv</span>
+</pre></div>
+</div>
 <p><strong>Maillage</strong></p>
 <p>Le maillage est le même que pour le tutoriel de <a class="reference internal" href="houleIrreguliere.html"><span class="doc">houle irrégulière</span></a>. La
 seule différence est l’ajout d’une condition limite vide dans le fichier <code class="docutils literal notranslate"><span class="pre">system/blockMeshDict</span></code></p>
@@ -330,10 +362,12 @@ ce cas, les données seront écrites dans des dossiers différents.</p>
 <p>Un fois que la simulation est lancée, vous pouvez la surveiller avec le
 script <code class="docutils literal notranslate"><span class="pre">AllpostProcess</span></code>. En options, vous pouvez y ajouter des scripts
 que vous voulez exécuter. Dans notre cas, nous allons exécuter le fichier
-de lecture des mesures de pression avec <code class="docutils literal notranslate"><span class="pre">lirePoints.py</span></code>. Puis nous afficherons
-le signal de pression.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ AllpostProcess lirePoints.py
-$ traceSondes.py --probefile point1.csv <span class="c1"># trace la pression</span>
+de lecture des mesures de pression avec <code class="docutils literal notranslate"><span class="pre">lirePoints.py</span></code>, ainsi
+que le fichier de lecture de mesures de sondes <code class="docutils literal notranslate"><span class="pre">lireSondes.py</span></code>. Puis nous afficherons
+les deux signaux générés</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>AllpostProcess lireSondes.py lirePoints.py
+traceSondes.py point1.csv
+traceSondes.py line_probes.csv
 </pre></div>
 </div>
 </div>

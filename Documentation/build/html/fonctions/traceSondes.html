@@ -211,6 +211,7 @@ automatiquement</p>
 <div class="section" id="utilisation">
 <h2>Utilisation<a class="headerlink" href="#utilisation" title="Lien permanent vers ce titre">¶</a></h2>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ traceSondes.py &lt;fichier&gt;
+$ traceSondes.py &lt;fichier&gt; &lt;ymin&gt; &lt;ymax&gt;
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">&lt;fichier&gt;</span></code> doit être au format <code class="docutils literal notranslate"><span class="pre">.csv</span></code>, et doit être formaté comme 
@@ -223,6 +224,9 @@ t_N,val_M1,val_M2,...,val_MN
 </div>
 <p>En résumé, les données sont organisées en colonnes, et la première
 doit être un vecteur de temps.</p>
+<p>Les options <code class="docutils literal notranslate"><span class="pre">ymin</span></code> et <code class="docutils literal notranslate"><span class="pre">ymax</span></code> sont optionnelles, mais permettent
+si besoin de régler les dimensions de l’axe des ordonnées, et doivent
+être au format <code class="docutils literal notranslate"><span class="pre">float</span></code>.</p>
 </div>
 <div class="section" id="code-source">
 <h2>Code source<a class="headerlink" href="#code-source" title="Lien permanent vers ce titre">¶</a></h2>

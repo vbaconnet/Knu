@@ -13,6 +13,41 @@ nous allons ajouter un obstacle rectangulaire, comme affiché sur la figure suiv
 .. image:: images/mesurePression_geometrie.PNG
     :alt: Géométrie
 
+Vous pouvez directement exécuter les scripts ``Allrun.case.turbulent`` ou 
+``Allrun.case.laminaire``, qui comprennent la suite de commandes à exécuter
+pour lancer la simulation:
+
+.. code-block::
+    
+    #!/bin/bash
+
+    # Lancer le maillage
+    Allmesh -c
+
+    # Générer l'obstacle
+    runApplication topoSet
+    runApplication subsetMesh c0 -patch obstacle -overwrite
+
+    # Générer la houle irrégulière
+    genHouleIrreguliere
+
+    # Charger le fichier de turbulence
+    cp constant/turbulenceProperties.turbulent constant/turbulenceProperties
+
+    # Lancer le calcul. L'option -s lance setFields
+    Allrun -s &
+
+    # Attendre 5 secondes avant de lancer le monitoring
+    sleep 5
+
+    # Suivre la progression du calcul et lancer la commande
+    # de lecture de sondes lorsque le calcul est terminé
+    AllpostProcess lireSondes.py lirePoints.py
+
+    traceSondes.py point1.csv
+    traceSondes.py line_probes.csv
+
+
 **Maillage**
 
 Le maillage est le même que pour le tutoriel de :doc:`houle irrégulière<houleIrreguliere>`. La 
@@ -171,10 +206,12 @@ traitement des données.
 Un fois que la simulation est lancée, vous pouvez la surveiller avec le 
 script ``AllpostProcess``. En options, vous pouvez y ajouter des scripts
 que vous voulez exécuter. Dans notre cas, nous allons exécuter le fichier
-de lecture des mesures de pression avec ``lirePoints.py``. Puis nous afficherons 
-le signal de pression.
+de lecture des mesures de pression avec ``lirePoints.py``, ainsi 
+que le fichier de lecture de mesures de sondes ``lireSondes.py``. Puis nous afficherons 
+les deux signaux générés
 
 .. code-block:: bash
 
-    $ AllpostProcess lirePoints.py
-    $ traceSondes.py --probefile point1.csv # trace la pression
+    AllpostProcess lireSondes.py lirePoints.py
+    traceSondes.py point1.csv
+    traceSondes.py line_probes.csv

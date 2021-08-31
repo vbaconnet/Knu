@@ -1,13 +1,22 @@
 #!/bin/bash
 
+# Maillage
 Allmesh
 
+# Générer la houle 
 genHouleReguliere
 
+# Copier le bon modèle de turbulence
 cp constant/turbulenceProperties.laminar constant/turbulenceProperties
 
+# Lancer le calcul. -s lance setfields
 Allrun -s &
 
+# attendre 2 secondes
 sleep 2
 
-AllpostProcess lireSondes.py traceSondes.py
+# Surveiller la simulation et lancer la lecture de sondes
+# lorsque terminé
+AllpostProcess lireSondes.py 
+
+traceSondes.py line_probes.csv
