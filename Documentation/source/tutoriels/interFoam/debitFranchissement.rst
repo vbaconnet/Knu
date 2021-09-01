@@ -10,9 +10,9 @@ La géométrie de Port-La-Galère utilisée porte le nom de "actuel2", et compor
 une couche d'enrochements. Ci-dessous, vous trouverez la configuration
 testée en canal réel lors de la campagne d'essais.
 
-.. image /images/actuel2.png
-   :width: 500
-   :alt:Actuel2
+.. image /tutoriels/interFoam/images/actuel2.png
+   :width: 400
+   :alt: Actuel2
 
 Vous trouverez l'ensemble des commandes à effectuer dans les fichiers
 ``Allrun.case.serial`` ou ``Allrun.case.parallel`` selon si vous voulez

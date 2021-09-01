@@ -149,7 +149,7 @@ lancer ``setFields``, pour initialiser une hauteur d'eau de :math:`0.864\,m`:
     cp -r 0.orig 0
     setFields
 
-En plus des sondes, nous avons rajouté un point de mesure de pression :
+En plus d'une sonde, nous avons rajouté un point de mesure de pression :
 
 .. code-block:: none
 

@@ -49,7 +49,7 @@ La condition de houle est la même que pour le tutoriel de :doc:`houle irréguli
 **Milieu poreux**
 
 Pour prendre en compte les enrochements, nous allons utiliser une modélisation
-de Darcy-Forchheimer. Pour plus de détails, consultez la `documentation <https://openfoamwiki.net/index.php/DarcyForchheimer>`
+de Darcy-Forchheimer. Pour plus de détails, consultez la `documentation <https://openfoamwiki.net/index.php/DarcyForchheimer>`_
 sur le modèle de porosité. Si vous y avez accès, mon rapport de stage présente les théories
 de modélisation en milieu poreux.
 
@@ -131,7 +131,7 @@ des vecteurs car vous pouvez préciser des coefficients différents selon chaque
 Nous considérons un matériau homogène et isotrope, donc nos coefficients sont les mêmes
 dans chaque direction.
 
-**solveur**
+**Solveur**
 
 Les conditions limites sont inchangées par rappport au tutoriel :doc:`houle irrégulière<houleIrreguliere>`,
 mais vous pouvez aller les vérifier dans le dossier ``0.orig``.
