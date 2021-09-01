@@ -11,7 +11,7 @@ runApplication topoSet
 runApplication subsetMesh c0 -patch obstacle -overwrite
 
 # Charger le fichier de turbulence
-cp constant/turbulenceProperties.laminar constant/turbulenceProperties
+cp constant/turbulenceProperties.laminaire constant/turbulenceProperties
 
 # Lancer le calcul. L'option -s lance setFields
 Allrun -s &

@@ -29,7 +29,7 @@ deltaT          0.001;
 
 writeControl    adjustable;
 
-writeInterval   0.1;
+writeInterval   10;
 
 purgeWrite      0;
 
@@ -57,16 +57,8 @@ maxDeltaT       1.0;
 // ************************************************************************* //
 
 // Indiquer ici les sondes et leurs coordonnées (position x en m)
-sonde1	    S1-5.0;
-x1	    5.0;
-sonde2      S2-10.0;
-x2          10.0;
-sonde3      S3-17.0;
-x3          17.0;
-sonde4      S4-24.0;
-x4          24.0;
-sonde5      inlet;
-x5          0.0;
+sonde1	    S1-10.0;
+x1	    10.0;
 
 // Coordonnées des points de mesure
 ystart      0.0;
@@ -135,38 +127,6 @@ functions
                 axis distance;
                 start   ( $x1 $ystart $zstart );
                 end     ( $x1 $yend   $zend   );
-                nPoints $N;
-            }
-            $sonde2
-            {
-                type uniform;
-                axis distance;
-                start   ( $x2 $ystart $zstart );
-                end     ( $x2 $yend   $zend   );
-                nPoints $N;
-            }
-	    $sonde3
-            {
-                type uniform;
-                axis distance;
-          	start   ( $x3 $ystart $zstart );
-                end     ( $x3 $yend   $zend   );
-                nPoints $N;
-            }
-	    $sonde4
-            {
-                type uniform;
-                axis distance;
-                start   ( $x4 $ystart $zstart );
-                end     ( $x4 $yend   $zend   );
-                nPoints $N;
-            }
-            $sonde5
-            {
-                type uniform;
-                axis distance;
-                start   ( $x5 $ystart $zstart );
-                end     ( $x5 $yend   $zend   );
                 nPoints $N;
             }
         );
