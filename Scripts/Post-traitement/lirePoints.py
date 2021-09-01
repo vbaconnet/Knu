@@ -166,8 +166,12 @@ if __name__ == "__main__":
             cloudfilepath = os.path.join(cwd,folder,cloudfile)
             data = genfromtxt(cloudfilepath)
             print("Extraction {} / {}".format(idx,len(all_folders)))
-            pointIds = [i[0] for i in data]
-            df.at[float(folder),:] = [i[1] for i in data]
+            try:
+                pointIds = [i[0] for i in data]
+                df.at[float(folder),:] = [i[1] for i in data]
+            except:
+                pointIds = data[0]
+                df.at[float(folder),:] = data[1:]
     
     print("Sauvegarde dans {}".format(cloudname.split('_')[0]+".csv"))
     df.to_csv(cloudname.split('_')[0]+".csv", sep=",", index_label="time")
