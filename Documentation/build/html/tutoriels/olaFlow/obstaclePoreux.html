@@ -196,25 +196,25 @@ Ce tutoriel est directement tiré des tutoriels d’olaFlow.</p>
 et <code class="docutils literal notranslate"><span class="pre">Allrun.case.turbulent</span></code> selon le type de simulation que vous voulez effectuer. Vous
 pouvez les exécuter directement pour ne pas avoir à exécuter chaque commande individuellement.
 Voici un exemple avec le fichier <code class="docutils literal notranslate"><span class="pre">Allrun.case.turbulent</span></code>:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>#!/bin/bash
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
 
-# Lancer le maillage
+<span class="c1"># Lancer le maillage</span>
 Allmesh -c
 
-# Générer la houle irrégulière
+<span class="c1"># Générer la houle irrégulière</span>
 genHouleIrreguliere --solver olaFlow
 
-# Choisir le modèle de turbulence kEpsilon
+<span class="c1"># Choisir le modèle de turbulence kEpsilon</span>
 cp constant/turbulenceProperties.turbulent constant/turbulenceProperties
 
-# Lancer le calcul. L&#39;option -s lance setFields
-Allrun -s &amp;
+<span class="c1"># Lancer le calcul. L&#39;option -s lance setFields</span>
+Allrun -s <span class="p">&amp;</span>
 
-# Attendre 2 secondes avant de lancer le monitoring
-sleep 5
+<span class="c1"># Attendre 2 secondes avant de lancer le monitoring</span>
+sleep <span class="m">5</span>
 
-# Suivre la progression du calcul et lancer la lecture
-# des points de mesure de pression
+<span class="c1"># Suivre la progression du calcul et lancer la lecture</span>
+<span class="c1"># des points de mesure de pression</span>
 AllpostProcess lirePoints.py
 
 traceSondes.py point1.csv

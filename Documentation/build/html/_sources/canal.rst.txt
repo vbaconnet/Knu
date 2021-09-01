@@ -82,7 +82,7 @@ donné par:
 
 .. math::
 
-   x(t) = \sum_{i=0}^{N}{x_i(t)} = \sum_{i=0}^{N}{\frac{H_i}{\tau_i}\cos{(\omega_i t + \phi_i)}}
+   x(t) = \sum_{i=0}^{N}{x_i(t)} = \sum_{i=0}^{N}{\frac{H_i}{\tau_i}\cos{(-\omega_i t + \phi_i)}}
 
 où :math:`\tau_i` est donné par:
 
@@ -115,7 +115,7 @@ Que l'on peut réécrire
 
    \frac{1}{k_i} = \frac{g}{\omega_i^2}\tanh(k_i h)
 
-Dans le programme de génération, cette équaion est résolue par 
+Dans le programme de génération, cette équation est résolue par 
 la méthode du point fixe dans la fonction ``dispersion`` 
 du fichier ``deplacement_batteur.m``.
 

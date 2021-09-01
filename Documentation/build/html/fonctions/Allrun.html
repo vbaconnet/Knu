@@ -196,7 +196,7 @@
 </div>
 <div class="section" id="description">
 <h2>Description<a class="headerlink" href="#description" title="Lien permanent vers ce titre">¶</a></h2>
-<p>Lance le calcul OpenFOAM selon le solveur défini dans controlDict
+<p>Lance le calcul OpenFOAM selon le solveur défini dans <code class="docutils literal notranslate"><span class="pre">controlDict</span></code>
 Peut lancer le calcul en parallèle selon les critères définis dans
 decomposeParDict. Permet aussi de lancer <code class="docutils literal notranslate"><span class="pre">setFields</span></code>,
 <code class="docutils literal notranslate"><span class="pre">surfaceFeatureExtract</span></code> et <code class="docutils literal notranslate"><span class="pre">topoSet</span></code>.</p>
@@ -220,14 +220,14 @@ variable d’environnement <code class="docutils literal notranslate"><span clas
 dossiers de processeurs, fichiers log)</p>
 </dd>
 <dt><kbd><span class="option">-s</span>, <span class="option">--setfields</span></kbd></dt>
-<dd><p>Lancer setFields selon les critères de
-setFieldsDict</p>
+<dd><p>Lancer <code class="docutils literal notranslate"><span class="pre">setFields</span></code> selon les critères de
+<code class="docutils literal notranslate"><span class="pre">setFieldsDict</span></code></p>
 </dd>
 <dt><kbd><span class="option">-e</span>, <span class="option">--surfacefeature</span></kbd></dt>
 <dd><p>Lancer surfaceFeatureExtract</p>
 </dd>
 <dt><kbd><span class="option">-t</span>, <span class="option">--toposet</span></kbd></dt>
-<dd><p>Lancer topoSet selon les critères de topoSetDict</p>
+<dd><p>Lancer <code class="docutils literal notranslate"><span class="pre">topoSet</span></code> selon les critères de <code class="docutils literal notranslate"><span class="pre">topoSetDict</span></code></p>
 </dd>
 <dt><kbd><span class="option">-p</span>, <span class="option">--parallel</span></kbd></dt>
 <dd><p>Lancer le calcul en parallèle avec le nombre de
@@ -250,10 +250,10 @@ elles ne seront pas prises en compte et généreront un warning</p>
 <li><p>1 pour argument ou option invalide</p></li>
 <li><p>4 si erreur dans decomposePar</p></li>
 <li><p>7 si erreur de lancement du solveur</p></li>
-<li><p>8 si erreur dans reconstructPar</p></li>
+<li><p>8 si erreur dans <code class="docutils literal notranslate"><span class="pre">reconstructPar</span></code></p></li>
 <li><p>9 si erreur dans la copie du dossier 0</p></li>
-<li><p>10 si erreur dans setFields</p></li>
-<li><p>11 si erreur dans topoSet</p></li>
+<li><p>10 si erreur dans <code class="docutils literal notranslate"><span class="pre">setFields</span></code></p></li>
+<li><p>11 si erreur dans <code class="docutils literal notranslate"><span class="pre">topoSet</span></code></p></li>
 <li><p>12 si erreur dans surfaceFeatureExtract</p></li>
 </ul>
 </div>

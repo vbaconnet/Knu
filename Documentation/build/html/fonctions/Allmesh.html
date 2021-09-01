@@ -197,10 +197,10 @@
 </div>
 <div class="section" id="description">
 <h2>Description<a class="headerlink" href="#description" title="Lien permanent vers ce titre">¶</a></h2>
-<p>Outil d’automatisation de maillage (blockMesh, snappyHexMesh), avec possibilité de
-lancement en parallèle et gestion des erreurs. Par défaut, ne lance que blockMesh.
-Pour lancer snappyHexMesh, utilisez l’option -S ou –snappyhexmesh.
-Le script supprime le maillage existant par défaut. blockMesh n’est jamais lancé en parallèle.</p>
+<p>Outil d’automatisation de maillage (<code class="docutils literal notranslate"><span class="pre">blockMesh</span></code>, <code class="docutils literal notranslate"><span class="pre">snappyHexMesh</span></code>), avec possibilité de
+lancement en parallèle et gestion des erreurs. Par défaut, ne lance que <code class="docutils literal notranslate"><span class="pre">blockMesh</span></code>.
+Pour lancer <code class="docutils literal notranslate"><span class="pre">snappyHexMesh</span></code>, utilisez l’option -S ou –snappyhexmesh.
+Le script supprime le maillage existant par défaut. <code class="docutils literal notranslate"><span class="pre">blockMesh</span></code> n’est jamais lancé en parallèle.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Il est conseillé de faire en sorte que ce fichier soit accessible dans la
@@ -222,16 +222,16 @@ variable d’environnement <code class="docutils literal notranslate"><span clas
 (polyMesh) est supprimé par défaut.</p>
 </dd>
 <dt><kbd><span class="option">-p</span>, <span class="option">-p<var>arallel</var></span></kbd></dt>
-<dd><p>Lancer snappyHexMesh en parallèle avec le nombre de
-processeurs défini dans decomposeParDict.</p>
+<dd><p>Lancer <code class="docutils literal notranslate"><span class="pre">snappyHexMesh</span></code> en parallèle avec le nombre de
+processeurs défini dans <code class="docutils literal notranslate"><span class="pre">decomposeParDict</span></code>.</p>
 </dd>
 <dt><kbd><span class="option">-e</span>, <span class="option">--extrudemesh</span></kbd></dt>
 <dd><p>Lancer l’extrusion de maillage selon les
-critères définis dans extrudeMeshDict.</p>
+critères définis dans <code class="docutils literal notranslate"><span class="pre">extrudeMeshDict</span></code>.</p>
 </dd>
 <dt><kbd><span class="option">-S</span>, <span class="option">--snappyhexmesh</span></kbd></dt>
-<dd><p>Lancer snappyHexMesh selon les critères
-définis dans snappyHexMeshDict.</p>
+<dd><p>Lancer <code class="docutils literal notranslate"><span class="pre">snappyHexMesh</span></code> selon les critères
+définis dans <code class="docutils literal notranslate"><span class="pre">snappyHexMeshDict</span></code>.</p>
 </dd>
 <dt><kbd><span class="option">-h</span>, <span class="option">--help</span></kbd></dt>
 <dd><p>Afficher l’aide</p>
@@ -239,12 +239,12 @@ définis dans snappyHexMeshDict.</p>
 </dl>
 <p><strong>Erreurs</strong></p>
 <ul class="simple">
-<li><p>1 pour argument ou option invalide »</p></li>
-<li><p>2 si erreur dans blockMesh »</p></li>
-<li><p>3 si erreur dans snappyHexMesh »</p></li>
-<li><p>4 si erreur dans decomposePar »</p></li>
-<li><p>5 si erreur dans extrudeMesh »</p></li>
-<li><p>6 si erreur dans reconstructParMesh »</p></li>
+<li><p>1 pour argument ou option invalide</p></li>
+<li><p>2 si erreur dans <code class="docutils literal notranslate"><span class="pre">blockMesh</span></code></p></li>
+<li><p>3 si erreur dans <code class="docutils literal notranslate"><span class="pre">snappyHexMesh</span></code></p></li>
+<li><p>4 si erreur dans <code class="docutils literal notranslate"><span class="pre">decomposePar</span></code></p></li>
+<li><p>5 si erreur dans <code class="docutils literal notranslate"><span class="pre">extrudeMesh</span></code></p></li>
+<li><p>6 si erreur dans <code class="docutils literal notranslate"><span class="pre">reconstructParMesh</span></code></p></li>
 </ul>
 </div>
 <div class="section" id="dependances">

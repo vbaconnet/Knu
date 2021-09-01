@@ -15,7 +15,7 @@ Utilisez ces tutoriels de base pour découvrir ``isoAdvector``.
       application interIsoFoam
 
    dans votre fichier ``system/controlDict``. Evidemment, 
-   lorsque vous lancer une simulation, entrez la commande::
+   lorsque vous lancez une simulation, entrez la commande::
 
        $ interIsoFoam > log.interIsoFoam &
 

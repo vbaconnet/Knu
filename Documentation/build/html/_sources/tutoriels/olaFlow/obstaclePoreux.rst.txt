@@ -24,7 +24,7 @@ et ``Allrun.case.turbulent`` selon le type de simulation que vous voulez effectu
 pouvez les exécuter directement pour ne pas avoir à exécuter chaque commande individuellement.
 Voici un exemple avec le fichier ``Allrun.case.turbulent``:
 
-.. code-block:: none
+.. code-block:: bash
 
     #!/bin/bash
 

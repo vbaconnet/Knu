@@ -48,8 +48,8 @@ Utilisation
 
 **Erreurs**
 
-1 en cas de problème de lecture d'option
-2 en cas de problème de lecture de fichier
+* 1 en cas de problème de lecture d'option
+* 2 en cas de problème de lecture de fichier
 
 Code source
 ------------

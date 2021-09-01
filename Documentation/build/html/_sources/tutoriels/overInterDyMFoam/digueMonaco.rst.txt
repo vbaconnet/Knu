@@ -402,7 +402,7 @@ Vous pouvez directement effectuer toutes ces étapes avec la commande::
     Allrun -psrt &
 
 L'option ``-r`` permet de ne pas reconstruire les fichiers processeurs à la 
-fin de la simulation, car ils sont très lourd et la reconstruction prend beaucoup de temps.
+fin de la simulation, car ils sont très lourds et la reconstruction prend beaucoup de temps.
 Libre à vous de l'enlever si vous le souhaitez.
 
 **Surveillance de la simulation et post-traitement**
@@ -420,32 +420,35 @@ on peut voir des informations liées au mouvement de la digue:
         Linear velocity: (0 0 0)
         Angular velocity: (-1.7030972555e-06 0.000144184008078 2.71368210221e-14)
 
-Ce qui noue intéresse pour mesurer les angles, c'est la valeur de ``Orientation``.
+Ce qui nous intéresse pour mesurer les angles, c'est la valeur de ``Orientation``.
 En fait, la série de chiffres qui suit sont les coordonnées du référentiel lié à la digue.
-La syntaxe de cette série de chiffre est :math:`(xx\,xy\,xz\,yx\,yy\,yz\,zx\,zy\,zz)`. Ainsi, le vecteur
+La syntaxe de cette série de chiffres est :math:`(xx\,xy\,xz\,yx\,yy\,yz\,zx\,zy\,zz)`. Ainsi, le vecteur
 :math:`\vec{x}` aura pour coordonnées :math:`(xx\,xy\,xz)`, et ainsi de suite.
 
 Le script ``read_orientation`` permet de récupérer les coordonnées et les stocker dans un fichier
 ``orientation.csv``, et lit également chaque pas de temps et stocke le signal temporel dans le fichier
 ``time.csv``. Le script ``angles.py`` permet de calculer les angles à partir de l'orientation 
-des vecteurs. Les calculs ont été obtenus à partir des formules de matrices de rotations. L'exécution
-de ``angles.py`` crée un fichier ``angles.csv`` dans lesquels les angles sont affichés. Pour rappel::
+des vecteurs. Les calculs ont été obtenus à partir des formules classiques de matrices de rotation pour des changements
+de repère. L'exécution de ``angles.py`` crée un fichier ``angles.csv`` dans lesquels les angles sont affichés. Pour rappel::
 
     alpha -> tangage (rotation axe y)
     beta  -> lacet   (rotation axe z)
     gamma -> roulis  (rotation axe x)
-
-Tracez ensuite les angles avec la commande::
-
-    traceSondes.py angles.csv
 
 En attendant que la simulation termine, vous pouvez surveiller son statut et lancer
 les scripts lorsqu'elle sera terminée::
 
     AllpostProcess ./read_orientation ./angles.csv
 
-Puis::
+Puis, pour tracer les angles en fonction du temps ::
 
         traceSondes.py angles.csv
 
-Lorsqu'elle sera terminée.
+Lorsqu'elle sera terminée. 
+
+.. NOTE::
+
+    Le graphique n'est pas bien ajusté? Ajoutez les valeurs minimales et maximales
+    de l'axe des ordonnées en paramètres supplémentaires si besoin ::
+
+        traceSondes.py angles.csv -10 10

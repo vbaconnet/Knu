@@ -564,7 +564,7 @@ boundaryField
 </pre></div>
 </div>
 <p>L’option <code class="docutils literal notranslate"><span class="pre">-r</span></code> permet de ne pas reconstruire les fichiers processeurs à la
-fin de la simulation, car ils sont très lourd et la reconstruction prend beaucoup de temps.
+fin de la simulation, car ils sont très lourds et la reconstruction prend beaucoup de temps.
 Libre à vous de l’enlever si vous le souhaitez.</p>
 <p><strong>Surveillance de la simulation et post-traitement</strong></p>
 <p>Le but de la simulation est de mesurer les angles de roulis, lacet, et tangage de la digue.
@@ -578,22 +578,18 @@ on peut voir des informations liées au mouvement de la digue:</p>
     Angular velocity: (-1.7030972555e-06 0.000144184008078 2.71368210221e-14)
 </pre></div>
 </div>
-<p>Ce qui noue intéresse pour mesurer les angles, c’est la valeur de <code class="docutils literal notranslate"><span class="pre">Orientation</span></code>.
+<p>Ce qui nous intéresse pour mesurer les angles, c’est la valeur de <code class="docutils literal notranslate"><span class="pre">Orientation</span></code>.
 En fait, la série de chiffres qui suit sont les coordonnées du référentiel lié à la digue.
-La syntaxe de cette série de chiffre est <span class="math notranslate nohighlight">\((xx\,xy\,xz\,yx\,yy\,yz\,zx\,zy\,zz)\)</span>. Ainsi, le vecteur
+La syntaxe de cette série de chiffres est <span class="math notranslate nohighlight">\((xx\,xy\,xz\,yx\,yy\,yz\,zx\,zy\,zz)\)</span>. Ainsi, le vecteur
 <span class="math notranslate nohighlight">\(\vec{x}\)</span> aura pour coordonnées <span class="math notranslate nohighlight">\((xx\,xy\,xz)\)</span>, et ainsi de suite.</p>
 <p>Le script <code class="docutils literal notranslate"><span class="pre">read_orientation</span></code> permet de récupérer les coordonnées et les stocker dans un fichier
 <code class="docutils literal notranslate"><span class="pre">orientation.csv</span></code>, et lit également chaque pas de temps et stocke le signal temporel dans le fichier
 <code class="docutils literal notranslate"><span class="pre">time.csv</span></code>. Le script <code class="docutils literal notranslate"><span class="pre">angles.py</span></code> permet de calculer les angles à partir de l’orientation
-des vecteurs. Les calculs ont été obtenus à partir des formules de matrices de rotations. L’exécution
-de <code class="docutils literal notranslate"><span class="pre">angles.py</span></code> crée un fichier <code class="docutils literal notranslate"><span class="pre">angles.csv</span></code> dans lesquels les angles sont affichés. Pour rappel:</p>
+des vecteurs. Les calculs ont été obtenus à partir des formules classiques de matrices de rotation pour des changements
+de repère. L’exécution de <code class="docutils literal notranslate"><span class="pre">angles.py</span></code> crée un fichier <code class="docutils literal notranslate"><span class="pre">angles.csv</span></code> dans lesquels les angles sont affichés. Pour rappel:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">alpha</span> <span class="o">-&gt;</span> <span class="n">tangage</span> <span class="p">(</span><span class="n">rotation</span> <span class="n">axe</span> <span class="n">y</span><span class="p">)</span>
 <span class="n">beta</span>  <span class="o">-&gt;</span> <span class="n">lacet</span>   <span class="p">(</span><span class="n">rotation</span> <span class="n">axe</span> <span class="n">z</span><span class="p">)</span>
 <span class="n">gamma</span> <span class="o">-&gt;</span> <span class="n">roulis</span>  <span class="p">(</span><span class="n">rotation</span> <span class="n">axe</span> <span class="n">x</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Tracez ensuite les angles avec la commande:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">traceSondes</span><span class="o">.</span><span class="n">py</span> <span class="n">angles</span><span class="o">.</span><span class="n">csv</span>
 </pre></div>
 </div>
 <p>En attendant que la simulation termine, vous pouvez surveiller son statut et lancer
@@ -601,11 +597,19 @@ les scripts lorsqu’elle sera terminée:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">AllpostProcess</span> <span class="o">./</span><span class="n">read_orientation</span> <span class="o">./</span><span class="n">angles</span><span class="o">.</span><span class="n">csv</span>
 </pre></div>
 </div>
-<p>Puis:</p>
+<p>Puis, pour tracer les angles en fonction du temps</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">traceSondes</span><span class="o">.</span><span class="n">py</span> <span class="n">angles</span><span class="o">.</span><span class="n">csv</span>
 </pre></div>
 </div>
 <p>Lorsqu’elle sera terminée.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Le graphique n’est pas bien ajusté? Ajoutez les valeurs minimales et maximales
+de l’axe des ordonnées en paramètres supplémentaires si besoin</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">traceSondes</span><span class="o">.</span><span class="n">py</span> <span class="n">angles</span><span class="o">.</span><span class="n">csv</span> <span class="o">-</span><span class="mi">10</span> <span class="mi">10</span>
+</pre></div>
+</div>
+</div>
 </div>
 
 

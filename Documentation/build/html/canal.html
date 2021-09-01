@@ -231,7 +231,7 @@ et <span class="math notranslate nohighlight">\(2\pi\)</span>.</p>
 utiliser la théorie de batteur piston. Le signal du batteur est
 donné par:</p>
 <div class="math notranslate nohighlight">
-\[x(t) = \sum_{i=0}^{N}{x_i(t)} = \sum_{i=0}^{N}{\frac{H_i}{\tau_i}\cos{(\omega_i t + \phi_i)}}\]</div>
+\[x(t) = \sum_{i=0}^{N}{x_i(t)} = \sum_{i=0}^{N}{\frac{H_i}{\tau_i}\cos{(-\omega_i t + \phi_i)}}\]</div>
 <p>où <span class="math notranslate nohighlight">\(\tau_i\)</span> est donné par:</p>
 <div class="math notranslate nohighlight">
 \[\tau_i = 2 \frac{\cosh{(2k_ih)} - 1}{\sinh(2k_ih) +  2k_ih}\]</div>
@@ -251,7 +251,7 @@ relation de dispersion :</p>
 <p>Que l’on peut réécrire</p>
 <div class="math notranslate nohighlight">
 \[\frac{1}{k_i} = \frac{g}{\omega_i^2}\tanh(k_i h)\]</div>
-<p>Dans le programme de génération, cette équaion est résolue par
+<p>Dans le programme de génération, cette équation est résolue par
 la méthode du point fixe dans la fonction <code class="docutils literal notranslate"><span class="pre">dispersion</span></code>
 du fichier <code class="docutils literal notranslate"><span class="pre">deplacement_batteur.m</span></code>.</p>
 <p>La fonction <code class="docutils literal notranslate"><span class="pre">deplacement_batteur</span></code> renvoie le signal

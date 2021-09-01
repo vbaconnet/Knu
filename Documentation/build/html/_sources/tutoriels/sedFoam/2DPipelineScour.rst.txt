@@ -116,7 +116,7 @@ lui-même avec le mot-clé ``code``.
     }
 
 Le reste est du C++ classique. N'hésitez pas à regarder les liens fournis sur la 
-`page principale </index>` qui expliquent la programmation sous OpenFOAM.
+:doc:`page principale </index>` qui expliquent la programmation sous OpenFOAM.
 
 .. WARNING::
 

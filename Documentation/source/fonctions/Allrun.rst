@@ -13,7 +13,7 @@ Informations
 Description
 ------------
 
-Lance le calcul OpenFOAM selon le solveur défini dans controlDict
+Lance le calcul OpenFOAM selon le solveur défini dans ``controlDict``
 Peut lancer le calcul en parallèle selon les critères définis dans
 decomposeParDict. Permet aussi de lancer ``setFields``, 
 ``surfaceFeatureExtract`` et ``topoSet``.
@@ -36,10 +36,10 @@ Utilisation
 
 -c, --clean             Nettoyer le répertoire (maillage, dossiers de résultats,
                         dossiers de processeurs, fichiers log)
--s, --setfields         Lancer setFields selon les critères de 
-                        setFieldsDict
+-s, --setfields         Lancer ``setFields`` selon les critères de 
+                        ``setFieldsDict``
 -e, --surfacefeature    Lancer surfaceFeatureExtract
--t, --toposet           Lancer topoSet selon les critères de topoSetDict
+-t, --toposet           Lancer ``topoSet`` selon les critères de ``topoSetDict``
 -p, --parallel          Lancer le calcul en parallèle avec le nombre de 
                         processeurs défini dans decomposeParDict
 -r, --noreconstruct     Pour ne pas reconstruire les fichiers après 
@@ -55,10 +55,10 @@ Utilisation
 * 1 pour argument ou option invalide
 * 4 si erreur dans decomposePar
 * 7 si erreur de lancement du solveur
-* 8 si erreur dans reconstructPar 
+* 8 si erreur dans ``reconstructPar`` 
 * 9 si erreur dans la copie du dossier 0
-* 10 si erreur dans setFields
-* 11 si erreur dans topoSet
+* 10 si erreur dans ``setFields``
+* 11 si erreur dans ``topoSet``
 * 12 si erreur dans surfaceFeatureExtract
 
 Code source
