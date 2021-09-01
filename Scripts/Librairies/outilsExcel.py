@@ -70,10 +70,6 @@ Fonctions
 
 """
 
-from openpyxl.utils.dataframe import dataframe_to_rows
-from openpyxl.chart import Reference, Series
-from openpyxl.chart.text import RichText
-import openpyxl.drawing.text as odt
 
 def write(data, sheet, with_index = False):
     """Ajoute (append) des données d'un DataFrame dans une feuille excel
@@ -84,6 +80,8 @@ def write(data, sheet, with_index = False):
     :type sheet: openpyxl.worksheet.worksheet.Worksheet
     """
     
+    from openpyxl.utils.dataframe import dataframe_to_rows
+
     for row in dataframe_to_rows(data, index = with_index):
         sheet.append(row)
 
@@ -108,6 +106,8 @@ def make_plot(chart, data_sheet, x_col, y_col, x_min_row = 2, y_min_row = 2,
     
     print(f"Nouveau tracé  (x,y) : colonnes ({x_col}, {y_col})")
     
+    from openpyxl.chart import Reference, Series
+
     x = Reference(worksheet = data_sheet,
                   min_row = 2,
                   min_col = x_col,
@@ -178,6 +178,9 @@ def plot(chart, cols, data_sheet, plot_sheet, where, title = "",
       * Right : ``r``
     """
     
+    from openpyxl.chart.text import RichText
+    import openpyxl.drawing.text as odt
+
     # Tracer chaque graphique
     for to_plot in cols:
         make_plot(chart, data_sheet, to_plot[0], to_plot[1], get_title = get_title)

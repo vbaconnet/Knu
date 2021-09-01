@@ -6,24 +6,36 @@ Houle irrégulière
 Ce tutoriel est une introduction à la génération de houle irrégulière sous OpenFOAM. 
 
 L'ensemble des commandes à lancer est donné dans les fichiers ``Allrun.case.laminaire`` ou 
-``Allrun.case.turbulent`` selon le type de simulation que vous voulez lancer. Voici un 
+``Allrun.case.turbulent``, que vous pouvez exécuter directement
+selon le type de simulation que vous voulez lancer. Voici un 
 extrait du fichier ``Allrun.case.laminaire``:
 
 .. code-block:: bash
 
     #!/bin/bash
 
+    # Lancer le maillage
     Allmesh
 
+    # Générer la houle irrégulière
     genHouleIrreguliere
 
-    mv constant/turbulenceProperties.laminar constant/turbulenceProperties
+    # Charger le fichier de turbulence
+    cp constant/turbulenceProperties.laminar constant/turbulenceProperties
 
+    # Lancer le calcul. L'option -s lance setFields
     Allrun -s &
 
-    sleep 2
+    # Attendre 3 secondes avant de lancer le monitoring
+    sleep 3
 
-    AllpostProcess lireSondes.py resample.py spectre.py
+    # Suivre la progression du calcul et lancer la commande
+    # de lecture de sondes lorsque le calcul est terminé
+    AllpostProcess lireSondes.py
+
+    # Tracer les sondes
+    traceSondes.py line_probes.csv
+
 
 **Maillage**
 
@@ -124,7 +136,7 @@ de houle.
 
 Exécutez ``blockMesh`` avec la commande ::
 
-    $ blockMesh
+    blockMesh
 
 Vous pouvez visualiser le maillage avec ``ParaView``.
 
@@ -148,9 +160,9 @@ Vous pouvez éventuellement rajouter d'autres paramètres. Pour plus de détails
 les paramètres à rajouter, consultez la documentation du fichier de génération de houle
 irrégulière :doc:`genHouleIrreguliere.py <../../fonctions/genHouleIrreguliere>`.
 
-Pour générer le fichier de houle régulière, lancez la commande::
+Pour générer le fichier de houle irrégulière, lancez la commande::
 
-    $ genHouleIrreguliere.py
+    genHouleIrreguliere.py
 
 Cette commande générera le fichier ``constant/waveProperties``::
 
@@ -232,7 +244,9 @@ d'absorption dynamique sur la face ``outlet`` par défaut.
 
 Pour indiquer une condition de houle sur les faces d'entrée/sortie, 
 nous devons spécifier la condition ``waveAlpha`` dans le fichier
-``0.orig/alpha.water``::
+``0.orig/alpha.water``:
+
+.. code-block:: none 
 
     dimensions      [0 0 0 0 0 0 0];
 
@@ -280,7 +294,9 @@ De manière générale, un mur sera de type ``zeroGradient``. Notez la condition
 d'atmosphère.
 
 Il faut également rajouter une condition limite de type ``waveVelocity`` dans le 
-fichier ``0.orig/U``::
+fichier ``0.orig/U``:
+
+.. code-block:: none
 
     dimensions      [0 1 -1 0 0 0 0];
 
@@ -335,7 +351,7 @@ utilisez le script ``Allrun.case.turbulent`` ou lancez la commande:
 
 .. code-block:: bash
 
-    mv constant/turbulenceProperties.komega constant/turbulenceProperties
+    cp constant/turbulenceProperties.komega constant/turbulenceProperties
 
 En faisant cela, vous allez utiliser le modèle de turbulence :math:`k-\omega` SST.
 

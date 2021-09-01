@@ -120,4 +120,4 @@ Liens utiles
 .. NOTE::
 
   Des exemples de programmation avec OpenFOAM sont donnés dans les fichiers ``0.orig/Ua`` et ``0.orig/alpha_a``
-  du tutoriel d'`affouillement 2D </tutoriels/sedFoam/2DPipelineScour>`.
+  du tutoriel d'`:doc:affouillement 2D </tutoriels/sedFoam/2DPipelineScour>`.

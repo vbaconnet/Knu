@@ -186,8 +186,8 @@
 <p><strong>Description de la situation</strong></p>
 <p>Ce tutoriel est une introduction à la génération de houle régulière sous OpenFOAM.</p>
 <p>L’ensemble des commandes à lancer est donné dans les fichiers <code class="docutils literal notranslate"><span class="pre">Allrun.case.laminaire</span></code> ou
-<code class="docutils literal notranslate"><span class="pre">Allrun.case.turbulent</span></code> selon le type de simulation que vous voulez lancer. Voici un
-extrait du fichier <code class="docutils literal notranslate"><span class="pre">Allrun.case.laminaire</span></code>:</p>
+<code class="docutils literal notranslate"><span class="pre">Allrun.case.turbulent</span></code>, que vous pouvez exécuter directement selon le type de
+simulation que vous voulez lancer. Voici un extrait du fichier <code class="docutils literal notranslate"><span class="pre">Allrun.case.laminaire</span></code>:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
 
 Allmesh
@@ -443,7 +443,7 @@ de l’atmosphère pour la face horizontale supérieure.</p>
 <p><strong>Lancement de la simulation</strong></p>
 <p>Si vous le souhaitez, vous pouvez utiliser un modèle de turbulence. Pour cela,
 utilisez le script <code class="docutils literal notranslate"><span class="pre">Allrun.case.turbulent</span></code> ou lancez la commande:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mv constant/turbulenceProperties.komega constant/turbulenceProperties
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>cp constant/turbulenceProperties.komega constant/turbulenceProperties
 </pre></div>
 </div>
 <p>En faisant cela, vous allez utiliser le modèle de turbulence <span class="math notranslate nohighlight">\(k-\omega\)</span> SST.</p>
@@ -526,14 +526,20 @@ functions
 }
 </pre></div>
 </div>
+<p>Lancez la simulation avec</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>interFoam &gt; log.interFoam <span class="p">&amp;</span>
+</pre></div>
+</div>
+<p>Vous pouvez aussi lancer <code class="docutils literal notranslate"><span class="pre">setFields</span></code> et <code class="docutils literal notranslate"><span class="pre">interFoam</span></code> directement avec la commande:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Allrun</span> <span class="o">-</span><span class="n">s</span> <span class="o">&amp;</span>
 </pre></div>
 </div>
 <p><strong>Post-traitement</strong></p>
 <p>Un fois que la simulation est lancée, vous pouvez la surveiller avec le
 script <code class="docutils literal notranslate"><span class="pre">AllpostProcess</span></code>. En options, vous pouvez y ajouter des scripts
-que vous voulez exécuter. Dans notre cas, nous allons exécuter le fichier
-de lecture de sondes <code class="docutils literal notranslate"><span class="pre">lireSondes.py</span></code>, puis afficher le signal de houle
+que vous voulez exécuter lorsque la simulation sera terminée.
+Dans notre cas, nous allons exécuter le fichier de lecture de sondes
+<code class="docutils literal notranslate"><span class="pre">lireSondes.py</span></code>, puis afficher le signal de houle
 mesuré par ces sondes.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>AllpostProcess lireSondes.py
 traceSondes.py line_probes.csv

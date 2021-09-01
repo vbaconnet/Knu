@@ -6,8 +6,8 @@ Houle régulière
 Ce tutoriel est une introduction à la génération de houle régulière sous OpenFOAM. 
 
 L'ensemble des commandes à lancer est donné dans les fichiers ``Allrun.case.laminaire`` ou 
-``Allrun.case.turbulent`` selon le type de simulation que vous voulez lancer. Voici un 
-extrait du fichier ``Allrun.case.laminaire``:
+``Allrun.case.turbulent``, que vous pouvez exécuter directement selon le type de 
+simulation que vous voulez lancer. Voici un extrait du fichier ``Allrun.case.laminaire``:
 
 .. code-block:: bash
 
@@ -282,7 +282,7 @@ utilisez le script ``Allrun.case.turbulent`` ou lancez la commande:
 
 .. code-block:: bash
 
-    mv constant/turbulenceProperties.komega constant/turbulenceProperties
+    cp constant/turbulenceProperties.komega constant/turbulenceProperties
 
 En faisant cela, vous allez utiliser le modèle de turbulence :math:`k-\omega` SST.
 
@@ -368,17 +368,23 @@ Nous avons aussi posé 4 sondes le long du canal, définies dans le dictionnaire
         }
     }
 
+Lancez la simulation avec
 
 .. code-block:: bash
 
     interFoam > log.interFoam &
 
+Vous pouvez aussi lancer ``setFields`` et ``interFoam`` directement avec la commande::
+
+    Allrun -s &
+
 **Post-traitement**
 
 Un fois que la simulation est lancée, vous pouvez la surveiller avec le 
 script ``AllpostProcess``. En options, vous pouvez y ajouter des scripts
-que vous voulez exécuter. Dans notre cas, nous allons exécuter le fichier
-de lecture de sondes ``lireSondes.py``, puis afficher le signal de houle 
+que vous voulez exécuter lorsque la simulation sera terminée.
+Dans notre cas, nous allons exécuter le fichier de lecture de sondes 
+``lireSondes.py``, puis afficher le signal de houle 
 mesuré par ces sondes.
 
 .. code-block:: bash

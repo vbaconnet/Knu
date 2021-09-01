@@ -186,21 +186,32 @@
 <p><strong>Description de la situation</strong></p>
 <p>Ce tutoriel est une introduction à la génération de houle irrégulière sous OpenFOAM.</p>
 <p>L’ensemble des commandes à lancer est donné dans les fichiers <code class="docutils literal notranslate"><span class="pre">Allrun.case.laminaire</span></code> ou
-<code class="docutils literal notranslate"><span class="pre">Allrun.case.turbulent</span></code> selon le type de simulation que vous voulez lancer. Voici un
+<code class="docutils literal notranslate"><span class="pre">Allrun.case.turbulent</span></code>, que vous pouvez exécuter directement
+selon le type de simulation que vous voulez lancer. Voici un
 extrait du fichier <code class="docutils literal notranslate"><span class="pre">Allrun.case.laminaire</span></code>:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
 
+<span class="c1"># Lancer le maillage</span>
 Allmesh
 
+<span class="c1"># Générer la houle irrégulière</span>
 genHouleIrreguliere
 
-mv constant/turbulenceProperties.laminar constant/turbulenceProperties
+<span class="c1"># Charger le fichier de turbulence</span>
+cp constant/turbulenceProperties.laminar constant/turbulenceProperties
 
+<span class="c1"># Lancer le calcul. L&#39;option -s lance setFields</span>
 Allrun -s <span class="p">&amp;</span>
 
-sleep <span class="m">2</span>
+<span class="c1"># Attendre 3 secondes avant de lancer le monitoring</span>
+sleep <span class="m">3</span>
 
-AllpostProcess lireSondes.py resample.py spectre.py
+<span class="c1"># Suivre la progression du calcul et lancer la commande</span>
+<span class="c1"># de lecture de sondes lorsque le calcul est terminé</span>
+AllpostProcess lireSondes.py
+
+<span class="c1"># Tracer les sondes</span>
+traceSondes.py line_probes.csv
 </pre></div>
 </div>
 <p><strong>Maillage</strong></p>
@@ -299,7 +310,7 @@ mais pour que la simulation soit plus rapide. Vous devrez créer un
 maillage plus fin si vous souhaitez obtenir une bonne propagation
 de houle.</p>
 <p>Exécutez <code class="docutils literal notranslate"><span class="pre">blockMesh</span></code> avec la commande</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ blockMesh
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">blockMesh</span>
 </pre></div>
 </div>
 <p>Vous pouvez visualiser le maillage avec <code class="docutils literal notranslate"><span class="pre">ParaView</span></code>.</p>
@@ -319,8 +330,8 @@ activeAbsorption yes
 <p>Vous pouvez éventuellement rajouter d’autres paramètres. Pour plus de détails sur
 les paramètres à rajouter, consultez la documentation du fichier de génération de houle
 irrégulière <a class="reference internal" href="../../fonctions/genHouleIrreguliere.html"><span class="doc">genHouleIrreguliere.py</span></a>.</p>
-<p>Pour générer le fichier de houle régulière, lancez la commande:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ genHouleIrreguliere.py
+<p>Pour générer le fichier de houle irrégulière, lancez la commande:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">genHouleIrreguliere</span><span class="o">.</span><span class="n">py</span>
 </pre></div>
 </div>
 <p>Cette commande générera le fichier <code class="docutils literal notranslate"><span class="pre">constant/waveProperties</span></code>:</p>
@@ -402,46 +413,46 @@ d’absorption dynamique sur la face <code class="docutils literal notranslate">
 <p>Pour indiquer une condition de houle sur les faces d’entrée/sortie,
 nous devons spécifier la condition <code class="docutils literal notranslate"><span class="pre">waveAlpha</span></code> dans le fichier
 <code class="docutils literal notranslate"><span class="pre">0.orig/alpha.water</span></code>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">dimensions</span>      <span class="p">[</span><span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span><span class="p">];</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>dimensions      [0 0 0 0 0 0 0];
 
-<span class="n">internalField</span>   <span class="n">uniform</span> <span class="mi">0</span><span class="p">;</span>
+internalField   uniform 0;
 
-<span class="n">boundaryField</span>
-<span class="p">{</span>
-    <span class="n">inlet</span>
-    <span class="p">{</span>
-        <span class="nb">type</span>            <span class="n">waveAlpha</span><span class="p">;</span>
-        <span class="n">value</span>           <span class="n">uniform</span> <span class="mi">0</span><span class="p">;</span>
-    <span class="p">}</span>
+boundaryField
+{
+    inlet
+    {
+        type            waveAlpha;
+        value           uniform 0;
+    }
 
-    <span class="n">outlet</span>
-    <span class="p">{</span>
-        <span class="nb">type</span>            <span class="n">waveAlpha</span><span class="p">;</span>
-        <span class="n">value</span>           <span class="n">uniform</span> <span class="mi">0</span><span class="p">;</span>
-    <span class="p">}</span>
+    outlet
+    {
+        type            waveAlpha;
+        value           uniform 0;
+    }
 
-    <span class="n">BOTTOM</span>
-    <span class="p">{</span>
-        <span class="nb">type</span>            <span class="n">zeroGradient</span><span class="p">;</span>
-    <span class="p">}</span>
+    BOTTOM
+    {
+        type            zeroGradient;
+    }
 
-    <span class="n">TOP</span>
-    <span class="p">{</span>
-        <span class="nb">type</span>            <span class="n">inletOutlet</span><span class="p">;</span>
-        <span class="n">inletValue</span>      <span class="n">uniform</span> <span class="mi">0</span><span class="p">;</span>
-        <span class="n">value</span>           <span class="n">uniform</span> <span class="mi">0</span><span class="p">;</span>
-    <span class="p">}</span>
+    TOP
+    {
+        type            inletOutlet;
+        inletValue      uniform 0;
+        value           uniform 0;
+    }
 
-    <span class="n">frontPlane</span>
-    <span class="p">{</span>
-        <span class="nb">type</span>            <span class="n">empty</span><span class="p">;</span>
-    <span class="p">}</span>
+    frontPlane
+    {
+        type            empty;
+    }
 
-    <span class="n">backPlane</span>
-    <span class="p">{</span>
-        <span class="nb">type</span>            <span class="n">empty</span><span class="p">;</span>
-    <span class="p">}</span>
-<span class="p">}</span>
+    backPlane
+    {
+        type            empty;
+    }
+}
 </pre></div>
 </div>
 <p>De manière générale, un mur sera de type <code class="docutils literal notranslate"><span class="pre">zeroGradient</span></code>. Notez la condition
@@ -449,46 +460,46 @@ nous devons spécifier la condition <code class="docutils literal notranslate"><
 d’atmosphère.</p>
 <p>Il faut également rajouter une condition limite de type <code class="docutils literal notranslate"><span class="pre">waveVelocity</span></code> dans le
 fichier <code class="docutils literal notranslate"><span class="pre">0.orig/U</span></code>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">dimensions</span>      <span class="p">[</span><span class="mi">0</span> <span class="mi">1</span> <span class="o">-</span><span class="mi">1</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span><span class="p">];</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>dimensions      [0 1 -1 0 0 0 0];
 
-<span class="n">internalField</span>   <span class="n">uniform</span> <span class="p">(</span><span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span><span class="p">);</span>
+internalField   uniform (0 0 0);
 
-<span class="n">boundaryField</span>
-<span class="p">{</span>
-    <span class="n">inlet</span>
-    <span class="p">{</span>
-        <span class="nb">type</span>            <span class="n">waveVelocity</span><span class="p">;</span>
-        <span class="n">value</span>           <span class="n">uniform</span> <span class="p">(</span><span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span><span class="p">);</span>
-    <span class="p">}</span>
+boundaryField
+{
+    inlet
+    {
+        type            waveVelocity;
+        value           uniform (0 0 0);
+    }
 
-    <span class="n">outlet</span>
-    <span class="p">{</span>
-        <span class="nb">type</span>            <span class="n">waveVelocity</span><span class="p">;</span>
-        <span class="n">value</span>           <span class="n">uniform</span> <span class="p">(</span><span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span><span class="p">);</span>
-    <span class="p">}</span>
+    outlet
+    {
+        type            waveVelocity;
+        value           uniform (0 0 0);
+    }
 
-    <span class="n">BOTTOM</span>
-    <span class="p">{</span>
-        <span class="nb">type</span>            <span class="n">fixedValue</span><span class="p">;</span>
-        <span class="n">value</span>           <span class="n">uniform</span> <span class="p">(</span><span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span><span class="p">);</span>
-    <span class="p">}</span>
+    BOTTOM
+    {
+        type            fixedValue;
+        value           uniform (0 0 0);
+    }
 
-    <span class="n">TOP</span>
-    <span class="p">{</span>
-        <span class="nb">type</span>            <span class="n">pressureInletOutletVelocity</span><span class="p">;</span>
-        <span class="n">value</span>           <span class="n">uniform</span> <span class="p">(</span><span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span><span class="p">);</span>
-    <span class="p">}</span>
+    TOP
+    {
+        type            pressureInletOutletVelocity;
+        value           uniform (0 0 0);
+    }
 
-    <span class="n">frontPlane</span>
-    <span class="p">{</span>
-        <span class="nb">type</span>            <span class="n">empty</span><span class="p">;</span>
-    <span class="p">}</span>
+    frontPlane
+    {
+        type            empty;
+    }
 
-    <span class="n">backPlane</span>
-    <span class="p">{</span>
-        <span class="nb">type</span>            <span class="n">empty</span><span class="p">;</span>
-    <span class="p">}</span>
-<span class="p">}</span>
+    backPlane
+    {
+        type            empty;
+    }
+}
 </pre></div>
 </div>
 <p>Notez là aussi la condition <code class="docutils literal notranslate"><span class="pre">pressureInletOutletVelocity</span></code> pour la modélisation
@@ -497,7 +508,7 @@ de l’atmosphère pour la face horizontale supérieure.</p>
 <p><strong>Lancement de la simulation</strong></p>
 <p>Si vous le souhaitez, vous pouvez utiliser un modèle de turbulence. Pour cela,
 utilisez le script <code class="docutils literal notranslate"><span class="pre">Allrun.case.turbulent</span></code> ou lancez la commande:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mv constant/turbulenceProperties.komega constant/turbulenceProperties
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>cp constant/turbulenceProperties.komega constant/turbulenceProperties
 </pre></div>
 </div>
 <p>En faisant cela, vous allez utiliser le modèle de turbulence <span class="math notranslate nohighlight">\(k-\omega\)</span> SST.</p>
