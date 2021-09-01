@@ -37,7 +37,7 @@ Utilisation
 
 .. code-block:: bash
 
-  $ resample [OPTIONS]
+   resample.py [OPTIONS]
 
 --file file             Nom du fichier dans lequel lire le signal à traiter.
                         Doit être au format ``.csv``.
